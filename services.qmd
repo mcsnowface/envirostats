@@ -1,0 +1,25 @@
+---
+#title: "Our Services"
+---
+
+## Our Services
+
+At EnviroStats Solutions, our focus centers on applying the most suitable and current analyses and visualizations to environmental data. We are well-versed in both traditional statistical methods and Bayesian statistics. Our day-to-day modeling involves a range of techniques:
+
+-   Linear models
+
+-   Generalized linear models
+
+-   Linear mixed effects models
+
+-   Generalized linear mixed effects models
+
+-   Models accommodating zero and one inflated data
+
+-   Classification and regression tree analyses
+
+-   Multivariate analyses, inclusive principal component analysis, linear discriminant analysis, and non-linear multidimensional scaling techniques
+
+In addition to our analytical work, we have ample experience in offering tailored R teaching workshops. These workshops cater to your specific requirements, providing participants with fundamental and advanced training in R, statistics, and data visualization.
+
+![](images/envirostats_logo_transparent.png){fig-align="center" width="50%"}
