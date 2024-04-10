@@ -1,9 +1,29 @@
 ---
-title: "About"
+title: "Who we are"
 ---
 
-About this site
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-```{r}
-1 + 1
-```
+![](images/stefanschreiber.jpg){fig-align="left" width="70%"}
+
+## Stefan Schreiber, Ph.D., P.Biol.
+Stefan holds a Ph.D. in Forest Biology and Management from the University of Alberta and is a certified Professional Biologist with the Alberta Society of Professional Biologists. Prior to his time in Canada, Stefan pursued his Bachelor's and Master's degree in Biology at Ruhr-University Bochum, specializing in plant ecology and molecular phylogeny. His passion are trees, specifically understanding their adaptive mechanisms to diverse environments. In addition to his academic pursuits, Stefan sharpened his skills in quantitative methods and statistics, establishing a robust foundation in R programming throughout his career. Beyond his work life, Stefan cherishes every moment with his wife and three children. He also has a passion for ultra-endurance sports, embodying a resilient spirit both in his  academic and work-related endeavors, as well as personal pursuits.
+
+[![](images/linkedin.png){fig-align="left" width="5%"}](https://www.linkedin.com/in/sgschreiber/)
+[![](images/scholar.png){fig-align="left" width="5%"}](https://scholar.google.ca/citations?user=Z4p4elkAAAAJ&hl=en)
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+![](images/sanjaschreiber.jpg){fig-align="left" width="70%"}
+
+## Sanja Schreiber, Ph.D., M.Sc., B.Sc
+
+Sanja is a clinician with a Ph.D. in Rehabilitation Science and a Postdoctorate in Evidence Synthesis, both from University of Alberta. She has extensive expertise in clinical trial design and methodology, conduct, and reporting, with an interest in bridging gaps between research and practice. She is an expert in evidence synthesis methodologies, including scoping reviews, systematic reviews, Cochrane systematic reviews, overviews of reviews and living systematic reviews, where she uses software technology to expedite review production and minimize human error. Employing the same rigorous methodology utilized in medical research, she directs environmental evidence syntheses production at EnviroStats Solutions, facilitating evidence-based policymaking and addressing complex environmental decisions. Outside of work, Sanja loves travel adventures with her husband and three children.
+
+[![](images/linkedin.png){fig-align="left" width="5%"}](https://www.linkedin.com/in/sanja-schreiber-phd-708236b7/)
+[![](images/scholar.png){fig-align="left" width="5%"}](https://scholar.google.ca/citations?hl=en&user=bRLXU0kAAAAJ)
+
+
+
+

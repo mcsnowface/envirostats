@@ -6,17 +6,17 @@
 
 Solid scientific inference and the foundations of evidence-based decision-making are rooted in data that precisely address the core questions and objectives at hand. This underscores the critical importance of meticulously planned study designs and targeted data collection. As the stakes rise, so does the demand for confidence. Building this confidence hinges on:
 
-1.  ***Thoughtful Experimental Design:***  
-Crafting the right experimental framework tailored to your inquiry.
+1.  ***Thoughtful Experimental Design:***\
+    Crafting the right experimental framework tailored to your inquiry.
 
-2.  ***Accurate Data Analysis:***  
-Applying sound analytical techniques that draw out reliable insights.
+2.  ***Accurate Data Analysis:***\
+    Applying sound analytical techniques that draw out reliable insights.
 
-3.  ***Transparent Visualization:***  
-Conveying findings truthfully and effectively.
+3.  ***Transparent Visualization:***\
+    Conveying findings truthfully and effectively.
 
-EnviroStats Solutions stands ready to provide expert guidance and consultation in data analysis, visualization, and interpretation, catering to those navigating the intricate landscape of environmental challenges. Backed by an extensive background in both applied and foundational research, we offer comprehensive support for evidence-driven decision-making --- guiding you from initial experimental design to conclusive recommendations.
+EnviroStats Solutions stands ready to provide expert guidance and consultation in data analysis, visualization, and interpretation, catering to those navigating the landscape of environmental challenges. Backed by an extensive background in both applied and foundational research, we offer comprehensive support for evidence-driven decision-making --- guiding you from initial experimental design to conclusive recommendations.
 
-What sets us apart is our commitment to empowering you with the tools to understand and harness data. Our commitment extends beyond consultation. We'll share our proficiency in data analysis and environmental statistics through tailor-made workshops and training sessions that align with your specific requirements. With a decade of hands-on experience as dedicated users of the R Environment for Statistical Computing, we're dedicated to equipping you for success.
+Our commitment extends beyond consultation. We'll share our proficiency in data analysis and environmental statistics through tailor-made workshops and training sessions that align with your specific requirements. With over a decade of hands-on experience as dedicated users of the R Environment for Statistical Computing, we're dedicated to equipping you for success.
 
 ![](images/envirostats_logo_transparent.png){fig-align="center" width="50%"}

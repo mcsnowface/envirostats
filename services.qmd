@@ -20,6 +20,9 @@ At EnviroStats Solutions, our focus centers on applying the most suitable and cu
 
 -   Multivariate analyses, inclusive principal component analysis, linear discriminant analysis, and non-linear multidimensional scaling techniques
 
+### New:
+- **Evidence syntheses through scoping and systematic reviews using narrative or meta-analyses**
+
 In addition to our analytical work, we have ample experience in offering tailored R teaching workshops. These workshops cater to your specific requirements, providing participants with fundamental and advanced training in R, statistics, and data visualization.
 
 ![](images/envirostats_logo_transparent.png){fig-align="center" width="50%"}

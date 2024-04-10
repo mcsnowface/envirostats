@@ -10,17 +10,18 @@ website:
         text: Home
       - mission.qmd
       - services.qmd
+      - about.qmd
       - posts.qmd
     logo: images/favicon.png
   favicon: images/favicon.png
 
 format:
   html:
-    theme: lux
+    theme: sandstone
     css: styles.css
     toc: false
     email-obfuscation: javascript
 
-editor: visual
+editor: source
 
 
