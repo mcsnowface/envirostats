@@ -4,7 +4,7 @@ title: "Who we are"
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-![](images/stefanschreiber2.jpg){fig-align="left" width="70%"}
+![](images/stefanschreiber.jpg){fig-align="left" width="70%"}
 
 ## Stefan Schreiber, Ph.D., P.Biol.
 Stefan holds a Ph.D. in Forest Biology and Management from the University of Alberta and is a certified Professional Biologist with the Alberta Society of Professional Biologists. Prior to his time in Canada, Stefan pursued his Bachelor's and Master's degree in Biology at Ruhr-University Bochum, specializing in plant ecology and molecular phylogeny. His passion are trees, specifically understanding their adaptive mechanisms to diverse environments. In addition to his academic pursuits, Stefan sharpened his skills in quantitative methods and statistics, establishing a robust foundation in R programming throughout his career. Beyond his work life, Stefan cherishes every moment with his wife and three children. He also has a passion for ultra-endurance sports, embodying a resilient spirit both in his  academic and work-related endeavors, as well as personal pursuits.
@@ -23,6 +23,7 @@ Sanja is a clinician with a Ph.D. in Rehabilitation Science and a Postdoctorate 
 
 [![](images/linkedin.png){fig-align="left" width="5%"}](https://www.linkedin.com/in/sanja-schreiber-phd-708236b7/)
 [![](images/scholar.png){fig-align="left" width="5%"}](https://scholar.google.ca/citations?hl=en&user=bRLXU0kAAAAJ)
+
 
 
 

@@ -19,4 +19,3 @@ EnviroStats Solutions stands ready to provide expert guidance and consultation i
 
 Our commitment extends beyond consultation. We'll share our proficiency in data analysis and environmental statistics through tailor-made workshops and training sessions that align with your specific requirements. With over a decade of hands-on experience as dedicated users of the R Environment for Statistical Computing, we're dedicated to equipping you for success.
 
-![](images/envirostats_logo_transparent.png){fig-align="center" width="50%"}
