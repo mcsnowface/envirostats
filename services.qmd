@@ -22,8 +22,6 @@ At EnviroStats Solutions, our focus centers on applying the most suitable and cu
 
 -   Generating Shiny Web Apps for easy visualization of data
 
-### New:
-- **Evidence syntheses through scoping and systematic reviews using narrative or meta-analyses**
+-   Evidence syntheses through scoping and systematic reviews using narrative or meta-analyses
 
 In addition to our analytical work, we have ample experience in offering tailored R teaching workshops. These workshops cater to your specific requirements, providing participants with fundamental and advanced training in R, statistics, and data visualization.
-

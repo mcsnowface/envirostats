@@ -1,27 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://www.envirostats.ca/about.html</loc>
+    <lastmod>2025-10-12T23:55:08.499Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.envirostats.ca/services.html</loc>
+    <lastmod>2025-10-13T14:54:21.953Z</lastmod>
+  </url>
+  <url>
     <loc>https://www.envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/index.html</loc>
     <lastmod>2025-10-13T14:35:20.590Z</lastmod>
   </url>
   <url>
-    <loc>https://www.envirostats.ca/index.html</loc>
-    <lastmod>2025-10-12T23:55:08.502Z</lastmod>
+    <loc>https://www.envirostats.ca/mission.html</loc>
+    <lastmod>2025-10-12T23:55:08.516Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.envirostats.ca/posts/2024-04-10-evidence-synthesis/index.html</loc>
+    <lastmod>2025-10-12T23:55:08.522Z</lastmod>
   </url>
   <url>
     <loc>https://www.envirostats.ca/posts.html</loc>
     <lastmod>2025-10-12T23:55:08.517Z</lastmod>
   </url>
   <url>
-    <loc>https://www.envirostats.ca/about.html</loc>
-    <lastmod>2025-10-12T23:55:08.499Z</lastmod>
-  </url>
-  <url>
-    <loc>https://www.envirostats.ca/services.html</loc>
-    <lastmod>2025-10-13T14:40:27.690Z</lastmod>
-  </url>
-  <url>
-    <loc>https://www.envirostats.ca/mission.html</loc>
-    <lastmod>2025-10-12T23:55:08.516Z</lastmod>
+    <loc>https://www.envirostats.ca/index.html</loc>
+    <lastmod>2025-10-12T23:55:08.502Z</lastmod>
   </url>
 </urlset>
