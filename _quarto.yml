@@ -3,7 +3,7 @@ project:
 
 website:
   title: "Quantitative Environmental Services"
-  page-footer: "Copyright 2024, EnviroStats Solutions Inc."
+  page-footer: "Copyright 2025, EnviroStats Solutions Inc."
   navbar:
     right:
       - href: index.qmd
