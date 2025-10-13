@@ -5,6 +5,7 @@ author: "Stefan Schreiber"
 date: 10-12-2025
 categories: [frequentist, inference, bayesian] # self-defined categories
 image: pearson_fisher_neyman.png
+social-image: pearson_fisher_neyman.png
 citation:
   url: https://envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/ 
 bibliography: references.bib
