@@ -1,23 +1,19 @@
 ---
 title: "Understanding Frequentist Inference"
-subtitle: "From Sampling Distributions to Statistical Decisions: A Visual Introduction"
+subtitle: "From Sampling Distributions to Statistical Decisions"
 author: "Stefan Schreiber"
 date: 10-12-2025
 categories: [frequentist, inference, bayesian]
 
-# Local image for the page
-image: "https://www.envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/pearson_fisher_neyman.png"
+# Page image (local for the page itself)
+image: pearson_fisher_neyman.png
 image-alt: "When in doubt, repeat the experiment forever."
 
-# Open Graph metadata for social media (must use absolute URL for images)
-open-graph:
-  title: "Understanding Frequentist Inference"
-  description: "A visual introduction to sampling distributions and statistical decisions."
-  image: "https://www.envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/pearson_fisher_neyman.png"
-  url: "https://envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/"
+# Open Graph metadata for social media (absolute URL)
+open-graph: true  # still allows Quarto defaults, but we also force tags below
 
 citation:
-  url: https://envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/ 
+  url: https://envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/
 bibliography: references.bib
 csl: apa.csl
 
@@ -28,6 +24,14 @@ format:
     code-fold: true
     code-summary: "Show code"
     df-print: paged
+    include-in-header:
+      text: |
+        <!-- Forced Open Graph metadata for LinkedIn -->
+        <meta property="og:title" content="Understanding Frequentist Inference"/>
+        <meta property="og:description" content="A visual introduction to sampling distributions and statistical decisions."/>
+        <meta property="og:image" content="https://envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/pearson_fisher_neyman_1200x627.png"/>
+        <meta property="og:url" content="https://envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/"/>
+        <meta property="og:type" content="article"/>
 
 editor: source
 
@@ -38,6 +42,8 @@ execute:
   cache: true
 
 draft: false  
+---
+
 ---
 
 ---
