@@ -6,7 +6,7 @@ date: 10-12-2025
 categories: [frequentist, inference, bayesian]
 
 # Local image for the page
-image: pearson_fisher_neyman.png
+image: "https://www.envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/pearson_fisher_neyman.png"
 image-alt: "When in doubt, repeat the experiment forever."
 
 # Open Graph metadata for social media (must use absolute URL for images)
