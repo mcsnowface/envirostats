@@ -3,14 +3,24 @@ title: "Understanding Frequentist Inference"
 subtitle: "From Sampling Distributions to Statistical Decisions: A Visual Introduction"
 author: "Stefan Schreiber"
 date: 10-12-2025
-categories: [frequentist, inference, bayesian] # self-defined categories
+categories: [frequentist, inference, bayesian]
+
+# Local image for the page
 image: pearson_fisher_neyman.png
-image-alt: "Fisher tests the null, Neyman rejects it, Pearson computes the power."
-open-graph: true
+image-alt: "When in doubt, repeat the experiment forever."
+
+# Open Graph metadata for social media (must use absolute URL for images)
+open-graph:
+  title: "Understanding Frequentist Inference"
+  description: "A visual introduction to sampling distributions and statistical decisions."
+  image: "https://www.envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/pearson_fisher_neyman.png"
+  url: "https://envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/"
+
 citation:
   url: https://envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/ 
 bibliography: references.bib
 csl: apa.csl
+
 format:
   html:
     toc: true
@@ -18,15 +28,20 @@ format:
     code-fold: true
     code-summary: "Show code"
     df-print: paged
+
 editor: source
+
 execute:
   echo: true
   warning: false
   message: false
   cache: true
+
 draft: false  
 ---
-![](pearson_fisher_neyman.png)
+
+---
+![When in doubt, repeat the experiment forever.](pearson_fisher_neyman.png)
 
 # Introduction
 
