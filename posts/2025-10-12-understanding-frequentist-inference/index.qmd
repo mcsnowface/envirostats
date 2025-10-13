@@ -26,6 +26,7 @@ execute:
   cache: true
 draft: false  
 ---
+![](pearson_fisher_neyman.png)
 
 # Introduction
 
