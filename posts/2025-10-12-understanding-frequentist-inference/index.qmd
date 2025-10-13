@@ -714,8 +714,8 @@ However, Bayesian methods come with their own challenges:
 
 - **Prior specification** requires explicit modeling choices (though frequentist methods have implicit choices too -- selecting which test to run, which variables to include, when to stop collecting data).
 - **Computational demands** can be substantial for complex models.
-- **Interpretation requires** understanding probability as degree of belief.
-- **Different analysts** with different priors may reach different conclusions (though frequentist analysts with different analysis choices may also differ).
+- **Interpretation requires** understanding of probabilistic reasoning.
+- **Different analysts** with different priors may reach different conclusions (as will frequentist analysts who make different analysis choices).
 
 **A note on subjectivity:** Both frameworks involve subjective choices. Frequentist inference requires decisions about significance levels, which tests to conduct, and when to stop data collection. P-hacking, optional stopping, and selective reporting are all forms of analyst subjectivity that can distort frequentist inference. Bayesian inference makes some of these choices more explicit through prior specification, but this transparency can also be seen as a strength rather than a weakness.
 
