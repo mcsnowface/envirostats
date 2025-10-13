@@ -165,6 +165,7 @@ window.Quarto = {
 <meta property="og:description" content="A visual introduction to sampling distributions and statistical decisions.">
 <meta property="og:image" content="https://www.envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/pearson_fisher_neyman.png">
 <meta property="og:site_name" content="Quantitative Environmental Services">
+<meta property="og:image:alt" content="When in doubt, repeat the experiment forever.">
 </head>
 
 <body class="nav-fixed quarto-light">
@@ -305,7 +306,7 @@ window.Quarto = {
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="pearson_fisher_neyman.png" class="img-fluid figure-img"></p>
-<figcaption>When in doubt, repeat the experiment forever.</figcaption>
+<figcaption>When in doubt, repeat the experiment forever. ;P</figcaption>
 </figure>
 </div>
 <section id="introduction" class="level1">
@@ -1196,7 +1197,7 @@ Inference</em>. <a href="https://envirostats.ca/posts/2025-10-12-understanding-f
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp('/' + window.location.host + '/');
+        var filterRegex = new RegExp("https:\/\/www\.envirostats\.ca");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

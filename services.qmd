@@ -20,6 +20,8 @@ At EnviroStats Solutions, our focus centers on applying the most suitable and cu
 
 -   Multivariate analyses, inclusive principal component analysis, linear discriminant analysis, and non-linear multidimensional scaling techniques
 
+-   Generating Shiny Web Apps for easy visualization of data
+
 ### New:
 - **Evidence syntheses through scoping and systematic reviews using narrative or meta-analyses**
 

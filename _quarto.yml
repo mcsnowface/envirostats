@@ -3,6 +3,8 @@ project:
 
 website:
   title: "Quantitative Environmental Services"
+  site-url: "https://www.envirostats.ca"
+  open-graph: true
   page-footer: "Copyright 2025, EnviroStats Solutions Inc."
   navbar:
     right:

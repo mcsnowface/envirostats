@@ -71,6 +71,12 @@ ul.task-list li input[type="checkbox"] {
 
 
 <link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="Quantitative Environmental Services">
+<meta property="og:description" content="">
+<meta property="og:image" content="https://www.envirostats.ca/images/envirostats_logo_transparent.png">
+<meta property="og:site_name" content="Quantitative Environmental Services">
+<meta property="og:image:height" content="1541">
+<meta property="og:image:width" content="2057">
 </head>
 
 <body class="nav-fixed fullcontent quarto-light">
@@ -228,7 +234,7 @@ document.write('<a h'+'ref'+'="ma'+'ilto'+':'+e+'" clas'+'s="em' + 'ail">'+'&#68
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp('/' + window.location.host + '/');
+        var filterRegex = new RegExp("https:\/\/www\.envirostats\.ca");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

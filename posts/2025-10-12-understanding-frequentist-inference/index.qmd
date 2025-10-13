@@ -41,7 +41,7 @@ draft: false
 ---
 
 ---
-![When in doubt, repeat the experiment forever.](pearson_fisher_neyman.png)
+![When in doubt, repeat the experiment forever. ;P](pearson_fisher_neyman.png)
 
 # Introduction
 
