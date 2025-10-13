@@ -29,7 +29,7 @@ format:
         <!-- Forced Open Graph metadata for LinkedIn -->
         <meta property="og:title" content="Understanding Frequentist Inference"/>
         <meta property="og:description" content="A visual introduction to sampling distributions and statistical decisions."/>
-        <meta property="og:image" content="https://envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/pearson_fisher_neyman_1200x627.png"/>
+        <meta property="og:image" content="https://envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/pearson_fisher_neyman.png"/>
         <meta property="og:url" content="https://envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/"/>
         <meta property="og:type" content="article"/>
 
