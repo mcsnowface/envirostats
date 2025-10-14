@@ -64,16 +64,24 @@ Imagine we take a sample of 20 data points from a normal distribution with mean 
 ```{r}
 library(tidyverse)
 
+# Set seed for reproducibility
 set.seed(123)
-n <- 20
-true_mu <- 6
-true_sd <- 3
 
+# Simulation parameters
+n <- 20              # Sample size
+true_mu <- 6         # Population mean
+true_sd <- 3         # Population standard deviation
+
+# Generate 1000 sample means from N(6, 3)
 sample_means <- replicate(1000, mean(rnorm(n, true_mu, true_sd)))
+
+# Calculate theoretical standard error
 se_theoretical <- true_sd / sqrt(n)
 
+# Create data frame for plotting
 df <- tibble(x = sample_means)
 
+# Plot sampling distribution with theoretical normal overlay
 ggplot(df, aes(x = x)) +
   geom_histogram(aes(y = after_stat(density)), bins = 30, fill = "grey80", 
                  color = "white", alpha = 0.7) +
@@ -126,27 +134,26 @@ More precisely: **the p-value is the probability, assuming $H_0$ is true, of obt
 
 ```{r}
 #| fig-height: 6
-library(ggplot2)
+library(tidyverse)
 library(patchwork)
-library(dplyr)
 
 # Observed test statistic
 obs_stat <- 1.8
 
-# Create normal distribution data
+# Generate standard normal distribution
 x <- seq(-4, 4, length.out = 400)
 y <- dnorm(x)
 df_full <- data.frame(x, y)
 
-# Subsets for shading
-df_right <- df_full %>% filter(x >= obs_stat)
-df_left  <- df_full %>% filter(x <= -obs_stat)
+# Create subsets for shading tails
+df_right <- df_full |> filter(x >= obs_stat)
+df_left  <- df_full |> filter(x <= -obs_stat)
 
 # Calculate p-values
 p_one <- pnorm(obs_stat, lower.tail = FALSE)
 p_two <- 2 * p_one
 
-# One-tailed plot
+# One-tailed test plot
 p1 <- ggplot(df_full, aes(x, y)) +
   geom_line(linewidth = 1.2, color = "black") +
   geom_area(data = df_right, aes(x, y), fill = "#d95f02", alpha = 0.6) +
@@ -163,7 +170,7 @@ p1 <- ggplot(df_full, aes(x, y)) +
   theme_minimal(base_size = 11) +
   theme(plot.title = element_text(hjust = 0.5))
 
-# Two-tailed plot
+# Two-tailed test plot
 p2 <- ggplot(df_full, aes(x, y)) +
   geom_line(linewidth = 1.2, color = "black") +
   geom_area(data = df_right, aes(x, y), fill = "#d95f02", alpha = 0.6) +
@@ -188,7 +195,7 @@ p2 <- ggplot(df_full, aes(x, y)) +
   theme_minimal(base_size = 11) +
   theme(plot.title = element_text(hjust = 0.5))
 
-# Combine plots
+# Combine plots vertically
 p1 / p2 + plot_annotation(
   title = "P-values as Areas Under the Sampling Distribution Curve",
   theme = theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5))
@@ -245,16 +252,19 @@ For small samples, using the normal distribution would give us confidence interv
 Let's see this difference visually:
 
 ```{r}
-# Compare normal vs t-distribution
+library(tidyverse)
+
+# Generate data comparing normal and t-distributions
 x <- seq(-4, 4, length.out = 500)
 df_compare <- tibble(
   x = x,
   Normal = dnorm(x),
-  `t (df=5)` = dt(x, df = 5),
-  `t (df=30)` = dt(x, df = 30)
-) %>%
+  `t (df=5)` = dt(x, df = 5),      # Small sample: heavier tails
+  `t (df=30)` = dt(x, df = 30)     # Larger sample: approaches normal
+) |> 
   pivot_longer(cols = -x, names_to = "distribution", values_to = "density")
 
+# Plot comparison
 ggplot(df_compare, aes(x = x, y = density, color = distribution)) +
   geom_line(linewidth = 1) +
   labs(
@@ -282,12 +292,15 @@ Instead, the 95% refers to the **procedure**: if we repeated the entire sampling
 Now let's see this in action with a simulation:
 
 ```{r}
+library(tidyverse)
+
+# Function to simulate one sample and compute its 95% CI
 simulation <- function(n, mu, stdev) {
   s <- rnorm(n, mu, stdev)
   sample_mean <- mean(s)
   sample_sd <- sd(s)
   sample_se <- sample_sd / sqrt(n)
-  confint_95 <- qt(0.975, df = n - 1) * sample_se
+  confint_95 <- qt(0.975, df = n - 1) * sample_se  # t-critical value × SE
   tibble(
     n = n,
     sample_mean = sample_mean,
@@ -300,15 +313,20 @@ simulation <- function(n, mu, stdev) {
   )
 }
 
+# Set parameters and run simulation
 set.seed(777)
 n <- 10; mu <- 0; stdev <- 5
 sim <- 100
-draws <- map(1:sim, ~ simulation(n, mu, stdev)) %>% 
-  bind_rows() %>% 
+
+# Generate 100 confidence intervals
+draws <- map(1:sim, ~ simulation(n, mu, stdev)) |>  
+  bind_rows() |>  
   mutate(experiment_id = 1:sim)
 
+# Calculate observed coverage rate
 coverage <- mean(draws$contains_mu)
 
+# Visualize confidence intervals
 ggplot(draws, aes(x = sample_mean, y = experiment_id, color = contains_mu)) + 
   geom_point(size = 3) + 
   geom_errorbarh(aes(xmin = lower_bound, xmax = upper_bound), linewidth = 1, alpha = 0.5) + 
@@ -336,22 +354,27 @@ ggplot(draws, aes(x = sample_mean, y = experiment_id, color = contains_mu)) +
 
 You may have noticed that confidence intervals and hypothesis tests both use the same ingredients: the sample statistic, the standard error, and critical values from the $t$-distribution. This is no accident -- they are mathematically linked procedures that provide complementary information.
 
-The connection is elegant: **if a 95% confidence interval excludes a particular null value, then a two-sided hypothesis test at $\alpha = 0.05$ will reject that null value ($p < 0.05$). Conversely, if the CI includes the null value, the test will not reject it ($p ≥ 0.05$).**
+The connection is this: **if a 95% confidence interval excludes a particular null value, then a two-sided hypothesis test at $\alpha = 0.05$ will reject that null value ($p < 0.05$). Conversely, if the CI includes the null value, the test will not reject it ($p ≥ 0.05$).**
 
 This relationship exists because both procedures rely on the same sampling distribution. The confidence interval shows us the *range* of null values we wouldn't reject, while the hypothesis test tells us whether one *specific* null value would be rejected.
 
 Let's visualize this connection using the same 100 simulated experiments from above. We'll now compute p-values for testing whether the true mean equals zero:
 
 ```{r}
+library(tidyverse)
+
+# Calculate t-statistics and p-values for each experiment
 draws <- draws %>%
   mutate(
     t_statistic = (sample_mean - mu) / sample_se,
-    p_value = 2 * (1 - pt(abs(t_statistic), df = n - 1)),
+    p_value = 2 * (1 - pt(abs(t_statistic), df = n - 1)),  # Two-tailed test
     significant = p_value < 0.05
   )
 
+# Count false positives (Type I errors)
 n_significant <- sum(draws$significant)
 
+# Visualize p-value distribution
 ggplot(draws, aes(x = p_value, y = experiment_id, color = significant)) + 
   geom_point(size = 3) + 
   geom_vline(xintercept = 0.05, linetype = "dashed", color = "grey40") +
@@ -372,7 +395,7 @@ ggplot(draws, aes(x = p_value, y = experiment_id, color = significant)) +
   theme(legend.position = "right")
 ```
 
-Notice that the experiments with orange points (significant p-values) are exactly those whose confidence intervals (in the previous plot) excluded zero. This perfect correspondence illustrates the deep mathematical connection between these two inferential approaches.
+Notice that the experiments with orange points (significant p-values) are exactly those whose confidence intervals (in the previous plot) excluded zero. This perfect correspondence illustrates the mathematical connection between these two inferential approaches.
 
 **Key insight:** When the null hypothesis is true (as in this simulation), approximately 5% of our tests will incorrectly yield p < 0.05. This is the **Type I error** rate, $\alpha$, which we set when we chose the 0.05 threshold. This brings us to a crucial question: what types of errors can occur in hypothesis testing, and how can we control them?
 
@@ -395,37 +418,45 @@ We can visualize these ideas by comparing two sampling distributions: one under 
 
 ```{r}
 #| fig-height: 8
+library(tidyverse)
+library(patchwork)
+
 set.seed(42)
 
-# Function to create error/power plot data
+# Function to calculate distributions and error rates
 create_error_plot_data <- function(n, mu_null = 100, mu_alt = 103, 
                                    sd_pop = 10, alpha = 0.05) {
+  # Calculate standard error and critical values
   se <- sd_pop / sqrt(n)
   t_crit <- qt(1 - alpha / 2, df = n - 1)
   lower_crit <- mu_null - t_crit * se
   upper_crit <- mu_null + t_crit * se
   
+  # Generate sampling distributions under H0 and H1
   x_vals <- seq(90, 110, length.out = 500)
   null_dist <- dnorm(x_vals, mean = mu_null, sd = se)
   alt_dist  <- dnorm(x_vals, mean = mu_alt, sd = se)
   
-  # Calculate beta
+  # Calculate Type II error (β) and power
   beta <- pnorm(upper_crit, mean = mu_alt, sd = se) - 
           pnorm(lower_crit, mean = mu_alt, sd = se)
   power <- 1 - beta
   
+  # Combine distributions for plotting
   df <- tibble(
     x = rep(x_vals, 2),
     density = c(null_dist, alt_dist),
     hypothesis = rep(c("H0: μ = 100", "H1: μ = 103"), each = length(x_vals))
   )
   
+  # Create shading regions for α (Type I error)
   alpha_region <- tibble(
     x = x_vals[x_vals < lower_crit | x_vals > upper_crit],
     y = dnorm(x_vals[x_vals < lower_crit | x_vals > upper_crit], 
               mean = mu_null, sd = se)
   )
   
+  # Create shading region for β (Type II error)
   beta_region <- tibble(
     x = x_vals[x_vals >= lower_crit & x_vals <= upper_crit],
     y = dnorm(x_vals[x_vals >= lower_crit & x_vals <= upper_crit], 
@@ -437,10 +468,10 @@ create_error_plot_data <- function(n, mu_null = 100, mu_alt = 103,
        se = se, beta = beta, power = power)
 }
 
-# Create data for n=30 (underpowered)
+# Generate data for small sample (low power)
 data_30 <- create_error_plot_data(n = 30)
 
-# Create data for n=200 (overpowered)
+# Generate data for large sample (high power)
 data_200 <- create_error_plot_data(n = 200)
 
 # Plot for n=30
@@ -487,7 +518,6 @@ p2 <- ggplot(data_200$df, aes(x = x, y = density, color = hypothesis)) +
   theme(legend.position = "top")
 
 # Combine plots vertically
-library(patchwork)
 p1 / p2
 ```
 
@@ -526,36 +556,40 @@ The side-by-side comparison above revealed a critical challenge: too little powe
 The answer lies in **prospective power analysis** -- plotting the relationship between sample size and power to find the sweet spot:
 
 ```{r}
-# Define parameters (same as used in previous visualization)
+library(tidyverse)
+
+# Define parameters (matching previous visualization)
 mu_null <- 100
 mu_alt <- 103
 sd_pop <- 10
 alpha <- 0.05
 
-# Calculate power for different sample sizes
+# Function to calculate statistical power for a given sample size
 calculate_power <- function(n, mu_null, mu_alt, sd_pop, alpha = 0.05) {
   se <- sd_pop / sqrt(n)
   t_crit <- qt(1 - alpha / 2, df = n - 1)
   lower_crit <- mu_null - t_crit * se
   upper_crit <- mu_null + t_crit * se
   
+  # Power = probability of rejecting H0 when H1 is true
   power <- pnorm(lower_crit, mean = mu_alt, sd = se) + 
            (1 - pnorm(upper_crit, mean = mu_alt, sd = se))
   return(power)
 }
 
+# Calculate power across range of sample sizes
 sample_sizes <- seq(10, 200, by = 5)
 power_values <- map_dbl(sample_sizes, ~calculate_power(.x, mu_null, mu_alt, sd_pop))
-
 power_df <- tibble(n = sample_sizes, power = power_values)
 
-# Find sample size needed for 80% power
+# Find sample size needed for conventional 80% power
 n_for_80_power <- sample_sizes[which.min(abs(power_values - 0.80))]
-# Calculate power for sample size of 30
+
+# Calculate power at our example sample sizes
 power_at_n30 <- calculate_power(30, mu_null, mu_alt, sd_pop)
-# Calculate power for sample size of 200
 power_at_n200 <- calculate_power(200, mu_null, mu_alt, sd_pop)
 
+# Plot power curve
 ggplot(power_df, aes(x = n, y = power)) +
   geom_line(color = "#1b9e77", linewidth = 1.2) +
   geom_hline(yintercept = 0.80, linetype = "dashed", color = "grey40") +
@@ -635,17 +669,25 @@ A single $p < 0.05$ result should never be considered definitive evidence. Repli
 Another crucial distinction: **statistical significance is not the same as practical importance**. With a large enough sample size, even tiny, meaningless differences will yield $p < 0.05$. For example:
 
 ```{r}
-# Simulate a trivially small effect with large sample size
+library(tidyverse)
+library(knitr)
+
+# Simulate a statistically significant but practically meaningless result
 set.seed(999)
 n_large <- 10000
-small_effect <- 0.05  # Tiny effect: 0.05 SD difference
+small_effect <- 0.05  # Negligible effect: 0.05 SD difference
 
+# Generate two groups with trivial difference
 group1 <- rnorm(n_large, mean = 0, sd = 1)
 group2 <- rnorm(n_large, mean = small_effect, sd = 1)
 
+# Conduct t-test
 t_result <- t.test(group1, group2)
-cohens_d <- small_effect / 1  # Effect size in SD units
 
+# Calculate effect size
+cohens_d <- small_effect / 1
+
+# Summarize results
 results_df <- tibble(
   Metric = c("Sample size per group", "Cohen's d (effect size)", "p-value", "Mean difference"),
   Value = c(
@@ -656,7 +698,7 @@ results_df <- tibble(
   )
 )
 
-knitr::kable(results_df, align = c("l", "r"))
+kable(results_df, align = c("l", "r"))
 ```
 
 This hypothetical example shows that with 10,000 observations per group, we can detect an effect size of only 0.05 standard deviations with high confidence -- but such a small effect is likely meaningless in most practical contexts.
