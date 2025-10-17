@@ -1,2 +1,40 @@
-/* css styles */
-b,strong {font-weight: 900}
+/* Enhanced TOC styling with scroll highlighting */
+#TOC {
+  position: sticky;
+  top: 20px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+}
+
+#TOC ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+#TOC ul ul {
+  padding-left: 1.2em;
+}
+
+#TOC a {
+  display: block;
+  padding: 0.3em 0.5em;
+  text-decoration: none;
+  color: #666;
+  border-left: 3px solid transparent;
+  transition: all 0.3s ease;
+}
+
+#TOC a:hover {
+  color: #93c54b;
+  background-color: #f5f5f5;
+}
+
+#TOC a.active {
+  color: #93c54b;
+  border-left-color: #93c54b;
+}
+
+/* Smooth scrolling for the whole page */
+html {
+  scroll-behavior: smooth;
+}
