@@ -972,7 +972,7 @@ The test’s sensitivity to real effects.</p></li>
 <section id="multiple-testing-inflates-false-positives" class="level2">
 <h2 class="anchored" data-anchor-id="multiple-testing-inflates-false-positives">Multiple Testing Inflates False Positives</h2>
 <p><strong>Important distinction:</strong> This problem applies to multiple tests on the <em>same data</em>, not to independent replication studies. If different researchers independently test the same hypothesis on different datasets, those p-values shouldn’t be corrected for multiple testing – that’s replication, which is exactly what science needs!</p>
-<p>When conducting multiple hypothesis tests within the same study or dataset, a critical issue emerges: <strong>false positives accumulate</strong>. If you conduct 100 tests on the same dataset where all null hypotheses are true at <span class="math inline">\(\alpha = 0.05\)</span>, you expect about 5 false positives purely by chance.</p>
+<p>When conducting multiple hypothesis tests within the same study or dataset, a critical issue emerges: <strong>false positives accumulate</strong>. If you conduct 100 tests on the same dataset where all null hypotheses are true and use a significance level of <span class="math inline">\(\alpha = 0.05\)</span>, you expect about 5 false positives, as predicted by the Type I error rate.</p>
 <p><strong>Examples where correction is needed:</strong></p>
 <ul>
 <li>Testing 20 different biomarkers to see which predict disease.</li>
@@ -983,7 +983,7 @@ The test’s sensitivity to real effects.</p></li>
 <p><strong>Why this matters:</strong></p>
 <ul>
 <li>Without correction, the probability of getting <em>at least one</em> false positive increases dramatically.</li>
-<li>With 20 independent tests at <span class="math inline">\(\alpha = 0.05\)</span>, there’s a 64% chance of at least one false positive even if all nulls are true (<span class="math inline">\(1 - (1-0.05)^{20} = 1 - 0.95^{20} \approx 0.64\)</span>).</li>
+<li>For example, with 20 tests on the same dataset at <span class="math inline">\(\alpha = 0.05\)</span>, there’s a 64% chance of at least one false positive even if all null hypotheses are true (<span class="math inline">\(1 - (1-0.05)^{20} = 1 - 0.95^{20} \approx 0.64\)</span>).</li>
 <li>This is why multiple testing corrections (Bonferroni, FDR control <span class="citation" data-cites="benjamini1995">(<a href="#ref-benjamini1995" role="doc-biblioref">Benjamini &amp; Hochberg, 1995</a>)</span>, Holm-Bonferroni) are essential.</li>
 </ul>
 <p><strong>Practical implication:</strong> When you conduct multiple tests, either:</p>
@@ -1141,7 +1141,7 @@ The test’s sensitivity to real effects.</p></li>
 <li><strong>Interpretation requires</strong> understanding of probabilistic reasoning.</li>
 <li><strong>Different analysts</strong> with different priors may reach different conclusions (as will frequentist analysts who make different analysis choices).</li>
 </ul>
-<p><strong>A note on subjectivity:</strong> Both frameworks involve subjective choices. Frequentist inference requires decisions about significance levels, which tests to conduct, and when to stop data collection. P-hacking, optional stopping, and selective reporting are all forms of analyst subjectivity that can distort frequentist inference. Bayesian inference makes some of these choices more explicit through prior specification, but this transparency can also be seen as a strength rather than a weakness.</p>
+<p><strong>A note on subjectivity:</strong> Both frameworks involve subjective choices. Frequentist inference requires decisions about significance levels, which tests to conduct, and when to stop data collection. P-hacking, optional stopping, and selective reporting are all forms of analyst subjectivity that can distort frequentist inference. Bayesian inference makes some of these choices more explicit through prior specification, but this transparency should be seen as a strength rather than a weakness.</p>
 <p>Neither frequentist nor Bayesian inference is universally “better” – they answer different questions and suit different contexts. The frequentist approach described in this post remains widely used, well-understood, and appropriate for many scientific questions, particularly when you want inference procedures with known long-run error rates.</p>
 <p>In our next post, we’ll begin building intuition for Bayesian inference from the ground up, starting with the simplest possible examples and gradually working toward more principled approaches <span class="citation" data-cites="mcelreath2020 gelman2013">(<a href="#ref-gelman2013" role="doc-biblioref">Gelman et al., 2013</a>; <a href="#ref-mcelreath2020" role="doc-biblioref">McElreath, 2020</a>)</span>. The key is understanding what each framework can and cannot tell you, and choosing your tools thoughtfully based on your specific inferential goals.</p>
 </section>

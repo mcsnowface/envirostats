@@ -680,7 +680,8 @@ So far, we've focused on interpreting a single hypothesis test. But real researc
 
 **Important distinction:** This problem applies to multiple tests on the *same data*, not to independent replication studies. If different researchers independently test the same hypothesis on different datasets, those p-values shouldn't be corrected for multiple testing -- that's replication, which is exactly what science needs!
 
-When conducting multiple hypothesis tests within the same study or dataset, a critical issue emerges: **false positives accumulate**. If you conduct 100 tests on the same dataset where all null hypotheses are true at $\alpha = 0.05$, you expect about 5 false positives purely by chance.
+When conducting multiple hypothesis tests within the same study or dataset, a critical issue emerges: **false positives accumulate**. If you conduct 100 tests on the same dataset where all null hypotheses are true and use a significance level of $\alpha = 0.05$, you expect about 5 false positives, as predicted by the Type I error rate.
+
 
 **Examples where correction is needed:**
 
@@ -692,7 +693,7 @@ When conducting multiple hypothesis tests within the same study or dataset, a cr
 **Why this matters:**
 
 - Without correction, the probability of getting *at least one* false positive increases dramatically.
-- With 20 independent tests at $\alpha = 0.05$, there's a 64% chance of at least one false positive even if all nulls are true ($1 - (1-0.05)^{20} = 1 - 0.95^{20} \approx 0.64$).
+- For example, with 20 tests on the same dataset at $\alpha = 0.05$, there's a 64% chance of at least one false positive even if all null hypotheses are true ($1 - (1-0.05)^{20} = 1 - 0.95^{20} \approx 0.64$).
 - This is why multiple testing corrections (Bonferroni, FDR control [@benjamini1995], Holm-Bonferroni) are essential.
 
 **Practical implication:** When you conduct multiple tests, either:
@@ -822,7 +823,7 @@ However, Bayesian methods come with their own challenges:
 - **Interpretation requires** understanding of probabilistic reasoning.
 - **Different analysts** with different priors may reach different conclusions (as will frequentist analysts who make different analysis choices).
 
-**A note on subjectivity:** Both frameworks involve subjective choices. Frequentist inference requires decisions about significance levels, which tests to conduct, and when to stop data collection. P-hacking, optional stopping, and selective reporting are all forms of analyst subjectivity that can distort frequentist inference. Bayesian inference makes some of these choices more explicit through prior specification, but this transparency can also be seen as a strength rather than a weakness.
+**A note on subjectivity:** Both frameworks involve subjective choices. Frequentist inference requires decisions about significance levels, which tests to conduct, and when to stop data collection. P-hacking, optional stopping, and selective reporting are all forms of analyst subjectivity that can distort frequentist inference. Bayesian inference makes some of these choices more explicit through prior specification, but this transparency should be seen as a strength rather than a weakness.
 
 Neither frequentist nor Bayesian inference is universally "better" -- they answer different questions and suit different contexts. The frequentist approach described in this post remains widely used, well-understood, and appropriate for many scientific questions, particularly when you want inference procedures with known long-run error rates.
 
