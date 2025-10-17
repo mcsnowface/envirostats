@@ -211,7 +211,7 @@ A small p-value tells us that our observed data would be quite surprising under 
 - ✗ "p = 0.06 means the study failed".
 - ✗ "p < 0.05 means the effect is important".
 - ✗ "The p-value is the probability that the results occurred by chance".
-- ✓ "p = 0.03 means data this extreme would occur 3% of the time *if* $H_0$ were true".
+- ✓ "p = 0.03 means data this extreme (or more) would occur 3% of the time under the null distribution, i.e. if $H_0$ were true".
 
 The p-value only tells us about the compatibility between our data and one specific null model. It does **not** tell us the size or importance of an effect, and it does **not** tell us whether we've made a mistake.
 :::
@@ -397,11 +397,11 @@ ggplot(draws, aes(x = p_value, y = experiment_id, color = significant)) +
 
 Notice that the experiments with orange points (significant p-values) are exactly those whose confidence intervals (in the previous plot) excluded zero. This perfect correspondence illustrates the mathematical connection between these two inferential approaches.
 
-**Key insight:** When the null hypothesis is true (as in this simulation), approximately 5% of our tests will incorrectly yield p < 0.05. This is the **Type I error** rate, $\alpha$, which we set when we chose the 0.05 threshold. This brings us to a crucial question: what types of errors can occur in hypothesis testing, and how can we control them?
+**Key insight:** When the null hypothesis is true (as in this simulation), approximately 5% of our tests will incorrectly reject $H_0$ -- that is, they will produce p-values below 0.05, as expected under the null distribution. This is the **Type I error** rate, $\alpha$, which we set when we chose the 0.05 threshold, and it brings us to a crucial question: what types of errors can occur in hypothesis testing, and how can we control them?
 
 # Decisions, Errors, and Power
 
-Once we have a p-value, we compare it to a chosen threshold -- the **significance level**, denoted by **α**. If the p-value is smaller than $\alpha$ (commonly 0.05), we reject $H_0$; otherwise, we fail to reject it.
+Once we have a p-value, we compare it to a chosen threshold -- the **significance level**, denoted by **$\alpha$**. If the p-value is smaller than $\alpha$ (commonly 0.05), we reject $H_0$; otherwise, we fail to reject it.
 
 Because statistical inference is based on hypothetical repeated sampling, two kinds of mistakes are always possible [@neyman1933]:
 
@@ -449,23 +449,46 @@ create_error_plot_data <- function(n, mu_null = 100, mu_alt = 103,
     hypothesis = rep(c("H0: μ = 100", "H1: μ = 103"), each = length(x_vals))
   )
   
-  # Create shading regions for α (Type I error)
-  alpha_region <- tibble(
-    x = x_vals[x_vals < lower_crit | x_vals > upper_crit],
-    y = dnorm(x_vals[x_vals < lower_crit | x_vals > upper_crit], 
-              mean = mu_null, sd = se)
+  # Create shading regions for α (Type I error) - LEFT and RIGHT tails under H0
+  alpha_left <- tibble(
+    x = x_vals[x_vals <= lower_crit],
+    y = dnorm(x_vals[x_vals <= lower_crit], mean = mu_null, sd = se)
   )
   
-  # Create shading region for β (Type II error)
+  alpha_right <- tibble(
+    x = x_vals[x_vals >= upper_crit],
+    y = dnorm(x_vals[x_vals >= upper_crit], mean = mu_null, sd = se)
+  )
+  
+  # Create shading region for β (Type II error) - CENTER under H1
   beta_region <- tibble(
     x = x_vals[x_vals >= lower_crit & x_vals <= upper_crit],
     y = dnorm(x_vals[x_vals >= lower_crit & x_vals <= upper_crit], 
               mean = mu_alt, sd = se)
   )
   
-  list(df = df, alpha_region = alpha_region, beta_region = beta_region,
-       lower_crit = lower_crit, upper_crit = upper_crit, 
-       se = se, beta = beta, power = power)
+  # Create shading regions for Power - LEFT and RIGHT tails under H1
+  power_left <- tibble(
+    x = x_vals[x_vals <= lower_crit],
+    y = dnorm(x_vals[x_vals <= lower_crit], mean = mu_alt, sd = se)
+  )
+  
+  power_right <- tibble(
+    x = x_vals[x_vals >= upper_crit],
+    y = dnorm(x_vals[x_vals >= upper_crit], mean = mu_alt, sd = se)
+  )
+  
+  list(df = df, 
+       alpha_left = alpha_left, 
+       alpha_right = alpha_right, 
+       beta_region = beta_region,
+       power_left = power_left,
+       power_right = power_right,
+       lower_crit = lower_crit, 
+       upper_crit = upper_crit, 
+       se = se, 
+       beta = beta, 
+       power = power)
 }
 
 # Generate data for small sample (low power)
@@ -476,11 +499,21 @@ data_200 <- create_error_plot_data(n = 200)
 
 # Plot for n=30
 p1 <- ggplot(data_30$df, aes(x = x, y = density, color = hypothesis)) +
-  geom_line(linewidth = 1.2) +
-  geom_area(data = data_30$alpha_region, aes(x = x, y = y), 
-            fill = "#d95f02", alpha = 0.3, color = NA) +
+  # Type I error (α) - orange tails under H0
+  geom_area(data = data_30$alpha_left, aes(x = x, y = y), 
+            fill = "#d95f02", alpha = 0.3, color = NA, inherit.aes = FALSE) +
+  geom_area(data = data_30$alpha_right, aes(x = x, y = y), 
+            fill = "#d95f02", alpha = 0.3, color = NA, inherit.aes = FALSE) +
+  # Type II error (β) - teal center under H1
   geom_area(data = data_30$beta_region, aes(x = x, y = y), 
-            fill = "#1b9e77", alpha = 0.3, color = NA) +
+            fill = "#1b9e77", alpha = 0.3, color = NA, inherit.aes = FALSE) +
+  # Power - light blue tails under H1
+  geom_area(data = data_30$power_left, aes(x = x, y = y), 
+            fill = "#7570b3", alpha = 0.2, color = NA, inherit.aes = FALSE) +
+  geom_area(data = data_30$power_right, aes(x = x, y = y), 
+            fill = "#7570b3", alpha = 0.2, color = NA, inherit.aes = FALSE) +
+  # Distribution curves
+  geom_line(linewidth = 1.2) +
   geom_vline(xintercept = c(data_30$lower_crit, data_30$upper_crit), 
              linetype = "dashed", color = "grey40") +
   labs(
@@ -497,11 +530,21 @@ p1 <- ggplot(data_30$df, aes(x = x, y = density, color = hypothesis)) +
 
 # Plot for n=200
 p2 <- ggplot(data_200$df, aes(x = x, y = density, color = hypothesis)) +
-  geom_line(linewidth = 1.2) +
-  geom_area(data = data_200$alpha_region, aes(x = x, y = y), 
-            fill = "#d95f02", alpha = 0.3, color = NA) +
+  # Type I error (α) - orange tails under H0
+  geom_area(data = data_200$alpha_left, aes(x = x, y = y), 
+            fill = "#d95f02", alpha = 0.3, color = NA, inherit.aes = FALSE) +
+  geom_area(data = data_200$alpha_right, aes(x = x, y = y), 
+            fill = "#d95f02", alpha = 0.3, color = NA, inherit.aes = FALSE) +
+  # Type II error (β) - teal center under H1
   geom_area(data = data_200$beta_region, aes(x = x, y = y), 
-            fill = "#1b9e77", alpha = 0.3, color = NA) +
+            fill = "#1b9e77", alpha = 0.3, color = NA, inherit.aes = FALSE) +
+  # Power - light blue tails under H1
+  geom_area(data = data_200$power_left, aes(x = x, y = y), 
+            fill = "#7570b3", alpha = 0.2, color = NA, inherit.aes = FALSE) +
+  geom_area(data = data_200$power_right, aes(x = x, y = y), 
+            fill = "#7570b3", alpha = 0.2, color = NA, inherit.aes = FALSE) +
+  # Distribution curves
+  geom_line(linewidth = 1.2) +
   geom_vline(xintercept = c(data_200$lower_crit, data_200$upper_crit), 
              linetype = "dashed", color = "grey40") +
   labs(
@@ -510,7 +553,7 @@ p2 <- ggplot(data_200$df, aes(x = x, y = density, color = hypothesis)) +
                       data_200$se, data_200$beta, data_200$power),
     x = "Sample mean (x̄)",
     y = "Density",
-    caption = "Orange = Type I error (α = 0.05); Teal = Type II error (β)\nDashed lines mark critical values. Notice how distributions become narrower as n increases"
+    caption = "Orange = Type I error rate (α = 0.05) under H0; Teal = Type II error rate (β) under H1; Purple = Power (1-β) under H1\nDashed lines mark critical values. Notice how distributions become narrower as n increases"
   ) +
   scale_color_manual(values = c("H0: μ = 100" = "#d95f02", 
                                 "H1: μ = 103" = "#1b9e77")) +
@@ -523,27 +566,28 @@ p1 / p2
 
 ## Interpreting the Plots
 
-**Top panel (n = 30 - Underpowered):**
+**Top panel ($n = 30$ - Underpowered):**
 
 - The **orange curve** shows the sampling distribution if $H_0: \mu = 100$ is true.
 - The **green curve** shows the sampling distribution if $H_1: \mu = 103$ is true.
 - Standard error is $\text{SE} \approx 1.83$, creating relatively wide, overlapping distributions.
-- Type II error $\beta \approx 0.63$ (large teal area) means we'd miss the true effect 63% of the time.
-- Power $\approx 0.37$ (only 37% chance of detecting the true effect).
+- The **orange shaded regions** (in the tails under $H_0$) show Type I error rate $\alpha = 0.05$.
+- The **teal shaded region** (under $H_1$, within the non-rejection region) shows Type II error rate $\beta \approx 0.63$ - meaning if the true mean is 103, we'd fail to detect this effect 63% of the time.
+- The **purple shaded regions** (under $H_1$, in the rejection regions) show power $\approx 0.37$ - only a 37% chance of correctly detecting the true effect.
 
-**Bottom panel (n = 200 - Overpowered):**
+**Bottom panel ($n = 200$ - Overpowered):**
 
 - Same hypotheses, but now $\text{SE} \approx 0.71$ (much smaller due to very large sample size).
 - The distributions are **extremely narrow** with almost no overlap.
-- Type II error $\beta \approx 0.00$ (virtually no teal area) means we'd almost never miss the true effect.
-- Power $\approx 1.00$ (nearly 100% chance of detecting the true effect).
+- The **teal region** ($\beta$) is now virtually invisible, with $\beta \approx 0.01$ -- we'd almost never miss the true effect.
+- The **purple regions** (power) dominate the $H_1$ distribution, with power $\approx 0.99$ -- nearly 100% chance of correctly detecting the true effect.
 
 **Key observations:** 
 
 The comparison reveals an important trade-off in study design. This tension between statistical and practical significance is particularly problematic in fields where underpowered studies are common [@button2013], leading to inflated effect size estimates and poor replication rates:
 
-- **Too small (n=30)**: High risk of missing real effects, wasting research effort and potentially leading to false conclusions.
-- **Too large (n=200)**: Excessive power means collecting far more data than necessary, wasting time, money, and resources.
+- **Too small ($n = 30$)**: High risk of missing real effects, wasting research effort and potentially leading to false conclusions.
+- **Too large ($n = 200$)**: Excessive power means collecting far more data than necessary, wasting time, money, and resources.
 
 While the underpowered study clearly has problems, the overpowered study also raises concerns. Beyond a certain point, additional data provides diminishing returns -- power increases very little while costs continue to mount. Moreover, with very large samples, even trivially small effects become "statistically significant," which doesn't necessarily mean they're practically meaningful.
 
@@ -551,7 +595,7 @@ While the underpowered study clearly has problems, the overpowered study also ra
 
 ## Planning Sample Size Through **Prospective Power Analysis**
 
-The side-by-side comparison above revealed a critical challenge: too little power (n=30) risks missing real effects, while excessive power (n=200) wastes resources and may detect effects too trivial to matter. This raises a practical question: **rather than guessing what constitutes an adequate sample size, how can we systematically determine the optimal n for our specific goals?**
+The side-by-side comparison above revealed a critical challenge: too little power ($n = 30$) risks missing real effects, while excessive power ($n = 200$) wastes resources and may detect effects too trivial to matter. This raises a practical question: **rather than guessing what constitutes an adequate sample size, how can we systematically determine the optimal n for our specific goals?**
 
 The answer lies in **prospective power analysis** -- plotting the relationship between sample size and power to find the sweet spot:
 
@@ -617,13 +661,14 @@ ggplot(power_df, aes(x = n, y = power)) +
 ```
 
 **Key insights:** 
-- At n = 30, power is only about 38% -- inadequate for reliable detection.
-- At n = 200, power is nearly 100% -- far more than needed, representing wasted resources.
-- To achieve conventional 80% power for this effect size, we'd need approximately **n ≈ 85**.
+
+- At $n = 30$, power is only about 38% -- inadequate for reliable detection.
+- At $n = 200$, power is nearly 100% -- far more than needed, representing wasted resources.
+- To achieve conventional 80% power for this effect size, we'd need approximately **$n \approx 85$**.
 - Larger sample sizes increase power by **decreasing the standard error** ($\text{SE} = s/\sqrt{n}$). Smaller SE means narrower. sampling distributions, which creates better separation between the null and alternative distributions, reducing overlap and making true effects easier to detect.
 - This is why **prospective power analysis** is crucial for study design -- it helps us determine the sample size needed to detect effects of meaningful magnitude with adequate probability [@cohen1988].
 
-**Practical lesson:** The error and power visualization showed us the *problem* (low power with n=30), and this plot shows us the *solution* (increase sample size to approximately 85). This demonstrates why researchers should conduct power analyses *before* collecting data, not after!
+**Practical lesson:** The error and power visualization showed us the *problem* (low power with $n = 30$), and this plot shows us the *solution* (increase sample size to approximately 85). This demonstrates why researchers should conduct power analyses *before* collecting data, not after!
 
 Now that we understand how to plan studies and interpret individual tests, we need to confront a more subtle challenge: what happens when we conduct not just one test, but many? And beyond statistical significance, how do we assess whether effects actually matter in practice?
 

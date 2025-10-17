@@ -486,7 +486,7 @@ Common P-value Misconceptions
 <li>✗ “p = 0.06 means the study failed”.</li>
 <li>✗ “p &lt; 0.05 means the effect is important”.</li>
 <li>✗ “The p-value is the probability that the results occurred by chance”.</li>
-<li>✓ “p = 0.03 means data this extreme would occur 3% of the time <em>if</em> <span class="math inline">\(H_0\)</span> were true”.</li>
+<li>✓ “p = 0.03 means data this extreme (or more) would occur 3% of the time under the null distribution, i.e.&nbsp;if <span class="math inline">\(H_0\)</span> were true”.</li>
 </ul>
 <p>The p-value only tells us about the compatibility between our data and one specific null model. It does <strong>not</strong> tell us the size or importance of an effect, and it does <strong>not</strong> tell us whether we’ve made a mistake.</p>
 </div>
@@ -682,11 +682,11 @@ Common P-value Misconceptions
 </div>
 </div>
 <p>Notice that the experiments with orange points (significant p-values) are exactly those whose confidence intervals (in the previous plot) excluded zero. This perfect correspondence illustrates the mathematical connection between these two inferential approaches.</p>
-<p><strong>Key insight:</strong> When the null hypothesis is true (as in this simulation), approximately 5% of our tests will incorrectly yield p &lt; 0.05. This is the <strong>Type I error</strong> rate, <span class="math inline">\(\alpha\)</span>, which we set when we chose the 0.05 threshold. This brings us to a crucial question: what types of errors can occur in hypothesis testing, and how can we control them?</p>
+<p><strong>Key insight:</strong> When the null hypothesis is true (as in this simulation), approximately 5% of our tests will incorrectly reject <span class="math inline">\(H_0\)</span> – that is, they will produce p-values below 0.05, as expected under the null distribution. This is the <strong>Type I error</strong> rate, <span class="math inline">\(\alpha\)</span>, which we set when we chose the 0.05 threshold, and it brings us to a crucial question: what types of errors can occur in hypothesis testing, and how can we control them?</p>
 </section>
 <section id="decisions-errors-and-power" class="level1">
 <h1>Decisions, Errors, and Power</h1>
-<p>Once we have a p-value, we compare it to a chosen threshold – the <strong>significance level</strong>, denoted by <strong>α</strong>. If the p-value is smaller than <span class="math inline">\(\alpha\)</span> (commonly 0.05), we reject <span class="math inline">\(H_0\)</span>; otherwise, we fail to reject it.</p>
+<p>Once we have a p-value, we compare it to a chosen threshold – the <strong>significance level</strong>, denoted by <strong><span class="math inline">\(\alpha\)</span></strong>. If the p-value is smaller than <span class="math inline">\(\alpha\)</span> (commonly 0.05), we reject <span class="math inline">\(H_0\)</span>; otherwise, we fail to reject it.</p>
 <p>Because statistical inference is based on hypothetical repeated sampling, two kinds of mistakes are always possible <span class="citation" data-cites="neyman1933">(<a href="#ref-neyman1933" role="doc-biblioref">Neyman &amp; Pearson, 1933</a>)</span>:</p>
 <ul>
 <li><p><strong>Type I error (false positive):</strong> Rejecting <span class="math inline">\(H_0\)</span> when it is actually true.<br>
@@ -731,76 +731,119 @@ The test’s sensitivity to real effects.</p></li>
 <span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">hypothesis =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"H0: μ = 100"</span>, <span class="st">"H1: μ = 103"</span>), <span class="at">each =</span> <span class="fu">length</span>(x_vals))</span>
 <span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create shading regions for α (Type I error)</span></span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>  alpha_region <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> x_vals[x_vals <span class="sc">&lt;</span> lower_crit <span class="sc">|</span> x_vals <span class="sc">&gt;</span> upper_crit],</span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">dnorm</span>(x_vals[x_vals <span class="sc">&lt;</span> lower_crit <span class="sc">|</span> x_vals <span class="sc">&gt;</span> upper_crit], </span>
-<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>              <span class="at">mean =</span> mu_null, <span class="at">sd =</span> se)</span>
-<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create shading region for β (Type II error)</span></span>
-<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>  beta_region <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> x_vals[x_vals <span class="sc">&gt;=</span> lower_crit <span class="sc">&amp;</span> x_vals <span class="sc">&lt;=</span> upper_crit],</span>
-<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">dnorm</span>(x_vals[x_vals <span class="sc">&gt;=</span> lower_crit <span class="sc">&amp;</span> x_vals <span class="sc">&lt;=</span> upper_crit], </span>
-<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>              <span class="at">mean =</span> mu_alt, <span class="at">sd =</span> se)</span>
-<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">df =</span> df, <span class="at">alpha_region =</span> alpha_region, <span class="at">beta_region =</span> beta_region,</span>
-<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>       <span class="at">lower_crit =</span> lower_crit, <span class="at">upper_crit =</span> upper_crit, </span>
-<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>       <span class="at">se =</span> se, <span class="at">beta =</span> beta, <span class="at">power =</span> power)</span>
-<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate data for small sample (low power)</span></span>
-<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>data_30 <span class="ot">&lt;-</span> <span class="fu">create_error_plot_data</span>(<span class="at">n =</span> <span class="dv">30</span>)</span>
-<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate data for large sample (high power)</span></span>
-<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>data_200 <span class="ot">&lt;-</span> <span class="fu">create_error_plot_data</span>(<span class="at">n =</span> <span class="dv">200</span>)</span>
-<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot for n=30</span></span>
-<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data_30<span class="sc">$</span>df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> density, <span class="at">color =</span> hypothesis)) <span class="sc">+</span></span>
-<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
-<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> data_30<span class="sc">$</span>alpha_region, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), </span>
-<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> <span class="st">"#d95f02"</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> data_30<span class="sc">$</span>beta_region, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), </span>
-<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> <span class="st">"#1b9e77"</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(data_30<span class="sc">$</span>lower_crit, data_30<span class="sc">$</span>upper_crit), </span>
-<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a>             <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"grey40"</span>) <span class="sc">+</span></span>
-<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Underpowered Study (n = 30)"</span>,</span>
-<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="fu">sprintf</span>(<span class="st">"SE = %.2f | β ≈ %.2f | Power ≈ %.2f"</span>, </span>
-<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a>                      data_30<span class="sc">$</span>se, data_30<span class="sc">$</span>beta, data_30<span class="sc">$</span>power),</span>
-<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Sample mean (x̄)"</span>,</span>
-<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Density"</span></span>
-<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"H0: μ = 100"</span> <span class="ot">=</span> <span class="st">"#d95f02"</span>, </span>
-<span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"H1: μ = 103"</span> <span class="ot">=</span> <span class="st">"#1b9e77"</span>)) <span class="sc">+</span></span>
-<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">11</span>) <span class="sc">+</span></span>
-<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>)</span>
-<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot for n=200</span></span>
-<span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data_200<span class="sc">$</span>df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> density, <span class="at">color =</span> hypothesis)) <span class="sc">+</span></span>
-<span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
-<span id="cb6-81"><a href="#cb6-81" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> data_200<span class="sc">$</span>alpha_region, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), </span>
-<span id="cb6-82"><a href="#cb6-82" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> <span class="st">"#d95f02"</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> data_200<span class="sc">$</span>beta_region, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), </span>
-<span id="cb6-84"><a href="#cb6-84" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> <span class="st">"#1b9e77"</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb6-85"><a href="#cb6-85" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(data_200<span class="sc">$</span>lower_crit, data_200<span class="sc">$</span>upper_crit), </span>
-<span id="cb6-86"><a href="#cb6-86" aria-hidden="true" tabindex="-1"></a>             <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"grey40"</span>) <span class="sc">+</span></span>
-<span id="cb6-87"><a href="#cb6-87" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb6-88"><a href="#cb6-88" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Overpowered Study (n = 200)"</span>,</span>
-<span id="cb6-89"><a href="#cb6-89" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="fu">sprintf</span>(<span class="st">"SE = %.2f | β ≈ %.2f | Power ≈ %.2f"</span>, </span>
-<span id="cb6-90"><a href="#cb6-90" aria-hidden="true" tabindex="-1"></a>                      data_200<span class="sc">$</span>se, data_200<span class="sc">$</span>beta, data_200<span class="sc">$</span>power),</span>
-<span id="cb6-91"><a href="#cb6-91" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Sample mean (x̄)"</span>,</span>
-<span id="cb6-92"><a href="#cb6-92" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Density"</span>,</span>
-<span id="cb6-93"><a href="#cb6-93" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Orange = Type I error (α = 0.05); Teal = Type II error (β)</span><span class="sc">\n</span><span class="st">Dashed lines mark critical values. Notice how distributions become narrower as n increases"</span></span>
-<span id="cb6-94"><a href="#cb6-94" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb6-95"><a href="#cb6-95" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"H0: μ = 100"</span> <span class="ot">=</span> <span class="st">"#d95f02"</span>, </span>
-<span id="cb6-96"><a href="#cb6-96" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"H1: μ = 103"</span> <span class="ot">=</span> <span class="st">"#1b9e77"</span>)) <span class="sc">+</span></span>
-<span id="cb6-97"><a href="#cb6-97" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">11</span>) <span class="sc">+</span></span>
-<span id="cb6-98"><a href="#cb6-98" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>)</span>
-<span id="cb6-99"><a href="#cb6-99" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-100"><a href="#cb6-100" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine plots vertically</span></span>
-<span id="cb6-101"><a href="#cb6-101" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">/</span> p2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create shading regions for α (Type I error) - LEFT and RIGHT tails under H0</span></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>  alpha_left <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> x_vals[x_vals <span class="sc">&lt;=</span> lower_crit],</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">dnorm</span>(x_vals[x_vals <span class="sc">&lt;=</span> lower_crit], <span class="at">mean =</span> mu_null, <span class="at">sd =</span> se)</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>  alpha_right <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> x_vals[x_vals <span class="sc">&gt;=</span> upper_crit],</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">dnorm</span>(x_vals[x_vals <span class="sc">&gt;=</span> upper_crit], <span class="at">mean =</span> mu_null, <span class="at">sd =</span> se)</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create shading region for β (Type II error) - CENTER under H1</span></span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>  beta_region <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> x_vals[x_vals <span class="sc">&gt;=</span> lower_crit <span class="sc">&amp;</span> x_vals <span class="sc">&lt;=</span> upper_crit],</span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">dnorm</span>(x_vals[x_vals <span class="sc">&gt;=</span> lower_crit <span class="sc">&amp;</span> x_vals <span class="sc">&lt;=</span> upper_crit], </span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>              <span class="at">mean =</span> mu_alt, <span class="at">sd =</span> se)</span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create shading regions for Power - LEFT and RIGHT tails under H1</span></span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>  power_left <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> x_vals[x_vals <span class="sc">&lt;=</span> lower_crit],</span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">dnorm</span>(x_vals[x_vals <span class="sc">&lt;=</span> lower_crit], <span class="at">mean =</span> mu_alt, <span class="at">sd =</span> se)</span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a>  power_right <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> x_vals[x_vals <span class="sc">&gt;=</span> upper_crit],</span>
+<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">dnorm</span>(x_vals[x_vals <span class="sc">&gt;=</span> upper_crit], <span class="at">mean =</span> mu_alt, <span class="at">sd =</span> se)</span>
+<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">df =</span> df, </span>
+<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a>       <span class="at">alpha_left =</span> alpha_left, </span>
+<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a>       <span class="at">alpha_right =</span> alpha_right, </span>
+<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a>       <span class="at">beta_region =</span> beta_region,</span>
+<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a>       <span class="at">power_left =</span> power_left,</span>
+<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a>       <span class="at">power_right =</span> power_right,</span>
+<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a>       <span class="at">lower_crit =</span> lower_crit, </span>
+<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a>       <span class="at">upper_crit =</span> upper_crit, </span>
+<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a>       <span class="at">se =</span> se, </span>
+<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a>       <span class="at">beta =</span> beta, </span>
+<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a>       <span class="at">power =</span> power)</span>
+<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate data for small sample (low power)</span></span>
+<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a>data_30 <span class="ot">&lt;-</span> <span class="fu">create_error_plot_data</span>(<span class="at">n =</span> <span class="dv">30</span>)</span>
+<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate data for large sample (high power)</span></span>
+<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a>data_200 <span class="ot">&lt;-</span> <span class="fu">create_error_plot_data</span>(<span class="at">n =</span> <span class="dv">200</span>)</span>
+<span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot for n=30</span></span>
+<span id="cb6-81"><a href="#cb6-81" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data_30<span class="sc">$</span>df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> density, <span class="at">color =</span> hypothesis)) <span class="sc">+</span></span>
+<span id="cb6-82"><a href="#cb6-82" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Type I error (α) - orange tails under H0</span></span>
+<span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> data_30<span class="sc">$</span>alpha_left, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), </span>
+<span id="cb6-84"><a href="#cb6-84" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> <span class="st">"#d95f02"</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">color =</span> <span class="cn">NA</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb6-85"><a href="#cb6-85" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> data_30<span class="sc">$</span>alpha_right, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), </span>
+<span id="cb6-86"><a href="#cb6-86" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> <span class="st">"#d95f02"</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">color =</span> <span class="cn">NA</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb6-87"><a href="#cb6-87" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Type II error (β) - teal center under H1</span></span>
+<span id="cb6-88"><a href="#cb6-88" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> data_30<span class="sc">$</span>beta_region, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), </span>
+<span id="cb6-89"><a href="#cb6-89" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> <span class="st">"#1b9e77"</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">color =</span> <span class="cn">NA</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb6-90"><a href="#cb6-90" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Power - light blue tails under H1</span></span>
+<span id="cb6-91"><a href="#cb6-91" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> data_30<span class="sc">$</span>power_left, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), </span>
+<span id="cb6-92"><a href="#cb6-92" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> <span class="st">"#7570b3"</span>, <span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">color =</span> <span class="cn">NA</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb6-93"><a href="#cb6-93" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> data_30<span class="sc">$</span>power_right, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), </span>
+<span id="cb6-94"><a href="#cb6-94" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> <span class="st">"#7570b3"</span>, <span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">color =</span> <span class="cn">NA</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb6-95"><a href="#cb6-95" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Distribution curves</span></span>
+<span id="cb6-96"><a href="#cb6-96" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb6-97"><a href="#cb6-97" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(data_30<span class="sc">$</span>lower_crit, data_30<span class="sc">$</span>upper_crit), </span>
+<span id="cb6-98"><a href="#cb6-98" aria-hidden="true" tabindex="-1"></a>             <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"grey40"</span>) <span class="sc">+</span></span>
+<span id="cb6-99"><a href="#cb6-99" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb6-100"><a href="#cb6-100" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Underpowered Study (n = 30)"</span>,</span>
+<span id="cb6-101"><a href="#cb6-101" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="fu">sprintf</span>(<span class="st">"SE = %.2f | β ≈ %.2f | Power ≈ %.2f"</span>, </span>
+<span id="cb6-102"><a href="#cb6-102" aria-hidden="true" tabindex="-1"></a>                      data_30<span class="sc">$</span>se, data_30<span class="sc">$</span>beta, data_30<span class="sc">$</span>power),</span>
+<span id="cb6-103"><a href="#cb6-103" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Sample mean (x̄)"</span>,</span>
+<span id="cb6-104"><a href="#cb6-104" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Density"</span></span>
+<span id="cb6-105"><a href="#cb6-105" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-106"><a href="#cb6-106" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"H0: μ = 100"</span> <span class="ot">=</span> <span class="st">"#d95f02"</span>, </span>
+<span id="cb6-107"><a href="#cb6-107" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"H1: μ = 103"</span> <span class="ot">=</span> <span class="st">"#1b9e77"</span>)) <span class="sc">+</span></span>
+<span id="cb6-108"><a href="#cb6-108" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">11</span>) <span class="sc">+</span></span>
+<span id="cb6-109"><a href="#cb6-109" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>)</span>
+<span id="cb6-110"><a href="#cb6-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-111"><a href="#cb6-111" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot for n=200</span></span>
+<span id="cb6-112"><a href="#cb6-112" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data_200<span class="sc">$</span>df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> density, <span class="at">color =</span> hypothesis)) <span class="sc">+</span></span>
+<span id="cb6-113"><a href="#cb6-113" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Type I error (α) - orange tails under H0</span></span>
+<span id="cb6-114"><a href="#cb6-114" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> data_200<span class="sc">$</span>alpha_left, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), </span>
+<span id="cb6-115"><a href="#cb6-115" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> <span class="st">"#d95f02"</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">color =</span> <span class="cn">NA</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb6-116"><a href="#cb6-116" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> data_200<span class="sc">$</span>alpha_right, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), </span>
+<span id="cb6-117"><a href="#cb6-117" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> <span class="st">"#d95f02"</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">color =</span> <span class="cn">NA</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb6-118"><a href="#cb6-118" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Type II error (β) - teal center under H1</span></span>
+<span id="cb6-119"><a href="#cb6-119" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> data_200<span class="sc">$</span>beta_region, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), </span>
+<span id="cb6-120"><a href="#cb6-120" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> <span class="st">"#1b9e77"</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">color =</span> <span class="cn">NA</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb6-121"><a href="#cb6-121" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Power - light blue tails under H1</span></span>
+<span id="cb6-122"><a href="#cb6-122" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> data_200<span class="sc">$</span>power_left, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), </span>
+<span id="cb6-123"><a href="#cb6-123" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> <span class="st">"#7570b3"</span>, <span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">color =</span> <span class="cn">NA</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb6-124"><a href="#cb6-124" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> data_200<span class="sc">$</span>power_right, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), </span>
+<span id="cb6-125"><a href="#cb6-125" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> <span class="st">"#7570b3"</span>, <span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">color =</span> <span class="cn">NA</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb6-126"><a href="#cb6-126" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Distribution curves</span></span>
+<span id="cb6-127"><a href="#cb6-127" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb6-128"><a href="#cb6-128" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(data_200<span class="sc">$</span>lower_crit, data_200<span class="sc">$</span>upper_crit), </span>
+<span id="cb6-129"><a href="#cb6-129" aria-hidden="true" tabindex="-1"></a>             <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"grey40"</span>) <span class="sc">+</span></span>
+<span id="cb6-130"><a href="#cb6-130" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb6-131"><a href="#cb6-131" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Overpowered Study (n = 200)"</span>,</span>
+<span id="cb6-132"><a href="#cb6-132" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="fu">sprintf</span>(<span class="st">"SE = %.2f | β ≈ %.2f | Power ≈ %.2f"</span>, </span>
+<span id="cb6-133"><a href="#cb6-133" aria-hidden="true" tabindex="-1"></a>                      data_200<span class="sc">$</span>se, data_200<span class="sc">$</span>beta, data_200<span class="sc">$</span>power),</span>
+<span id="cb6-134"><a href="#cb6-134" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Sample mean (x̄)"</span>,</span>
+<span id="cb6-135"><a href="#cb6-135" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Density"</span>,</span>
+<span id="cb6-136"><a href="#cb6-136" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Orange = Type I error rate (α = 0.05) under H0; Teal = Type II error rate (β) under H1; Purple = Power (1-β) under H1</span><span class="sc">\n</span><span class="st">Dashed lines mark critical values. Notice how distributions become narrower as n increases"</span></span>
+<span id="cb6-137"><a href="#cb6-137" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-138"><a href="#cb6-138" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"H0: μ = 100"</span> <span class="ot">=</span> <span class="st">"#d95f02"</span>, </span>
+<span id="cb6-139"><a href="#cb6-139" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"H1: μ = 103"</span> <span class="ot">=</span> <span class="st">"#1b9e77"</span>)) <span class="sc">+</span></span>
+<span id="cb6-140"><a href="#cb6-140" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">11</span>) <span class="sc">+</span></span>
+<span id="cb6-141"><a href="#cb6-141" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>)</span>
+<span id="cb6-142"><a href="#cb6-142" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-143"><a href="#cb6-143" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine plots vertically</span></span>
+<span id="cb6-144"><a href="#cb6-144" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">/</span> p2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -812,33 +855,34 @@ The test’s sensitivity to real effects.</p></li>
 </div>
 <section id="interpreting-the-plots" class="level2">
 <h2 class="anchored" data-anchor-id="interpreting-the-plots">Interpreting the Plots</h2>
-<p><strong>Top panel (n = 30 - Underpowered):</strong></p>
+<p><strong>Top panel (<span class="math inline">\(n = 30\)</span> - Underpowered):</strong></p>
 <ul>
 <li>The <strong>orange curve</strong> shows the sampling distribution if <span class="math inline">\(H_0: \mu = 100\)</span> is true.</li>
 <li>The <strong>green curve</strong> shows the sampling distribution if <span class="math inline">\(H_1: \mu = 103\)</span> is true.</li>
 <li>Standard error is <span class="math inline">\(\text{SE} \approx 1.83\)</span>, creating relatively wide, overlapping distributions.</li>
-<li>Type II error <span class="math inline">\(\beta \approx 0.63\)</span> (large teal area) means we’d miss the true effect 63% of the time.</li>
-<li>Power <span class="math inline">\(\approx 0.37\)</span> (only 37% chance of detecting the true effect).</li>
+<li>The <strong>orange shaded regions</strong> (in the tails under <span class="math inline">\(H_0\)</span>) show Type I error rate <span class="math inline">\(\alpha = 0.05\)</span>.</li>
+<li>The <strong>teal shaded region</strong> (under <span class="math inline">\(H_1\)</span>, within the non-rejection region) shows Type II error rate <span class="math inline">\(\beta \approx 0.63\)</span> - meaning if the true mean is 103, we’d fail to detect this effect 63% of the time.</li>
+<li>The <strong>purple shaded regions</strong> (under <span class="math inline">\(H_1\)</span>, in the rejection regions) show power <span class="math inline">\(\approx 0.37\)</span> - only a 37% chance of correctly detecting the true effect.</li>
 </ul>
-<p><strong>Bottom panel (n = 200 - Overpowered):</strong></p>
+<p><strong>Bottom panel (<span class="math inline">\(n = 200\)</span> - Overpowered):</strong></p>
 <ul>
 <li>Same hypotheses, but now <span class="math inline">\(\text{SE} \approx 0.71\)</span> (much smaller due to very large sample size).</li>
 <li>The distributions are <strong>extremely narrow</strong> with almost no overlap.</li>
-<li>Type II error <span class="math inline">\(\beta \approx 0.00\)</span> (virtually no teal area) means we’d almost never miss the true effect.</li>
-<li>Power <span class="math inline">\(\approx 1.00\)</span> (nearly 100% chance of detecting the true effect).</li>
+<li>The <strong>teal region</strong> (<span class="math inline">\(\beta\)</span>) is now virtually invisible, with <span class="math inline">\(\beta \approx 0.01\)</span> – we’d almost never miss the true effect.</li>
+<li>The <strong>purple regions</strong> (power) dominate the <span class="math inline">\(H_1\)</span> distribution, with power <span class="math inline">\(\approx 0.99\)</span> – nearly 100% chance of correctly detecting the true effect.</li>
 </ul>
 <p><strong>Key observations:</strong></p>
 <p>The comparison reveals an important trade-off in study design. This tension between statistical and practical significance is particularly problematic in fields where underpowered studies are common <span class="citation" data-cites="button2013">(<a href="#ref-button2013" role="doc-biblioref">Button et al., 2013</a>)</span>, leading to inflated effect size estimates and poor replication rates:</p>
 <ul>
-<li><strong>Too small (n=30)</strong>: High risk of missing real effects, wasting research effort and potentially leading to false conclusions.</li>
-<li><strong>Too large (n=200)</strong>: Excessive power means collecting far more data than necessary, wasting time, money, and resources.</li>
+<li><strong>Too small (<span class="math inline">\(n = 30\)</span>)</strong>: High risk of missing real effects, wasting research effort and potentially leading to false conclusions.</li>
+<li><strong>Too large (<span class="math inline">\(n = 200\)</span>)</strong>: Excessive power means collecting far more data than necessary, wasting time, money, and resources.</li>
 </ul>
 <p>While the underpowered study clearly has problems, the overpowered study also raises concerns. Beyond a certain point, additional data provides diminishing returns – power increases very little while costs continue to mount. Moreover, with very large samples, even trivially small effects become “statistically significant,” which doesn’t necessarily mean they’re practically meaningful.</p>
 <p><strong>The Goldilocks principle of sample size</strong>: We need a sample size that’s “just right” – large enough to reliably detect effects that matter, but not so large that we waste resources or detect effects too small to care about. This is why prospective power analysis is essential for efficient research design.</p>
 </section>
 <section id="planning-sample-size-through-prospective-power-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="planning-sample-size-through-prospective-power-analysis">Planning Sample Size Through <strong>Prospective Power Analysis</strong></h2>
-<p>The side-by-side comparison above revealed a critical challenge: too little power (n=30) risks missing real effects, while excessive power (n=200) wastes resources and may detect effects too trivial to matter. This raises a practical question: <strong>rather than guessing what constitutes an adequate sample size, how can we systematically determine the optimal n for our specific goals?</strong></p>
+<p>The side-by-side comparison above revealed a critical challenge: too little power (<span class="math inline">\(n = 30\)</span>) risks missing real effects, while excessive power (<span class="math inline">\(n = 200\)</span>) wastes resources and may detect effects too trivial to matter. This raises a practical question: <strong>rather than guessing what constitutes an adequate sample size, how can we systematically determine the optimal n for our specific goals?</strong></p>
 <p>The answer lies in <strong>prospective power analysis</strong> – plotting the relationship between sample size and power to find the sweet spot:</p>
 <div class="cell">
 <details class="code-fold">
@@ -910,8 +954,15 @@ The test’s sensitivity to real effects.</p></li>
 </div>
 </div>
 </div>
-<p><strong>Key insights:</strong> - At n = 30, power is only about 38% – inadequate for reliable detection. - At n = 200, power is nearly 100% – far more than needed, representing wasted resources. - To achieve conventional 80% power for this effect size, we’d need approximately <strong>n ≈ 85</strong>. - Larger sample sizes increase power by <strong>decreasing the standard error</strong> (<span class="math inline">\(\text{SE} = s/\sqrt{n}\)</span>). Smaller SE means narrower. sampling distributions, which creates better separation between the null and alternative distributions, reducing overlap and making true effects easier to detect. - This is why <strong>prospective power analysis</strong> is crucial for study design – it helps us determine the sample size needed to detect effects of meaningful magnitude with adequate probability <span class="citation" data-cites="cohen1988">(<a href="#ref-cohen1988" role="doc-biblioref">Cohen, 1988</a>)</span>.</p>
-<p><strong>Practical lesson:</strong> The error and power visualization showed us the <em>problem</em> (low power with n=30), and this plot shows us the <em>solution</em> (increase sample size to approximately 85). This demonstrates why researchers should conduct power analyses <em>before</em> collecting data, not after!</p>
+<p><strong>Key insights:</strong></p>
+<ul>
+<li>At <span class="math inline">\(n = 30\)</span>, power is only about 38% – inadequate for reliable detection.</li>
+<li>At <span class="math inline">\(n = 200\)</span>, power is nearly 100% – far more than needed, representing wasted resources.</li>
+<li>To achieve conventional 80% power for this effect size, we’d need approximately <strong><span class="math inline">\(n \approx 85\)</span></strong>.</li>
+<li>Larger sample sizes increase power by <strong>decreasing the standard error</strong> (<span class="math inline">\(\text{SE} = s/\sqrt{n}\)</span>). Smaller SE means narrower. sampling distributions, which creates better separation between the null and alternative distributions, reducing overlap and making true effects easier to detect.</li>
+<li>This is why <strong>prospective power analysis</strong> is crucial for study design – it helps us determine the sample size needed to detect effects of meaningful magnitude with adequate probability <span class="citation" data-cites="cohen1988">(<a href="#ref-cohen1988" role="doc-biblioref">Cohen, 1988</a>)</span>.</li>
+</ul>
+<p><strong>Practical lesson:</strong> The error and power visualization showed us the <em>problem</em> (low power with <span class="math inline">\(n = 30\)</span>), and this plot shows us the <em>solution</em> (increase sample size to approximately 85). This demonstrates why researchers should conduct power analyses <em>before</em> collecting data, not after!</p>
 <p>Now that we understand how to plan studies and interpret individual tests, we need to confront a more subtle challenge: what happens when we conduct not just one test, but many? And beyond statistical significance, how do we assess whether effects actually matter in practice?</p>
 </section>
 </section>
