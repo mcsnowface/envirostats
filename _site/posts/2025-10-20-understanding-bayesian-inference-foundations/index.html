@@ -538,6 +538,7 @@ For reasonable priors and moderate sample sizes, the data dominate. The prior ma
 <p>For example, <span class="math inline">\(\text{Beta}(15, 5)\)</span> is like having previously tested <span class="math inline">\(14 + 4 = 18\)</span> seeds and observed 14 germinate (with a 78% success rate). <strong>The prior is just data you saw before.</strong> <span class="math inline">\(\text{Beta}(1, 1)\)</span> is like having tested 0 seeds – complete ignorance.</p>
 <p><strong>The beautiful part:</strong> When you observe new data, you simply add your actual observations to these pseudo-observations:</p>
 <p><span class="math display">\[
+\small
 \text{Beta}(\alpha, \beta) + \text{Data}(k \text{ germinate}, n-k \text{ fail}) = \text{Beta}(\alpha + k, \beta + n - k)
 \]</span></p>
 <div class="callout callout-style-simple callout-note no-icon callout-titled">
@@ -971,7 +972,7 @@ For reasonable priors and moderate sample sizes, the data dominate. The prior ma
 <li><strong>Decide on further testing</strong>: The wide uncertainty (3-8 is a big range) suggests testing more seeds would be valuable</li>
 </ul>
 <p>This also enables <strong>model checking</strong>: if you test another batch and get results far outside your predictive distribution, something’s wrong with your model assumptions <span class="citation" data-cites="gelman1996posterior">(<a href="#ref-gelman1996posterior" role="doc-biblioref">Gelman et al., 1996</a>)</span>. Perhaps germination varies by seed lot more than you thought, or environmental factors matter more than your simple model assumes.</p>
-<p>This same logic—priors, likelihoods, posteriors, and predictions—extends to any statistical model, from simple proportions to complex regression and beyond.</p>
+<p>This same logic – priors, likelihoods, posteriors, and predictions – extends to any statistical model, from simple proportions to complex regression and beyond.</p>
 <div class="callout callout-style-simple callout-note no-icon callout-titled">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -1037,7 +1038,7 @@ P(\tilde{y}) = \int P(\tilde{y} \mid \theta)\, P(\theta)\, d\theta
 <section id="sequential-learning-testing-seeds-over-time" class="level1">
 <h1>Sequential Learning: Testing Seeds Over Time</h1>
 <p>One of Bayesian inference’s most powerful features is <strong>sequential learning</strong>: today’s posterior becomes tomorrow’s prior.</p>
-<p><strong>Unlike frequentist methods, Bayesian inference doesn’t penalize you for examining data mid-study.</strong> In frequentist hypothesis testing, looking at your data before reaching a predetermined sample size inflates your Type I error rate—you’re “spending” your alpha budget with each peek. But in Bayesian inference, your posterior after 100 observations is identical whether you looked at your data 0 times, 10 times, or 100 times along the way.</p>
+<p><strong>Unlike frequentist methods, Bayesian inference doesn’t penalize you for examining data mid-study.</strong> In frequentist hypothesis testing, looking at your data before reaching a predetermined sample size inflates your Type I error rate – you’re “spending” your alpha budget with each peek. But in Bayesian inference, your posterior after 100 observations is identical whether you looked at your data 0 times, 10 times, or 100 times along the way.</p>
 <p>This means you can:</p>
 <ul>
 <li>Test seeds in small batches as they arrive</li>

@@ -284,9 +284,12 @@ For example, $\text{Beta}(15, 5)$ is like having previously tested $14 + 4 = 18$
 
 **The beautiful part:** When you observe new data, you simply add your actual observations to these pseudo-observations:
 
+
 $$
+\small
 \text{Beta}(\alpha, \beta) + \text{Data}(k \text{ germinate}, n-k \text{ fail}) = \text{Beta}(\alpha + k, \beta + n - k)
 $$
+
 
 ::: {.callout-note collapse="true" appearance="minimal"}
 ## 🐰 Another Burrow to Explore: Conjugate Priors Explained 🔦
@@ -671,7 +674,7 @@ kable(summary_stats,
 
 This also enables **model checking**: if you test another batch and get results far outside your predictive distribution, something's wrong with your model assumptions [@gelman1996posterior]. Perhaps germination varies by seed lot more than you thought, or environmental factors matter more than your simple model assumes.
 
-This same logic—priors, likelihoods, posteriors, and predictions—extends to any statistical model, from simple proportions to complex regression and beyond.
+This same logic -- priors, likelihoods, posteriors, and predictions -- extends to any statistical model, from simple proportions to complex regression and beyond.
 
 
 ::: {.callout-note collapse="true" appearance="minimal"}
@@ -723,13 +726,11 @@ This answers:
 If your prior predictive simulations yield implausible outcomes (e.g., negative germination rates or rates greater than 100%), that's a clear sign your **prior needs revision** [@gabry2019visualization]. We'll use this technique extensively in the next post when working with regression models.
 :::
 
-
-
 # Sequential Learning: Testing Seeds Over Time
 
 One of Bayesian inference's most powerful features is **sequential learning**: today's posterior becomes tomorrow's prior.
 
-**Unlike frequentist methods, Bayesian inference doesn't penalize you for examining data mid-study.** In frequentist hypothesis testing, looking at your data before reaching a predetermined sample size inflates your Type I error rate—you're "spending" your alpha budget with each peek. But in Bayesian inference, your posterior after 100 observations is identical whether you looked at your data 0 times, 10 times, or 100 times along the way.
+**Unlike frequentist methods, Bayesian inference doesn't penalize you for examining data mid-study.** In frequentist hypothesis testing, looking at your data before reaching a predetermined sample size inflates your Type I error rate -- you're "spending" your alpha budget with each peek. But in Bayesian inference, your posterior after 100 observations is identical whether you looked at your data 0 times, 10 times, or 100 times along the way.
 
 This means you can:
 
