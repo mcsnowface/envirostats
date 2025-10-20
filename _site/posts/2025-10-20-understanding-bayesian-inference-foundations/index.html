@@ -831,7 +831,13 @@ For reasonable priors and moderate sample sizes, the data dominate. The prior ma
 <section id="posterior-predictions-what-happens-next" class="level2">
 <h2 class="anchored" data-anchor-id="posterior-predictions-what-happens-next">Posterior Predictions: What Happens Next?</h2>
 <p>One of Bayesian inference’s most powerful features is that we can use our posterior distribution to predict future observations, accounting for all our uncertainty <span class="citation" data-cites="gelman1996posterior gabry2019visualization">(<a href="#ref-gabry2019visualization" role="doc-biblioref">Gabry et al., 2019</a>; <a href="#ref-gelman1996posterior" role="doc-biblioref">Gelman et al., 1996</a>)</span>. <strong>This is huge</strong> – instead of just estimating “the germination rate is probably around 59%,” we can directly answer questions like <strong>“If I plant 10 seeds from this batch in a customer’s garden, how many will germinate?”</strong></p>
-<p>For a seed supplier, this is far more useful than a point estimate. You need to: - Set realistic customer expectations - Decide whether to accept or reject the batch - Determine appropriate pricing - Estimate how many seeds to include per packet</p>
+<p>For a seed supplier, this is far more useful than a point estimate. You need to:</p>
+<ul>
+<li>Set realistic customer expectations</li>
+<li>Decide whether to accept or reject the batch</li>
+<li>Determine appropriate pricing</li>
+<li>Estimate how many seeds to include per packet</li>
+</ul>
 <section id="the-question" class="level3">
 <h3 class="anchored" data-anchor-id="the-question">The Question</h3>
 <p>We tested 20 seeds and observed 12 germinations, giving us a posterior <span class="math inline">\(\text{Beta}(13, 9)\)</span> for the germination rate <span class="math inline">\(\theta\)</span>. Now suppose a customer plants 10 seeds from this batch in their garden. How many should we expect to germinate?</p>

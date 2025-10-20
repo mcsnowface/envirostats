@@ -560,6 +560,7 @@ ggplot(posterior_data, aes(x = theta, y = density)) +
 One of Bayesian inference's most powerful features is that we can use our posterior distribution to predict future observations, accounting for all our uncertainty [@gelman1996posterior; @gabry2019visualization]. **This is huge** -- instead of just estimating "the germination rate is probably around 59%," we can directly answer questions like **"If I plant 10 seeds from this batch in a customer's garden, how many will germinate?"** 
 
 For a seed supplier, this is far more useful than a point estimate. You need to:
+
 - Set realistic customer expectations
 - Decide whether to accept or reject the batch
 - Determine appropriate pricing
