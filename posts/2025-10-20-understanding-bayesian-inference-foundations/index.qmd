@@ -277,6 +277,7 @@ The Beta distribution is perfect here because:
 3. It's flexible, able to represent various beliefs from uniform (no information) to highly concentrated
 
 **Understanding Beta parameters intuitively:** You can think of the Beta prior $\text{Beta}(\alpha, \beta)$ as if you'd already observed pseudo-data from previous experiments. Specifically:
+
 - $\alpha - 1$ = number of prior "germinations" you've seen
 - $\beta - 1$ = number of prior "failures" you've seen
 
@@ -286,9 +287,10 @@ For example, $\text{Beta}(15, 5)$ is like having previously tested $14 + 4 = 18$
 
 
 $$
-\small
-\text{Beta}(\alpha, \beta) + \text{Data}(k \text{ germinate}, n-k \text{ fail}) = \text{Beta}(\alpha + k, \beta + n - k)
+\text{Beta}(\alpha, \beta) + \text{Data}(k, n-k) = \text{Beta}(\alpha + k, \beta + n - k)
 $$
+
+where $n$ = total trials, $k$ = germinations, and $n-k$ = failures
 
 
 ::: {.callout-note collapse="true" appearance="minimal"}

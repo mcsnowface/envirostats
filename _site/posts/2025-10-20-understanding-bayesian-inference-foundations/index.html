@@ -534,13 +534,17 @@ For reasonable priors and moderate sample sizes, the data dominate. The prior ma
 <li>It’s the <strong>conjugate prior</strong> for the Binomial – the posterior is also Beta, making calculations simple</li>
 <li>It’s flexible, able to represent various beliefs from uniform (no information) to highly concentrated</li>
 </ol>
-<p><strong>Understanding Beta parameters intuitively:</strong> You can think of the Beta prior <span class="math inline">\(\text{Beta}(\alpha, \beta)\)</span> as if you’d already observed pseudo-data from previous experiments. Specifically: - <span class="math inline">\(\alpha - 1\)</span> = number of prior “germinations” you’ve seen - <span class="math inline">\(\beta - 1\)</span> = number of prior “failures” you’ve seen</p>
+<p><strong>Understanding Beta parameters intuitively:</strong> You can think of the Beta prior <span class="math inline">\(\text{Beta}(\alpha, \beta)\)</span> as if you’d already observed pseudo-data from previous experiments. Specifically:</p>
+<ul>
+<li><span class="math inline">\(\alpha - 1\)</span> = number of prior “germinations” you’ve seen</li>
+<li><span class="math inline">\(\beta - 1\)</span> = number of prior “failures” you’ve seen</li>
+</ul>
 <p>For example, <span class="math inline">\(\text{Beta}(15, 5)\)</span> is like having previously tested <span class="math inline">\(14 + 4 = 18\)</span> seeds and observed 14 germinate (with a 78% success rate). <strong>The prior is just data you saw before.</strong> <span class="math inline">\(\text{Beta}(1, 1)\)</span> is like having tested 0 seeds – complete ignorance.</p>
 <p><strong>The beautiful part:</strong> When you observe new data, you simply add your actual observations to these pseudo-observations:</p>
 <p><span class="math display">\[
-\small
-\text{Beta}(\alpha, \beta) + \text{Data}(k \text{ germinate}, n-k \text{ fail}) = \text{Beta}(\alpha + k, \beta + n - k)
+\text{Beta}(\alpha, \beta) + \text{Data}(k, n-k) = \text{Beta}(\alpha + k, \beta + n - k)
 \]</span></p>
+<p>where <span class="math inline">\(n\)</span> = total trials, <span class="math inline">\(k\)</span> = germinations, and <span class="math inline">\(n-k\)</span> = failures</p>
 <div class="callout callout-style-simple callout-note no-icon callout-titled">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
