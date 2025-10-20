@@ -1,0 +1,1804 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Stefan Schreiber">
+<meta name="dcterms.date" content="2025-10-20">
+
+<title>Understanding Bayesian Inference: Foundations – Quantitative Environmental Services</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../images/favicon.png" rel="icon" type="image/png">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-e83117e711fad372bcb8c8022997a9a8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="../../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+
+<script src="../../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Understanding Bayesian Inference: Foundations">
+<meta property="og:description" content="From Priors to Predictions with a Simple Example">
+<meta property="og:image" content="https://www.envirostats.ca/posts/2025-10-20-understanding-bayesian-inference-foundations/thomas_bayes.png">
+<meta property="og:site_name" content="Quantitative Environmental Services">
+<meta property="og:image:alt" content="When in doubt, just update your beliefs. ;P">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../images/favicon.png" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Quantitative Environmental Services</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../mission.html"> 
+<span class="menu-text">Our Mission</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../services.html"> 
+<span class="menu-text">Our Services</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">Who we are</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../posts.html"> 
+<span class="menu-text">Insights</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Understanding Bayesian Inference: Foundations</h1>
+            <p class="subtitle lead">From Priors to Predictions with a Simple Example</p>
+                                <div class="quarto-categories">
+                <div class="quarto-category">frequentist</div>
+                <div class="quarto-category">inference</div>
+                <div class="quarto-category">bayesian</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Stefan Schreiber </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">October 20, 2025</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#why-priors-matter-and-why-theyre-less-controversial-than-you-think" id="toc-why-priors-matter-and-why-theyre-less-controversial-than-you-think" class="nav-link" data-scroll-target="#why-priors-matter-and-why-theyre-less-controversial-than-you-think">Why Priors Matter (and Why They’re Less Controversial Than You Think)</a>
+  <ul class="collapse">
+  <li><a href="#the-fishing-story-bayesian-reasoning-in-daily-life" id="toc-the-fishing-story-bayesian-reasoning-in-daily-life" class="nav-link" data-scroll-target="#the-fishing-story-bayesian-reasoning-in-daily-life">The Fishing Story: Bayesian Reasoning in Daily Life</a></li>
+  <li><a href="#types-of-priors" id="toc-types-of-priors" class="nav-link" data-scroll-target="#types-of-priors">Types of Priors</a></li>
+  <li><a href="#implicit-assumptions-in-frequentist-methods" id="toc-implicit-assumptions-in-frequentist-methods" class="nav-link" data-scroll-target="#implicit-assumptions-in-frequentist-methods">Implicit Assumptions in Frequentist Methods</a></li>
+  </ul></li>
+  <li><a href="#starting-simple-a-seed-germination-example" id="toc-starting-simple-a-seed-germination-example" class="nav-link" data-scroll-target="#starting-simple-a-seed-germination-example">Starting Simple: A Seed Germination Example</a>
+  <ul class="collapse">
+  <li><a href="#the-scenario-testing-a-new-seed-batch" id="toc-the-scenario-testing-a-new-seed-batch" class="nav-link" data-scroll-target="#the-scenario-testing-a-new-seed-batch">The Scenario: Testing a New Seed Batch</a></li>
+  <li><a href="#the-beta-binomial-model" id="toc-the-beta-binomial-model" class="nav-link" data-scroll-target="#the-beta-binomial-model">The Beta-Binomial Model</a></li>
+  <li><a href="#bayesian-updating-in-action" id="toc-bayesian-updating-in-action" class="nav-link" data-scroll-target="#bayesian-updating-in-action">Bayesian Updating in Action</a></li>
+  <li><a href="#credible-intervals-direct-probability-statements" id="toc-credible-intervals-direct-probability-statements" class="nav-link" data-scroll-target="#credible-intervals-direct-probability-statements">Credible Intervals: Direct Probability Statements</a></li>
+  <li><a href="#posterior-predictions-what-happens-next" id="toc-posterior-predictions-what-happens-next" class="nav-link" data-scroll-target="#posterior-predictions-what-happens-next">Posterior Predictions: What Happens Next?</a>
+  <ul class="collapse">
+  <li><a href="#the-question" id="toc-the-question" class="nav-link" data-scroll-target="#the-question">The Question</a></li>
+  <li><a href="#two-sources-of-uncertainty" id="toc-two-sources-of-uncertainty" class="nav-link" data-scroll-target="#two-sources-of-uncertainty">Two Sources of Uncertainty</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#sequential-learning-testing-seeds-over-time" id="toc-sequential-learning-testing-seeds-over-time" class="nav-link" data-scroll-target="#sequential-learning-testing-seeds-over-time">Sequential Learning: Testing Seeds Over Time</a>
+  <ul class="collapse">
+  <li><a href="#demonstration-sequential-germination-testing" id="toc-demonstration-sequential-germination-testing" class="nav-link" data-scroll-target="#demonstration-sequential-germination-testing">Demonstration: Sequential Germination Testing</a></li>
+  <li><a href="#what-this-shows" id="toc-what-this-shows" class="nav-link" data-scroll-target="#what-this-shows">What This Shows</a>
+  <ul class="collapse">
+  <li><a href="#making-decisions-along-the-way" id="toc-making-decisions-along-the-way" class="nav-link" data-scroll-target="#making-decisions-along-the-way">Making Decisions Along the Way</a></li>
+  <li><a href="#the-frequentist-problem-optional-stopping" id="toc-the-frequentist-problem-optional-stopping" class="nav-link" data-scroll-target="#the-frequentist-problem-optional-stopping">The Frequentist Problem: Optional Stopping</a></li>
+  </ul></li>
+  <li><a href="#why-this-matters-for-seed-testing" id="toc-why-this-matters-for-seed-testing" class="nav-link" data-scroll-target="#why-this-matters-for-seed-testing">Why This Matters for Seed Testing</a></li>
+  </ul></li>
+  <li><a href="#looking-forward" id="toc-looking-forward" class="nav-link" data-scroll-target="#looking-forward">Looking Forward</a></li>
+  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways">Key Takeaways</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="thomas_bayes.png" class="img-fluid figure-img"></p>
+<figcaption>When in doubt, just update your beliefs. ;P</figcaption>
+</figure>
+</div>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>Imagine you’re a medical researcher evaluating a new drug. Before seeing any patient data, you already have some knowledge: similar drugs showed modest effects, basic science suggests the mechanism is plausible, and pilot studies hint at promise. How should this prior information shape your interpretation of new trial results?</p>
+<p>This is precisely the kind of question Bayesian inference helps us answer. In a <a href="https://www.envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/">previous post</a>, we explored frequentist inference – a framework built on the concept of repeated sampling, where parameters are treated as fixed unknowns and probability statements describe what would happen across hypothetical repetitions of an experiment.</p>
+<p>Bayesian inference offers a fundamentally different perspective <span class="citation" data-cites="gelman2013bayesian jaynes2003probability">(<a href="#ref-gelman2013bayesian" role="doc-biblioref">Gelman et al., 2013</a>; <a href="#ref-jaynes2003probability" role="doc-biblioref">Jaynes, 2003</a>)</span>. <strong>Bayesian methods use probability distributions to represent our uncertainty about parameters</strong>. We start with a <strong>prior distribution</strong> representing our initial beliefs, observe data, and use Bayes’ theorem to produce a <strong>posterior distribution</strong> representing our updated beliefs.</p>
+<p>The fundamental equation is:</p>
+<p><span class="math display">\[
+P(\theta \mid \text{data})
+= \frac{P(\text{data} \mid \theta)\, P(\theta)}{P(\text{data})}
+\;\propto\;
+P(\text{data} \mid \theta)\, P(\theta)
+\]</span></p>
+<p>Here, <span class="math inline">\(\theta\)</span> (theta, a Greek letter) represents the parameter(s) we want to learn about – for example, the true efficacy rate of a drug, or a regression slope.</p>
+<p>In plain language:</p>
+<blockquote class="blockquote">
+<p>Our beliefs after seeing data depend on two factors: how well different parameter values predict what we observed, and how plausible those values seemed beforehand. Values that both fit the data well and matched our prior expectations get the highest probability.</p>
+</blockquote>
+<p>Breaking this down:</p>
+<ul>
+<li><span class="math inline">\(P(\theta)\)</span> is the <strong>prior</strong>: what we believed before seeing data.</li>
+<li><span class="math inline">\(P(\text{data} \mid \theta)\)</span> is the <strong>likelihood</strong>: how well different parameter values predict our data.</li>
+<li><span class="math inline">\(P(\theta \mid \text{data})\)</span> is the <strong>posterior</strong>: what we believe after seeing data.</li>
+<li><span class="math inline">\(P(\text{data})\)</span> is the <strong>marginal likelihood</strong> (or average probability of the data): a normalizing constant ensuring the posterior integrates to 1. In practice, we often work with the proportional form <span class="math inline">\(P(\theta \mid \text{data}) \propto P(\text{data} \mid \theta)\, P(\theta)\)</span> because <span class="math inline">\(P(\text{data})\)</span> doesn’t depend on <span class="math inline">\(\theta\)</span> and can be computationally intractable.</li>
+</ul>
+<div class="callout callout-style-simple callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+🐰 Aaaand Down the Rabbit Hole We Go…🥕
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<section id="what-does-probability-of-a-parameter-really-mean" class="level3">
+<h3 class="anchored" data-anchor-id="what-does-probability-of-a-parameter-really-mean">What Does “Probability of a Parameter” Really Mean?</h3>
+<p>When we say that Bayesian methods treat parameters as having probability distributions, we need to be precise about what that means. The true parameter value – such as the actual efficacy of a drug – is <strong>fixed but unknown</strong>; it doesn’t fluctuate randomly. The probability distribution over that parameter represents our <strong>epistemic uncertainty</strong> (our state of knowledge about its value), not <strong>aleatory randomness</strong> (inherent randomness in the data-generating process). This distinction is subtle but fundamental: Bayesian probability quantifies belief about fixed quantities, not randomness in the world itself <span class="citation" data-cites="lindley2000philosophy">(<a href="#ref-lindley2000philosophy" role="doc-biblioref">Lindley, 2000</a>)</span>.</p>
+<p>In contrast, frequentist statistics treats parameters as fixed constants, and randomness comes only from hypothetical repeated sampling.</p>
+<p><strong>Example:</strong></p>
+<p>Bayesian: After observing data, we might say</p>
+<blockquote class="blockquote">
+<p>“There is a 95% probability that the drug efficacy is between 0.7 and 0.8.”</p>
+</blockquote>
+<p>Frequentist: After observing data, we might say</p>
+<blockquote class="blockquote">
+<p>“If we repeated this experiment many times, 95% of the constructed confidence intervals would contain the true drug efficacy.”</p>
+</blockquote>
+<p>Notice the crucial difference: the frequentist statement makes a claim about the <em>procedure</em> (what would happen in repeated samples), not about the <em>parameter</em> (which either is or isn’t in any particular interval). The Bayesian statement directly quantifies our uncertainty about the parameter itself.</p>
+</section>
+<section id="why-we-can-ignore-the-normalizing-constant" class="level3">
+<h3 class="anchored" data-anchor-id="why-we-can-ignore-the-normalizing-constant">Why We Can Ignore the Normalizing Constant</h3>
+<p>We often express Bayes’ theorem as a proportionality – <span class="math inline">\(P(\theta \mid \text{data}) \propto P(\text{data} \mid \theta)\, P(\theta)\)</span> – omitting <span class="math inline">\(P(\text{data})\)</span>. This works because once we’ve observed our data, <span class="math inline">\(P(\text{data})\)</span> becomes a fixed constant that doesn’t depend on <span class="math inline">\(\theta\)</span>. Since it’s the same for all possible parameter values, it doesn’t affect which values are <em>relatively</em> more or less probable.</p>
+<p>However, in continuous parameter models, computing <span class="math inline">\(P(\text{data})\)</span> requires integrating the likelihood over all possible parameter values:</p>
+<p><span class="math display">\[
+P(\text{data}) = \int P(\text{data} \mid \theta)\, P(\theta)\, d\theta
+\]</span></p>
+<p>This integral is often <strong>computationally intractable</strong>, especially for high-dimensional or complex models.</p>
+</section>
+<section id="computational-solutions-sampling-from-the-posterior" class="level3">
+<h3 class="anchored" data-anchor-id="computational-solutions-sampling-from-the-posterior">Computational Solutions: Sampling from the Posterior</h3>
+<p>Even when we can’t compute the normalizing constant, we still need to characterize the posterior distribution – to calculate means, medians, credible intervals, and other summaries. <strong>Markov Chain Monte Carlo (MCMC)</strong> methods solve this problem by generating samples from the posterior distribution <span class="citation" data-cites="brooks2011handbook betancourt2017conceptual">(<a href="#ref-betancourt2017conceptual" role="doc-biblioref">Betancourt, 2017</a>; <a href="#ref-brooks2011handbook" role="doc-biblioref">Brooks et al., 2011</a>)</span>. These algorithms construct a Markov chain that explores the parameter space in proportion to the posterior density – picture a dog sniffing around a park. It doesn’t need a map showing where all the interesting smells are; it just follows its nose, naturally lingering longer where things are more interesting.</p>
+<p>Over many iterations, the frequency with which different parameter values appear in our samples reflects the true shape of the posterior distribution. This allows us to approximate the posterior empirically – calculating means by averaging samples, constructing credible intervals from quantiles, and visualizing the distribution through histograms – all without computing the normalizing constant.</p>
+</section>
+</div>
+</div>
+</div>
+<p>The Bayesian framework offers compelling advantages:</p>
+<ul>
+<li><strong>Direct probability statements</strong> about parameters: “There’s an 89% probability the effect is positive”.</li>
+<li><strong>Natural incorporation</strong> of prior knowledge from previous studies or expert opinion.</li>
+<li><strong>Coherent sequential learning</strong>: Update beliefs as data accumulate without inflating error rates.</li>
+<li><strong>Full uncertainty quantification</strong>: Every quantity has a probability distribution.</li>
+</ul>
+<p>But it also brings challenges:</p>
+<ul>
+<li><strong>Prior specification</strong> requires explicit modeling choices.</li>
+<li><strong>Computational demands</strong> can be substantial for complex models.</li>
+<li><strong>Interpretation</strong> requires understanding probability as degree of belief.</li>
+</ul>
+<p>In this post, we’ll build intuition for Bayesian reasoning starting with a simple coin flipping example. In the next post, we’ll extend these ideas to regression modeling with real data, exploring how to specify priors for multiple parameters, conduct prior predictive checks, and make predictions with full uncertainty quantification.</p>
+</section>
+<section id="why-priors-matter-and-why-theyre-less-controversial-than-you-think" class="level1">
+<h1>Why Priors Matter (and Why They’re Less Controversial Than You Think)</h1>
+<p>If you’ve only worked with frequentist models, the idea of a “prior” can sound suspicious, as though we’re stacking the deck. But <strong>priors are just part of how we reason every day</strong> – consider the following story:</p>
+<section id="the-fishing-story-bayesian-reasoning-in-daily-life" class="level2">
+<h2 class="anchored" data-anchor-id="the-fishing-story-bayesian-reasoning-in-daily-life">The Fishing Story: Bayesian Reasoning in Daily Life</h2>
+<p>My oldest son recently got into fishing and asked where we could try along the North Saskatchewan River. We didn’t just pick a random spot – we built a <strong>prior</strong>. We looked at fishing forums, asked in tackle shops, and thought about where fish like to hide (around structure like fallen trees). We also preferred places near parking so the walk wasn’t too long. That’s all prior information we used to narrow down our choices.</p>
+<p>Then we went out and <strong>tested those beliefs</strong>. After a few hours, my son had caught three small perch near a spot with a big willow tree and nothing at a location under the bridge. We <strong>updated our beliefs</strong>: the willow tree location moved up in our mental ranking, while the bridge spot moved down. Next weekend, we’ll use this updated knowledge as our new prior – starting at the willow tree instead of exploring randomly.</p>
+<p><strong>This process – combining what you know ahead of time with what you observe – is exactly how Bayesian inference works.</strong></p>
+<p>A frequentist approach would be different. You’d go to a spot with no prior assumptions and fish for a fixed period – say 2 hours. If you caught 3 fish, you might construct a confidence interval: “If I fished here many times for 2 hours each, 95% of my confidence intervals would contain the true catch rate.” Notice this doesn’t tell you “there’s a 95% chance the true rate is between X and Y” – it’s a statement about the procedure, not the parameter.</p>
+<p>Bayesian reasoning is always conditional on the data actually observed – we update beliefs based on what really happened. Frequentist inference requires imagining repeated experiments under identical conditions, which is straightforward in controlled experiments but often artificial in observational studies or unique situations.</p>
+</section>
+<section id="types-of-priors" class="level2">
+<h2 class="anchored" data-anchor-id="types-of-priors">Types of Priors</h2>
+<p>This fishing example used what we’d call a <strong>weakly informative prior</strong> – we had some knowledge but weren’t certain. Let’s formalize the different types of priors you might use:</p>
+<p><strong>Non-informative (flat) priors:</strong></p>
+<ul>
+<li>Deliberately vague, letting data dominate</li>
+<li>Example: Uniform(0, 1) for a coin’s probability of heads when you have no prior information</li>
+<li>Can seem “objective” but often encode strong assumptions on transformed scales</li>
+<li>May lead to improper posteriors or numerical instability</li>
+</ul>
+<p><strong>Weakly informative priors:</strong></p>
+<ul>
+<li>Still wide, but rule out absurd values</li>
+<li>Help stabilize estimation, especially with small samples</li>
+<li>Example: Normal(0, 10) for a standardized regression slope – expecting effects around zero but allowing substantial deviations. In original units, this might translate to “a 1-year increase in education increases log-income by somewhere between -20 and +20, with values near 0 most plausible.”</li>
+<li>Often the best default choice <span class="citation" data-cites="gelman2017prior gelman2006prior">(<a href="#ref-gelman2006prior" role="doc-biblioref">Gelman, 2006</a>; <a href="#ref-gelman2017prior" role="doc-biblioref">Gelman et al., 2017</a>)</span></li>
+</ul>
+<p><strong>Informative priors:</strong></p>
+<ul>
+<li>Based on previous research or expert knowledge</li>
+<li>Can substantially improve inference when justified</li>
+<li>Example: Beta(30, 70) for disease prevalence when meta-analysis of previous studies found approximately 30% prevalence rates</li>
+<li>Require careful justification and sensitivity analysis</li>
+</ul>
+<div class="callout callout-style-simple callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+🐰 Wait, What’s a Normal(0, 10)? A Quick Field Guide Through The Burrows 🗺
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<section id="common-distribution-families" class="level3">
+<h3 class="anchored" data-anchor-id="common-distribution-families">Common Distribution Families</h3>
+<p>When we specify priors, we’re choosing <strong>probability distributions</strong> that describe our beliefs about parameter values before seeing data. Here are the key concepts:</p>
+<p><strong>Uniform(a, b)</strong> or <span class="math inline">\(\theta \sim \text{Uniform}(a, b)\)</span>: Every value between <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> is equally likely. Example: <span class="math inline">\(\text{Uniform}(0, 1)\)</span> means we believe a probability parameter could be anywhere from 0 to 1 with equal plausibility. This is “flat” – no value is preferred over another.</p>
+<p><strong>Normal(μ, σ)</strong> or <span class="math inline">\(\theta \sim \mathcal{N}(\mu, \sigma^2)\)</span>: The familiar bell curve, centered at mean <span class="math inline">\(\mu\)</span> with standard deviation <span class="math inline">\(\sigma\)</span>. Note that in mathematical notation, the second parameter is often the <em>variance</em> <span class="math inline">\(\sigma^2\)</span>, not the standard deviation. Example: <span class="math inline">\(\theta \sim \mathcal{N}(0, 100)\)</span> for a regression slope says we expect the effect to be around 0 with <em>standard deviation</em> <span class="math inline">\(\sigma = 10\)</span>, but values within roughly <span class="math inline">\(-20\)</span> to <span class="math inline">\(+20\)</span> are plausible.</p>
+<p><strong>Beta(α, β)</strong> or <span class="math inline">\(\theta \sim \text{Beta}(\alpha, \beta)\)</span>: Restricted to values between 0 and 1, making it perfect for probabilities or proportions. The shape depends on <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span>: <span class="math inline">\(\text{Beta}(1, 1)\)</span> is uniform, <span class="math inline">\(\text{Beta}(2, 2)\)</span> is slightly peaked in the middle, <span class="math inline">\(\text{Beta}(10, 10)\)</span> is strongly concentrated around 0.5.</p>
+<p><strong>Gamma(α, β)</strong> or <span class="math inline">\(\theta \sim \text{Gamma}(\alpha, \beta)\)</span>: Restricted to positive values, often used for scale parameters or rates. Warning: different software uses different parameterizations (shape/rate vs.&nbsp;shape/scale), so always check documentation!</p>
+<p><strong>Binomial(n, p)</strong> or <span class="math inline">\(Y \sim \text{Binomial}(n, p)\)</span>: Counts the number of successes in <span class="math inline">\(n\)</span> independent trials, each with probability <span class="math inline">\(p\)</span> of success. This is a discrete distribution with possible values 0, 1, 2, …, <span class="math inline">\(n\)</span>. Example: <span class="math inline">\(\text{Binomial}(10, 0.3)\)</span> represents flipping a weighted coin 10 times where each flip has a 30% chance of heads – you might observe anywhere from 0 to 10 heads, with 3 being most likely.</p>
+<p><strong>Poisson(λ)</strong> or <span class="math inline">\(\theta \sim \text{Poisson}(\lambda)\)</span>: For count data (non-negative integers: 0, 1, 2, 3, …) with no upper limit. The parameter <span class="math inline">\(\lambda\)</span> (lambda) is both the mean and variance. Example: <span class="math inline">\(\text{Poisson}(5)\)</span> is centered around 5 counts, with most probability on values between 1 and 10. Commonly used for rare events or occurrences over time/space.</p>
+<p><strong>Want to see what these distributions look like (and much more)?</strong> Check out this <a href="https://distribution-explorer.github.io/">interactive distribution explorer</a>.</p>
+</section>
+<section id="probability-density-vs.-probability-mass" class="level3">
+<h3 class="anchored" data-anchor-id="probability-density-vs.-probability-mass">Probability Density vs.&nbsp;Probability Mass</h3>
+<p>For <strong>continuous parameters</strong> (like temperature, height, or regression slopes), we use <strong>probability density functions (PDFs)</strong>. The density at a point doesn’t give you a probability directly – instead, probability comes from integrating the density over an interval. For example, with <span class="math inline">\(\text{Normal}(0, 1)\)</span>, we can’t say “the probability <span class="math inline">\(\theta = 0\)</span> is <span class="math inline">\(X\)</span>”, but we can say “the probability <span class="math inline">\(\theta\)</span> is between <span class="math inline">\(-0.1\)</span> and <span class="math inline">\(0.1\)</span> is <span class="math inline">\(Y\)</span>”.</p>
+<p>For <strong>discrete parameters</strong> (like counts or categories), we use <strong>probability mass functions (PMFs)</strong>. Here, each specific value <em>does</em> have a probability. For example, with a <span class="math inline">\(\text{Poisson}(5)\)</span> distribution, we can say “the probability of observing exactly 3 events is 0.14”.</p>
+<p>In Bayesian inference, most parameters are continuous, so we work with probability densities. When we say “the prior is <span class="math inline">\(\text{Normal}(0, 10)\)</span>”, we mean the prior <em>density</em> follows that normal distribution.</p>
+</section>
+<section id="what-makes-a-prior-informative" class="level3">
+<h3 class="anchored" data-anchor-id="what-makes-a-prior-informative">What Makes a Prior “Informative”?</h3>
+<p>The key is how much the prior constrains possible parameter values:</p>
+<ul>
+<li><strong>Flat/non-informative</strong>: <span class="math inline">\(\text{Normal}(0, 1000)\)</span> for a regression slope barely constrains anything – it says slopes from <span class="math inline">\(-2000\)</span> to <span class="math inline">\(+2000\)</span> are all plausible.</li>
+<li><strong>Weakly informative</strong>: <span class="math inline">\(\text{Normal}(0, 10)\)</span> gently suggests the effect is moderate, ruling out absurdly large values while remaining open-minded.</li>
+<li><strong>Informative</strong>: <span class="math inline">\(\text{Normal}(5, 1)\)</span> strongly expects the parameter to be near 5, with most probability mass between 3 and 7.</li>
+</ul>
+<p>The “right” prior depends on your actual knowledge and the scale of your problem. A slope of 1000 might be absurd for predicting human height from weight, but perfectly reasonable for predicting income from education years.</p>
+</section>
+</div>
+</div>
+</div>
+</section>
+<section id="implicit-assumptions-in-frequentist-methods" class="level2">
+<h2 class="anchored" data-anchor-id="implicit-assumptions-in-frequentist-methods">Implicit Assumptions in Frequentist Methods</h2>
+<p><strong>An important realization</strong>: Frequentist methods also make implicit assumptions, they’re just less visible <span class="citation" data-cites="robert2007bayesian">(<a href="#ref-robert2007bayesian" role="doc-biblioref">Robert, 2007</a>)</span>:</p>
+<ul>
+<li>Choosing which test to use (t-test vs.&nbsp;Mann-Whitney)</li>
+<li>Selecting significance levels (<span class="math inline">\(\alpha = 0.05\)</span> vs.&nbsp;<span class="math inline">\(0.01\)</span>)</li>
+<li>Deciding when to stop collecting data</li>
+<li>Which variables to include in a model</li>
+<li>How to handle outliers or missing data</li>
+</ul>
+<p>For example, when you choose to use a t-test instead of a nonparametric test, you’re implicitly assuming normality – that’s an assumption about your data, just never stated as a probability distribution. When you select <span class="math inline">\(\alpha = 0.05\)</span> rather than <span class="math inline">\(0.01\)</span>, you’re making a judgment about the relative costs of Type I and Type II errors.</p>
+<p><strong>By making priors explicit, Bayesian analysis gives you control and transparency.</strong> You can examine whether your assumptions are reasonable, test sensitivity to different priors, and clearly communicate what you’re assuming. As <span class="citation" data-cites="berger2006case">Berger (<a href="#ref-berger2006case" role="doc-biblioref">2006</a>)</span> argues, explicit modeling of prior information often leads to more honest and reproducible science than pretending we can analyze data without any prior assumptions.</p>
+<div class="callout callout-style-simple callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+🐰 But before we dive deeper, let’s address some frequent misunderstandings 🧭
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<section id="common-misconceptions-about-bayesian-inference" class="level3 callout-body-container callout-body">
+<h3 class="anchored" data-anchor-id="common-misconceptions-about-bayesian-inference">Common Misconceptions About Bayesian Inference</h3>
+<p><strong>“Priors are subjective, so Bayesian inference is unscientific.”</strong><br>
+All statistical methods involve choices (which test to use, what α-level, when to stop collecting data). Bayesian methods make these assumptions explicit and transparent. Moreover, with sufficient data, different reasonable priors converge to similar posteriors <span class="citation" data-cites="berger2006case">(<a href="#ref-berger2006case" role="doc-biblioref">Berger, 2006</a>)</span>.</p>
+<p><strong>“You need strong prior beliefs to use Bayesian methods.”</strong><br>
+Not at all. Weakly informative priors that gently constrain parameters to reasonable ranges often work best <span class="citation" data-cites="gelman2017prior">(<a href="#ref-gelman2017prior" role="doc-biblioref">Gelman et al., 2017</a>)</span>. You can be quite uncertain in your prior while still gaining the benefits of the Bayesian framework.</p>
+<p><strong>“Bayesian credible intervals are the same as confidence intervals.”</strong><br>
+They often give numerically similar results but have fundamentally different interpretations. A credible interval directly states the probability the parameter lies within it; a confidence interval describes properties of the procedure across repeated samples <span class="citation" data-cites="morey2016fallacy">(<a href="#ref-morey2016fallacy" role="doc-biblioref">Morey et al., 2016</a>)</span>.</p>
+<p><strong>“The prior ‘overwhelms’ the data.”</strong><br>
+For reasonable priors and moderate sample sizes, the data dominate. The prior matters most when data are sparse – which is exactly when incorporating external knowledge is most valuable.</p>
+</section>
+</div>
+</div>
+</section>
+</section>
+<section id="starting-simple-a-seed-germination-example" class="level1">
+<h1>Starting Simple: A Seed Germination Example</h1>
+<p>Before jumping to regression, let’s build intuition with a relatable example: estimating germination rates for wildflower seeds.</p>
+<section id="the-scenario-testing-a-new-seed-batch" class="level2">
+<h2 class="anchored" data-anchor-id="the-scenario-testing-a-new-seed-batch">The Scenario: Testing a New Seed Batch</h2>
+<p>Imagine you’re a seed supplier evaluating a new batch of <em>Echinacea purpurea</em> (Purple Coneflower) seeds from a different grower. You plant 20 seeds under controlled conditions and observe that 12 germinate successfully. What can you conclude about the true germination rate of this batch?</p>
+<p>Unlike flipping a coin, you’re not starting from complete ignorance. You have relevant prior knowledge:</p>
+<ul>
+<li>Published studies report 70-85% germination for fresh <em>Echinacea</em> seeds under optimal conditions</li>
+<li>Your company’s historical data from other suppliers shows similar rates</li>
+<li>However, germination can vary by seed source, storage conditions, and growing season</li>
+<li>Seeds from new suppliers sometimes underperform until growing practices are optimized</li>
+</ul>
+<p>This is a perfect scenario for Bayesian inference – you have genuine prior information to incorporate, but also meaningful uncertainty to resolve with data.</p>
+</section>
+<section id="the-beta-binomial-model" class="level2">
+<h2 class="anchored" data-anchor-id="the-beta-binomial-model">The Beta-Binomial Model</h2>
+<p>The natural Bayesian model for germination data is:</p>
+<ul>
+<li><strong>Prior</strong>: <span class="math inline">\(\theta \sim \text{Beta}(\alpha, \beta)\)</span> (germination probability)</li>
+<li><strong>Likelihood</strong>: Number germinating <span class="math inline">\(\sim \text{Binomial}(n, \theta)\)</span></li>
+<li><strong>Posterior</strong>: <span class="math inline">\(\theta \sim \text{Beta}(\alpha + \text{germinated}, \beta + \text{failed})\)</span></li>
+</ul>
+<p>The Beta distribution is perfect here because:</p>
+<ol type="1">
+<li>It’s defined on <span class="math inline">\([0,1]\)</span>, matching the range of probabilities</li>
+<li>It’s the <strong>conjugate prior</strong> for the Binomial – the posterior is also Beta, making calculations simple</li>
+<li>It’s flexible, able to represent various beliefs from uniform (no information) to highly concentrated</li>
+</ol>
+<p><strong>Understanding Beta parameters intuitively:</strong> You can think of the Beta prior <span class="math inline">\(\text{Beta}(\alpha, \beta)\)</span> as if you’d already observed pseudo-data from previous experiments. Specifically: - <span class="math inline">\(\alpha - 1\)</span> = number of prior “germinations” you’ve seen - <span class="math inline">\(\beta - 1\)</span> = number of prior “failures” you’ve seen</p>
+<p>For example, <span class="math inline">\(\text{Beta}(15, 5)\)</span> is like having previously tested <span class="math inline">\(14 + 4 = 18\)</span> seeds and observed 14 germinate (with a 78% success rate). <strong>The prior is just data you saw before.</strong> <span class="math inline">\(\text{Beta}(1, 1)\)</span> is like having tested 0 seeds – complete ignorance.</p>
+<p><strong>The beautiful part:</strong> When you observe new data, you simply add your actual observations to these pseudo-observations:</p>
+<p><span class="math display">\[
+\text{Beta}(\alpha, \beta) + \text{Data}(k \text{ germinate}, n-k \text{ fail}) = \text{Beta}(\alpha + k, \beta + n - k)
+\]</span></p>
+<div class="callout callout-style-simple callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+🐰 Another Burrow to Explore: Conjugate Priors Explained 🔦
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<section id="whats-a-conjugate-prior" class="level3">
+<h3 class="anchored" data-anchor-id="whats-a-conjugate-prior">What’s a Conjugate Prior?</h3>
+<p>A <strong>conjugate prior</strong> is a prior distribution that, when combined with a particular likelihood, produces a posterior in the <strong>same family</strong>. For the Binomial likelihood, the Beta distribution is conjugate – meaning:</p>
+<blockquote class="blockquote">
+<p>Beta prior + Binomial data = Beta posterior (still a Beta!)</p>
+</blockquote>
+<p>This is special because most combinations don’t work this way. Usually, prior × likelihood gives you some complicated function that’s hard to work with. But with conjugate pairs, the math stays clean.</p>
+</section>
+<section id="the-simple-updating-rule" class="level3">
+<h3 class="anchored" data-anchor-id="the-simple-updating-rule">The Simple Updating Rule</h3>
+<p>Here’s the beautiful part. If your prior is <span class="math inline">\(\text{Beta}(\alpha, \beta)\)</span> and you observe <span class="math inline">\(k\)</span> successes in <span class="math inline">\(n\)</span> trials, your posterior is:</p>
+<p><span class="math display">\[
+\text{Posterior} = \text{Beta}(\alpha_{\text{new}}, \beta_{\text{new}})
+\]</span></p>
+<p>where:</p>
+<p><span class="math display">\[
+\begin{align}
+\alpha_{\text{new}} &amp;= \alpha + k \quad \text{(old } \alpha \text{ + successes observed)} \\
+\beta_{\text{new}} &amp;= \beta + (n-k) \quad \text{(old } \beta \text{ + failures observed)}
+\end{align}
+\]</span></p>
+<p><strong>In plain English</strong>: Take your starting <span class="math inline">\(\alpha\)</span> and add the number of seeds that germinated. Take your starting <span class="math inline">\(\beta\)</span> and add the number that failed. Done!</p>
+</section>
+<section id="why-does-this-work-the-prior-as-pseudo-data" class="level3">
+<h3 class="anchored" data-anchor-id="why-does-this-work-the-prior-as-pseudo-data">Why Does This Work? The Prior as Pseudo-Data</h3>
+<p>Here’s the key insight: <strong>You can think of the Beta prior as if you’d already conducted some germination trials before your actual experiment.</strong></p>
+<p>The parameters <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> translate to pseudo-observations like this:</p>
+<ul>
+<li><span class="math inline">\(\alpha - 1\)</span> = number of “prior germinations”</li>
+<li><span class="math inline">\(\beta - 1\)</span> = number of “prior failures”</li>
+</ul>
+<p><strong>Why the “minus 1”?</strong> It’s a mathematical quirk of how the Beta distribution is defined. Just subtract 1 from each parameter to convert to counts.</p>
+<p><strong>Examples:</strong></p>
+<ul>
+<li><p><span class="math inline">\(\text{Beta}(1, 1)\)</span>: That’s <span class="math inline">\(1-1=0\)</span> prior germinations and <span class="math inline">\(1-1=0\)</span> prior failures. You’re starting with a blank slate – no prior information.</p></li>
+<li><p><span class="math inline">\(\text{Beta}(15, 5)\)</span>: That’s <span class="math inline">\(15-1=14\)</span> prior germinations and <span class="math inline">\(5-1=4\)</span> prior failures. It’s as if you’d already tested 18 seeds and seen 14 germinate. This encodes a belief that germination rate is probably around 75-80%.</p></li>
+<li><p><span class="math inline">\(\text{Beta}(40, 10)\)</span>: That’s <span class="math inline">\(40-1=39\)</span> prior germinations and <span class="math inline">\(10-1=9\)</span> prior failures. This represents stronger prior knowledge (48 pseudo-observations) with similar 80% germination expectation, but with more certainty.</p></li>
+</ul>
+</section>
+<section id="bayesian-updating-is-just-adding-new-data-to-old-data" class="level3">
+<h3 class="anchored" data-anchor-id="bayesian-updating-is-just-adding-new-data-to-old-data">Bayesian Updating is Just Adding New Data to Old Data</h3>
+<p>When you observe real data, you’re literally <strong>adding your new observations to your pseudo-observations</strong>.</p>
+<p><strong>Full example:</strong></p>
+<p>You start with prior <span class="math inline">\(\text{Beta}(15, 5)\)</span> based on historical data. Converting to counts:</p>
+<ul>
+<li>Prior pseudo-germinations: <span class="math inline">\(15 - 1 = 14\)</span></li>
+<li>Prior pseudo-failures: <span class="math inline">\(5 - 1 = 4\)</span></li>
+</ul>
+<p>Then you actually test seeds and observe 12 germinations and 8 failures. Add them together:</p>
+<ul>
+<li>Total germinations: <span class="math inline">\(14 + 12 = 26\)</span></li>
+<li>Total failures: <span class="math inline">\(4 + 8 = 12\)</span></li>
+</ul>
+<p>Now convert back to Beta parameters (add 1 to each count):</p>
+<ul>
+<li>New <span class="math inline">\(\alpha = 26 + 1 = 27\)</span></li>
+<li>New <span class="math inline">\(\beta = 12 + 1 = 13\)</span></li>
+<li>Posterior: <span class="math inline">\(\text{Beta}(27, 13)\)</span></li>
+</ul>
+<p><strong>Or use the shortcut:</strong> Just add observed counts directly to the old parameters:</p>
+<ul>
+<li><span class="math inline">\(\alpha_{\text{new}} = 15 + 12 = 27\)</span></li>
+<li><span class="math inline">\(\beta_{\text{new}} = 5 + 8 = 13\)</span></li>
+</ul>
+<p>Same answer, less thinking about the “-1” and “+1”!</p>
+</section>
+</div>
+</div>
+</div>
+<p>Let’s visualize different prior beliefs:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create sequence of probability values</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>theta <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">length.out =</span> <span class="dv">200</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Define three different priors representing different states of knowledge</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>prior_df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Uniform prior: no prior knowledge</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">theta =</span> theta,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">density =</span> <span class="fu">dbeta</span>(theta, <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">prior_type =</span> <span class="st">"Beta(1,1): Uniform</span><span class="sc">\n</span><span class="st">(No prior knowledge)"</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Weakly informative: general knowledge about Echinacea</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">theta =</span> theta,</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">density =</span> <span class="fu">dbeta</span>(theta, <span class="dv">15</span>, <span class="dv">5</span>),</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">prior_type =</span> <span class="st">"Beta(15,5): Centered at 0.75</span><span class="sc">\n</span><span class="st">(Literature suggests 70-85%)"</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Informative prior: strong historical data from your company</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">theta =</span> theta,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">density =</span> <span class="fu">dbeta</span>(theta, <span class="dv">40</span>, <span class="dv">10</span>),</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">prior_type =</span> <span class="st">"Beta(40,10): Strong belief at 0.80</span><span class="sc">\n</span><span class="st">(Extensive company records)"</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the three priors</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(prior_df, <span class="fu">aes</span>(<span class="at">x =</span> theta, <span class="at">y =</span> density, <span class="at">color =</span> prior_type)) <span class="sc">+</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#1b9e77"</span>, <span class="st">"#d95f02"</span>, <span class="st">"#7570b3"</span>)) <span class="sc">+</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Different Prior Beliefs About Echinacea Germination Rate"</span>,</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Beta distributions representing various states of prior knowledge"</span>,</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Three different prior beliefs about germination rates for Purple Coneflower seeds."</span>,</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Germination rate (θ)"</span>,</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Density"</span>,</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Prior Distribution"</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">13</span>) <span class="sc">+</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>,</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>),</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">9</span>)</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>        )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="bayesian-updating-in-action" class="level2">
+<h2 class="anchored" data-anchor-id="bayesian-updating-in-action">Bayesian Updating in Action</h2>
+<p>Now let’s see how these priors update when we observe 12 germinations out of 20 seeds:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Our observed data</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>n_germinated <span class="ot">&lt;-</span> <span class="dv">12</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>n_failed <span class="ot">&lt;-</span> <span class="dv">8</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate prior and posterior densities for each prior</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Prior 1: Uniform (Beta(1,1))</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>prior1_prior <span class="ot">&lt;-</span> <span class="fu">dbeta</span>(theta, <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>prior1_post <span class="ot">&lt;-</span> <span class="fu">dbeta</span>(theta, <span class="dv">1</span> <span class="sc">+</span> n_germinated, <span class="dv">1</span> <span class="sc">+</span> n_failed)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Prior 2: Literature-based (Beta(15,5))</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>prior2_prior <span class="ot">&lt;-</span> <span class="fu">dbeta</span>(theta, <span class="dv">15</span>, <span class="dv">5</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>prior2_post <span class="ot">&lt;-</span> <span class="fu">dbeta</span>(theta, <span class="dv">15</span> <span class="sc">+</span> n_germinated, <span class="dv">5</span> <span class="sc">+</span> n_failed)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Prior 3: Strong company data (Beta(40,10))</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>prior3_prior <span class="ot">&lt;-</span> <span class="fu">dbeta</span>(theta, <span class="dv">40</span>, <span class="dv">10</span>)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>prior3_post <span class="ot">&lt;-</span> <span class="fu">dbeta</span>(theta, <span class="dv">40</span> <span class="sc">+</span> n_germinated, <span class="dv">10</span> <span class="sc">+</span> n_failed)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine all priors and posteriors into one dataframe</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>updating_df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">theta =</span> theta, <span class="at">density =</span> prior1_prior, <span class="at">distribution =</span> <span class="st">"Prior"</span>, <span class="at">prior_type =</span> <span class="st">"No Prior Knowledge"</span>),</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">theta =</span> theta, <span class="at">density =</span> prior1_post, <span class="at">distribution =</span> <span class="st">"Posterior"</span>, <span class="at">prior_type =</span> <span class="st">"No Prior Knowledge"</span>),</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">theta =</span> theta, <span class="at">density =</span> prior2_prior, <span class="at">distribution =</span> <span class="st">"Prior"</span>, <span class="at">prior_type =</span> <span class="st">"Literature-Based Prior"</span>),</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">theta =</span> theta, <span class="at">density =</span> prior2_post, <span class="at">distribution =</span> <span class="st">"Posterior"</span>, <span class="at">prior_type =</span> <span class="st">"Literature-Based Prior"</span>),</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">theta =</span> theta, <span class="at">density =</span> prior3_prior, <span class="at">distribution =</span> <span class="st">"Prior"</span>, <span class="at">prior_type =</span> <span class="st">"Strong Company Data"</span>),</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">theta =</span> theta, <span class="at">density =</span> prior3_post, <span class="at">distribution =</span> <span class="st">"Posterior"</span>, <span class="at">prior_type =</span> <span class="st">"Strong Company Data"</span>)</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot priors and posteriors for comparison</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(updating_df, <span class="fu">aes</span>(<span class="at">x =</span> theta, <span class="at">y =</span> density, </span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>                        <span class="at">color =</span> distribution, <span class="at">linetype =</span> distribution)) <span class="sc">+</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> prior_type, <span class="at">ncol =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add vertical line at observed proportion (12/20 = 0.60)</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">12</span><span class="sc">/</span><span class="dv">20</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"grey40"</span>) <span class="sc">+</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Prior"</span> <span class="ot">=</span> <span class="st">"#7570b3"</span>, <span class="st">"Posterior"</span> <span class="ot">=</span> <span class="st">"#d95f02"</span>)) <span class="sc">+</span></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Bayesian Updating: How Germination Data Changes Our Beliefs"</span>,</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Data: 12 seeds germinated out of 20 | Dashed line shows observed rate (0.60)"</span>,</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"How different priors update with the same data."</span>,</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Distribution"</span>, </span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">linetype =</span> <span class="st">"Distribution"</span>,</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Germination rate (θ)"</span>,</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Density"</span></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Key insights:</strong></p>
+<ul>
+<li>All posteriors shift toward the observed data (<span class="math inline">\(12/20 = 0.60\)</span>), regardless of starting beliefs</li>
+<li>Different priors lead to different posteriors – your starting beliefs matter, especially with limited data</li>
+<li>Stronger priors (more peaked) require more data to substantially shift, while weak priors let the data dominate quickly</li>
+<li>With enough data, all <em>reasonable</em> priors eventually converge to similar posteriors</li>
+<li>This illustrates a fundamental principle: <strong>Bayesian inference represents a compromise between prior beliefs and observed data</strong></li>
+<li>The weight given to each depends on their relative certainty – weak priors defer to data, strong data overwhelms priors</li>
+</ul>
+</section>
+<section id="credible-intervals-direct-probability-statements" class="level2">
+<h2 class="anchored" data-anchor-id="credible-intervals-direct-probability-statements">Credible Intervals: Direct Probability Statements</h2>
+<p>Now let’s quantify our <strong>uncertainty about the germination rate</strong> using the posterior distribution.</p>
+<p>Unlike frequentist confidence intervals, Bayesian <strong>credible intervals</strong> have a direct probability interpretation <span class="citation" data-cites="kruschke2014doing morey2016fallacy">(<a href="#ref-kruschke2014doing" role="doc-biblioref">Kruschke, 2014</a>; <a href="#ref-morey2016fallacy" role="doc-biblioref">Morey et al., 2016</a>)</span>.</p>
+<p>A 95% credible interval is simply the range containing 95% of the posterior probability. We’ll calculate an <strong>equal-tailed interval</strong>, which places 2.5% of probability in each tail (there’s also a “highest posterior density” interval that finds the narrowest 95% region, but for symmetric posteriors like ours, they’re nearly identical).</p>
+<p>In Bayesian inference, the <strong>posterior distribution is the final product</strong> – it fully describes our updated beliefs about the parameter after seeing the data. Any interval you report (e.g., 80%, 89%, 90%, or 95%) is just a way of summarizing that posterior. The chosen level is not dictated by the method; it’s a <strong>communication choice</strong>, not a fixed error-control convention.</p>
+<p>In contrast, <strong>frequentist confidence intervals</strong> are tied to a pre-specified error rate (the <span class="math inline">\(\alpha\)</span>-level, such as 0.05 for 95% coverage). The level determines the long-run frequency properties of the procedure: if repeated infinitely, 95% of intervals constructed this way would contain the true value of <span class="math inline">\(\theta\)</span>. Changing the level changes the frequentist procedure itself.</p>
+<p>As <span class="citation" data-cites="mcelreath2020statistical">McElreath (<a href="#ref-mcelreath2020statistical" role="doc-biblioref">2020, p. 58</a>)</span> notes, “It is not easy to defend the choice of 95% (5%), outside of pleas of convention.” <span class="citation" data-cites="gelman2014beyond">Gelman &amp; Carlin (<a href="#ref-gelman2014beyond" role="doc-biblioref">2014</a>)</span> and <span class="citation" data-cites="kruschke2014doing">Kruschke (<a href="#ref-kruschke2014doing" role="doc-biblioref">2014</a>)</span> make the same point: since the posterior fully represents uncertainty, <strong>the interval percentage is a matter of reporting style, not of statistical principle.</strong></p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate posterior (using uniform prior)</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>alpha_post <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">+</span> n_germinated  <span class="co"># 13</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>beta_post <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">+</span> n_failed       <span class="co"># 9</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate 89% credible interval (equal-tailed)</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>lower <span class="ot">&lt;-</span> <span class="fu">qbeta</span>(<span class="fl">0.055</span>, alpha_post, beta_post)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>upper <span class="ot">&lt;-</span> <span class="fu">qbeta</span>(<span class="fl">0.945</span>, alpha_post, beta_post)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>post_mean <span class="ot">&lt;-</span> alpha_post <span class="sc">/</span> (alpha_post <span class="sc">+</span> beta_post)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Create data for plotting</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>posterior_data <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">theta =</span> theta, <span class="at">density =</span> <span class="fu">dbeta</span>(theta, alpha_post, beta_post))</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract only the data within the credible interval for shading</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>ci_data <span class="ot">&lt;-</span> posterior_data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(theta <span class="sc">&gt;=</span> lower <span class="sc">&amp;</span> theta <span class="sc">&lt;=</span> upper)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot posterior with shaded credible interval</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(posterior_data, <span class="fu">aes</span>(<span class="at">x =</span> theta, <span class="at">y =</span> density)) <span class="sc">+</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="fl">1.2</span>, <span class="at">color =</span> <span class="st">"#d95f02"</span>) <span class="sc">+</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Shade the 89% credible interval</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> ci_data, <span class="fu">aes</span>(<span class="at">x =</span> theta, <span class="at">y =</span> density), </span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> <span class="st">"#d95f02"</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add posterior mean line</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> post_mean, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"grey40"</span>) <span class="sc">+</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Annotate with posterior mean</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> post_mean, <span class="at">y =</span> <span class="fu">max</span>(posterior_data<span class="sc">$</span>density) <span class="sc">*</span> <span class="fl">1.05</span>,</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>           <span class="at">label =</span> <span class="fu">sprintf</span>(<span class="st">"Posterior mean = %.3f"</span>, post_mean),</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>           <span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Annotate with credible interval bounds</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> post_mean, <span class="at">y =</span> <span class="fu">max</span>(posterior_data<span class="sc">$</span>density) <span class="sc">*</span> <span class="fl">0.3</span>,</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>           <span class="at">label =</span> <span class="fu">sprintf</span>(<span class="st">"89%% Credible Interval:</span><span class="sc">\n</span><span class="st">[%.3f, %.3f]"</span>, lower, upper),</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>           <span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">4</span>, <span class="at">color =</span> <span class="st">"#d95f02"</span>, <span class="at">fontface =</span> <span class="st">"bold"</span>) <span class="sc">+</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"89% Bayesian Credible Interval for Germination Rate"</span>,</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"The shaded region contains 89% of the posterior probability"</span>,</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Germination rate (θ)"</span>,</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Posterior density"</span>,</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"This is the interpretation most people intuitively expect from any interval estimate.</span><span class="sc">\n</span><span class="st">And there is no reason why it should be 95% other than convention."</span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">13</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Key insights:</strong></p>
+<ul>
+<li>The crucial difference between confidence and credible intervals lies in their interpretation</li>
+<li>A <strong>confidence interval</strong> (frequentist) means “If we repeated this procedure infinitely, 95% of intervals would capture <span class="math inline">\(\theta\)</span>” – a statement about the procedure, not the parameter</li>
+<li>A <strong>credible interval</strong> (Bayesian) means “There is a 95% probability that <span class="math inline">\(\theta\)</span> lies in this interval” – a direct statement about the parameter itself</li>
+<li>For this seed batch, we can say with 89% confidence: <strong>“The true germination rate is between 42% and 75%”</strong></li>
+<li>This is the statement seed suppliers and customers actually care about – it directly quantifies our uncertainty about this specific batch’s quality</li>
+<li>The Bayesian statement is what most people think a confidence interval means, and in Bayesian inference, it actually does mean that</li>
+</ul>
+</section>
+<section id="posterior-predictions-what-happens-next" class="level2">
+<h2 class="anchored" data-anchor-id="posterior-predictions-what-happens-next">Posterior Predictions: What Happens Next?</h2>
+<p>One of Bayesian inference’s most powerful features is that we can use our posterior distribution to predict future observations, accounting for all our uncertainty <span class="citation" data-cites="gelman1996posterior gabry2019visualization">(<a href="#ref-gabry2019visualization" role="doc-biblioref">Gabry et al., 2019</a>; <a href="#ref-gelman1996posterior" role="doc-biblioref">Gelman et al., 1996</a>)</span>. <strong>This is huge</strong> – instead of just estimating “the germination rate is probably around 59%,” we can directly answer questions like <strong>“If I plant 10 seeds from this batch in a customer’s garden, how many will germinate?”</strong></p>
+<p>For a seed supplier, this is far more useful than a point estimate. You need to: - Set realistic customer expectations - Decide whether to accept or reject the batch - Determine appropriate pricing - Estimate how many seeds to include per packet</p>
+<section id="the-question" class="level3">
+<h3 class="anchored" data-anchor-id="the-question">The Question</h3>
+<p>We tested 20 seeds and observed 12 germinations, giving us a posterior <span class="math inline">\(\text{Beta}(13, 9)\)</span> for the germination rate <span class="math inline">\(\theta\)</span>. Now suppose a customer plants 10 seeds from this batch in their garden. How many should we expect to germinate?</p>
+</section>
+<section id="two-sources-of-uncertainty" class="level3">
+<h3 class="anchored" data-anchor-id="two-sources-of-uncertainty">Two Sources of Uncertainty</h3>
+<p>A good prediction must account for:</p>
+<ol type="1">
+<li><strong>Parameter uncertainty</strong>: We’re not completely sure what <span class="math inline">\(\theta\)</span> is (we have a posterior distribution, not a single value)</li>
+<li><strong>Sampling variability</strong>: Even if we knew <span class="math inline">\(\theta\)</span> exactly, germination is inherently variable – weather, soil conditions, planting depth, and random chance all matter. We wouldn’t get exactly <span class="math inline">\(10 \times \theta\)</span> germinations even with perfect knowledge of <span class="math inline">\(\theta\)</span>.</li>
+</ol>
+<p>The <strong>posterior predictive distribution</strong> accounts for both by:</p>
+<ul>
+<li>Drawing a plausible <span class="math inline">\(\theta\)</span> value from our posterior</li>
+<li>Simulating seed germinations using that <span class="math inline">\(\theta\)</span></li>
+<li>Repeating this many times to build up a distribution of predictions</li>
+</ul>
+<p><strong>Think of it this way:</strong> Imagine asking “How many <em>Echinacea</em> seedlings will emerge in my garden?” rather than “What is the true germination rate of this batch?” The first question (prediction) naturally incorporates both your uncertainty about the batch quality <em>and</em> the randomness inherent in any particular planting.</p>
+<p>Let’s see this in action:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Set seed for reproducibility</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate posterior (using uniform prior)</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>alpha_post <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">+</span> n_germinated  <span class="co"># 13</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>beta_post <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">+</span> n_failed       <span class="co"># 9</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of seeds customer will plant</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>n_future <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>n_sims <span class="ot">&lt;-</span> <span class="dv">10000</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate from posterior predictive distribution</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: Draw theta values from posterior Beta(13, 9)</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>theta_samples <span class="ot">&lt;-</span> <span class="fu">rbeta</span>(n_sims, alpha_post, beta_post)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: For each theta, simulate seed germinations</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>future_germinations <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(n_sims, <span class="at">size =</span> n_future, <span class="at">prob =</span> theta_samples)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Create dataframe for plotting</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>predictive_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">future_germinations =</span> future_germinations)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate posterior mean prediction (for comparison)</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>posterior_mean_theta <span class="ot">&lt;-</span> alpha_post <span class="sc">/</span> (alpha_post <span class="sc">+</span> beta_post)</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>point_prediction <span class="ot">&lt;-</span> n_future <span class="sc">*</span> posterior_mean_theta</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the posterior predictive distribution</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(predictive_df, <span class="fu">aes</span>(<span class="at">x =</span> future_germinations)) <span class="sc">+</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">after_stat</span>(count) <span class="sc">/</span> <span class="fu">sum</span>(<span class="fu">after_stat</span>(count))),</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>           <span class="at">fill =</span> <span class="st">"#d95f02"</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> point_prediction, </span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>             <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"#1b9e77"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> point_prediction <span class="sc">+</span> <span class="fl">1.6</span>, <span class="at">y =</span> <span class="fl">0.21</span>,</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>           <span class="at">label =</span> <span class="fu">sprintf</span>(<span class="st">"Point estimate:</span><span class="sc">\n</span><span class="st">%.1f germinations"</span>, point_prediction),</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>           <span class="at">color =</span> <span class="st">"#1b9e77"</span>, <span class="at">size =</span> <span class="fl">3.5</span>) <span class="sc">+</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">10</span>) <span class="sc">+</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Predicting Germinations for a Customer's Planting"</span>,</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="fu">sprintf</span>(<span class="st">"Based on posterior from 12 germinations in 20 seeds | Mean prediction: %.1f germinations"</span>, </span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">mean</span>(future_germinations)),</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Number of germinations out of 10 seeds planted"</span>,</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Probability"</span>,</span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"The distribution captures both parameter uncertainty and natural variation in germination."</span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">13</span>) <span class="sc">+</span></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Show code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary statistics for the posterior predictive distribution</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>summary_stats <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Metric =</span> <span class="fu">c</span>(<span class="st">"Mean prediction"</span>, </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>             <span class="st">"Most likely outcome"</span>, </span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>             <span class="st">"89% Prediction Interval"</span>),</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">Value =</span> <span class="fu">c</span>(</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sprintf</span>(<span class="st">"%.1f germinations"</span>, <span class="fu">mean</span>(future_germinations)),</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sprintf</span>(<span class="st">"%d germinations (%.1f%% probability)"</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>            <span class="fu">as.numeric</span>(<span class="fu">names</span>(<span class="fu">sort</span>(<span class="fu">table</span>(future_germinations), <span class="at">decreasing =</span> <span class="cn">TRUE</span>)[<span class="dv">1</span>])),</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>            <span class="dv">100</span> <span class="sc">*</span> <span class="fu">max</span>(<span class="fu">table</span>(future_germinations)) <span class="sc">/</span> n_sims),</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sprintf</span>(<span class="st">"[%d, %d] germinations"</span>,</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>            <span class="fu">quantile</span>(future_germinations, <span class="fl">0.055</span>),</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>            <span class="fu">quantile</span>(future_germinations, <span class="fl">0.945</span>))</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(summary_stats, </span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">caption =</span> <span class="st">"Posterior predictive summary for 10 seeds from this batch."</span>,</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">align =</span> <span class="fu">c</span>(<span class="st">"l"</span>, <span class="st">"r"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Posterior predictive summary for 10 seeds from this batch.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Metric</th>
+<th style="text-align: right;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Mean prediction</td>
+<td style="text-align: right;">5.9 germinations</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Most likely outcome</td>
+<td style="text-align: right;">6 germinations (20.5% probability)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">89% Prediction Interval</td>
+<td style="text-align: right;">[3, 9] germinations</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><br> <strong>Key insights:</strong></p>
+<ul>
+<li>The distribution is wider than you might expect – this honest uncertainty reflects our uncertainty about <span class="math inline">\(\theta\)</span> plus natural variation in germination</li>
+<li>It’s naturally discrete (whole numbers only), matching the reality that you can’t have fractional germinations</li>
+<li>While the mean is near our point estimate (<span class="math inline">\(10 \times 0.59 \approx 5.9\)</span> germinations), the full distribution shows all plausible outcomes</li>
+<li>We can say: <strong>“There’s an 89% chance a customer planting 10 seeds will see between 3 and 8 germinate”</strong></li>
+</ul>
+<p><strong>For practical decision-making</strong>, we can say: <strong>“There’s an 89% chance a customer planting 10 seeds will see between 3 and 8 germinate.”</strong> This helps you:</p>
+<ul>
+<li><strong>Set customer expectations</strong>: Don’t promise 80% germination when the data suggest 60%</li>
+<li><strong>Make batch acceptance decisions</strong>: Is 3-8 germinations per 10 seeds acceptable?</li>
+<li><strong>Adjust seed packet counts</strong>: Maybe include 15 seeds instead of 10 to ensure customers get enough plants</li>
+<li><strong>Decide on further testing</strong>: The wide uncertainty (3-8 is a big range) suggests testing more seeds would be valuable</li>
+</ul>
+<p>This also enables <strong>model checking</strong>: if you test another batch and get results far outside your predictive distribution, something’s wrong with your model assumptions <span class="citation" data-cites="gelman1996posterior">(<a href="#ref-gelman1996posterior" role="doc-biblioref">Gelman et al., 1996</a>)</span>. Perhaps germination varies by seed lot more than you thought, or environmental factors matter more than your simple model assumes.</p>
+<p>This same logic—priors, likelihoods, posteriors, and predictions—extends to any statistical model, from simple proportions to complex regression and beyond.</p>
+<div class="callout callout-style-simple callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+🐰 Emerging from the Burrow: Posterior Predictions 🌅
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<section id="posterior-and-prior-predictive-distributions" class="level3">
+<h3 class="anchored" data-anchor-id="posterior-and-prior-predictive-distributions">Posterior and Prior Predictive Distributions</h3>
+<p>Mathematically, the <strong>posterior predictive distribution</strong> is:</p>
+<p><span class="math display">\[
+P(\tilde{y} \mid y_{\text{obs}}) = \int P(\tilde{y} \mid \theta)\, P(\theta \mid y_{\text{obs}})\, d\theta
+\]</span></p>
+<p>In words: <strong>the probability of future (or new) data</strong> <span class="math inline">\(\tilde{y}\)</span> <strong>is the average of the likelihoods</strong>, weighted by how plausible each parameter value <span class="math inline">\(\theta\)</span> is under the posterior.</p>
+<p>For each possible <span class="math inline">\(\theta\)</span>:</p>
+<ol type="1">
+<li>Compute how likely the future data are under that parameter: <span class="math inline">\(P(\tilde{y} \mid \theta)\)</span><br>
+</li>
+<li>Weight that likelihood by the posterior probability: <span class="math inline">\(P(\theta \mid y_{\text{obs}})\)</span><br>
+</li>
+<li>Integrate over all possible <span class="math inline">\(\theta\)</span></li>
+</ol>
+<p>This expresses the <strong>predictive uncertainty</strong> that combines both parameter uncertainty and data variability.</p>
+</section>
+<section id="why-we-simulate-instead-of-integrate" class="level3">
+<h3 class="anchored" data-anchor-id="why-we-simulate-instead-of-integrate">Why We Simulate Instead of Integrate</h3>
+<p>For simple models (like the Beta-Binomial), the integral above has a closed form. But in most real problems, it doesn’t – so we <strong>simulate</strong> instead.</p>
+<p><strong>Posterior Predictive Simulation Algorithm:</strong></p>
+<ol type="1">
+<li>Draw parameter samples <span class="math inline">\(\theta^{(i)} \sim P(\theta \mid y_{\text{obs}})\)</span><br>
+</li>
+<li>For each draw, simulate future data <span class="math inline">\(\tilde{y}^{(i)} \sim P(\tilde{y} \mid \theta^{(i)})\)</span><br>
+</li>
+<li>Repeat many times<br>
+</li>
+<li>The collection <span class="math inline">\(\{\tilde{y}^{(1)}, \tilde{y}^{(2)}, \ldots\}\)</span> approximates <span class="math inline">\(P(\tilde{y} \mid y_{\text{obs}})\)</span></li>
+</ol>
+<p>This process is called <strong>ancestral sampling</strong> because we first sample “ancestors” (parameters) and then simulate “descendants” (data). It works for <strong>any Bayesian model</strong>, no matter how complex.</p>
+</section>
+<section id="prior-predictive-checks-simulating-before-observing-data" class="level3">
+<h3 class="anchored" data-anchor-id="prior-predictive-checks-simulating-before-observing-data">Prior Predictive Checks: Simulating Before Observing Data</h3>
+<p>Before seeing data, we can simulate from the <strong>prior predictive distribution</strong>:</p>
+<p><span class="math display">\[
+P(\tilde{y}) = \int P(\tilde{y} \mid \theta)\, P(\theta)\, d\theta
+\]</span></p>
+<p>This answers:</p>
+<blockquote class="blockquote">
+<p>“If my prior beliefs were true, what kinds of data would I expect to see?”</p>
+</blockquote>
+<p>If your prior predictive simulations yield implausible outcomes (e.g., negative germination rates or rates greater than 100%), that’s a clear sign your <strong>prior needs revision</strong> <span class="citation" data-cites="gabry2019visualization">(<a href="#ref-gabry2019visualization" role="doc-biblioref">Gabry et al., 2019</a>)</span>. We’ll use this technique extensively in the next post when working with regression models.</p>
+</section>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="sequential-learning-testing-seeds-over-time" class="level1">
+<h1>Sequential Learning: Testing Seeds Over Time</h1>
+<p>One of Bayesian inference’s most powerful features is <strong>sequential learning</strong>: today’s posterior becomes tomorrow’s prior.</p>
+<p><strong>Unlike frequentist methods, Bayesian inference doesn’t penalize you for examining data mid-study.</strong> In frequentist hypothesis testing, looking at your data before reaching a predetermined sample size inflates your Type I error rate—you’re “spending” your alpha budget with each peek. But in Bayesian inference, your posterior after 100 observations is identical whether you looked at your data 0 times, 10 times, or 100 times along the way.</p>
+<p>This means you can:</p>
+<ul>
+<li>Test seeds in small batches as they arrive</li>
+<li>Examine your results after each batch</li>
+<li>Decide whether to continue testing or accept/reject the lot</li>
+<li>Resume testing later without any statistical penalties</li>
+</ul>
+<p><strong>Critically</strong>: None of these actions inflate your error rates or invalidate your conclusions.</p>
+<section id="demonstration-sequential-germination-testing" class="level2">
+<h2 class="anchored" data-anchor-id="demonstration-sequential-germination-testing">Demonstration: Sequential Germination Testing</h2>
+<p>Imagine you’re evaluating a large shipment of <em>Echinacea</em> seeds. Rather than testing all at once, you test them in batches of 10 seeds as time and resources permit. Let’s watch how your beliefs evolve:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">456</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate testing 100 seeds total from a batch with 60% germination rate</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>n_seeds <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>true_germ_rate <span class="ot">&lt;-</span> <span class="fl">0.60</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>germinations <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(n_seeds, <span class="dv">1</span>, true_germ_rate)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Start with a weakly informative prior based on literature: Beta(15,5)</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co"># This represents belief that Echinacea typically germinates around 75%</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>alpha <span class="ot">&lt;-</span> <span class="dv">15</span>  <span class="co"># prior "germinations"</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>beta <span class="ot">&lt;-</span> <span class="dv">5</span>    <span class="co"># prior "failures"</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a dataframe to track how our beliefs evolve</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>posterior_evolution <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">seeds_tested =</span> <span class="dv">0</span><span class="sc">:</span>n_seeds,</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha_param =</span> <span class="fu">numeric</span>(n_seeds <span class="sc">+</span> <span class="dv">1</span>),</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">beta_param =</span> <span class="fu">numeric</span>(n_seeds <span class="sc">+</span> <span class="dv">1</span>),</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">mean =</span> <span class="fu">numeric</span>(n_seeds <span class="sc">+</span> <span class="dv">1</span>),</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">lower =</span> <span class="fu">numeric</span>(n_seeds <span class="sc">+</span> <span class="dv">1</span>),</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">upper =</span> <span class="fu">numeric</span>(n_seeds <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Record initial prior</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>posterior_evolution<span class="sc">$</span>alpha_param[<span class="dv">1</span>] <span class="ot">&lt;-</span> alpha</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>posterior_evolution<span class="sc">$</span>beta_param[<span class="dv">1</span>] <span class="ot">&lt;-</span> beta</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>posterior_evolution<span class="sc">$</span>mean[<span class="dv">1</span>] <span class="ot">&lt;-</span> alpha <span class="sc">/</span> (alpha <span class="sc">+</span> beta)</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>posterior_evolution<span class="sc">$</span>lower[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">qbeta</span>(<span class="fl">0.055</span>, alpha, beta)</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>posterior_evolution<span class="sc">$</span>upper[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">qbeta</span>(<span class="fl">0.945</span>, alpha, beta)</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Update beliefs after each seed test</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="co"># This is the sequential update formula: α_new = α_old + germinated, β_new = β_old + failed</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_seeds) {</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (germinations[i] <span class="sc">==</span> <span class="dv">1</span>) {</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>    alpha <span class="ot">&lt;-</span> alpha <span class="sc">+</span> <span class="dv">1</span>  <span class="co"># observed a germination</span></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>    beta <span class="ot">&lt;-</span> beta <span class="sc">+</span> <span class="dv">1</span>    <span class="co"># observed a failure</span></span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Record the updated posterior</span></span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>  posterior_evolution<span class="sc">$</span>alpha_param[i<span class="sc">+</span><span class="dv">1</span>] <span class="ot">&lt;-</span> alpha</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>  posterior_evolution<span class="sc">$</span>beta_param[i<span class="sc">+</span><span class="dv">1</span>] <span class="ot">&lt;-</span> beta</span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>  posterior_evolution<span class="sc">$</span>mean[i<span class="sc">+</span><span class="dv">1</span>] <span class="ot">&lt;-</span> alpha <span class="sc">/</span> (alpha <span class="sc">+</span> beta)</span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>  posterior_evolution<span class="sc">$</span>lower[i<span class="sc">+</span><span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">qbeta</span>(<span class="fl">0.055</span>, alpha, beta)</span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>  posterior_evolution<span class="sc">$</span>upper[i<span class="sc">+</span><span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">qbeta</span>(<span class="fl">0.945</span>, alpha, beta)</span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize the evolution of our beliefs</span></span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(posterior_evolution, <span class="fu">aes</span>(<span class="at">x =</span> seeds_tested)) <span class="sc">+</span></span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> lower, <span class="at">ymax =</span> upper), <span class="at">fill =</span> <span class="st">"#d95f02"</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> mean), <span class="at">color =</span> <span class="st">"#d95f02"</span>, <span class="at">linewidth =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> true_germ_rate, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"grey40"</span>) <span class="sc">+</span></span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="dv">85</span>, <span class="at">y =</span> true_germ_rate <span class="sc">+</span> <span class="fl">0.05</span>, </span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>           <span class="at">label =</span> <span class="st">"True germination rate (0.60)"</span>, <span class="at">size =</span> <span class="dv">4</span>, <span class="at">color =</span> <span class="st">"grey40"</span>) <span class="sc">+</span></span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Sequential Bayesian Learning: No Penalty for Looking"</span>,</span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Posterior mean and 89% credible interval converge to truth as data accumulate"</span>,</span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Number of seeds tested"</span>,</span>
+<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Estimated germination rate (θ)"</span>,</span>
+<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Orange line = posterior mean | Shaded region = 89% credible interval"</span></span>
+<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">13</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="what-this-shows" class="level2">
+<h2 class="anchored" data-anchor-id="what-this-shows">What This Shows</h2>
+<ol type="1">
+<li><strong>Starting point matters initially</strong>: We began with a prior centered around 75% germination (based on literature), but as data accumulate, we learn the true rate is closer to 60%</li>
+<li><strong>Uncertainty shrinks</strong>: The credible interval (shaded region) narrows as we test more seeds</li>
+<li><strong>Beliefs converge</strong>: Our estimate approaches the true germination rate as evidence accumulates</li>
+<li><strong>No stopping penalty</strong>: We could have stopped at seed 20, examined results, then continued – our final answer would be identical</li>
+<li><strong>Coherent updates</strong>: Each seed test updates our beliefs in a mathematically principled way</li>
+</ol>
+<section id="making-decisions-along-the-way" class="level3">
+<h3 class="anchored" data-anchor-id="making-decisions-along-the-way">Making Decisions Along the Way</h3>
+<p>As a seed supplier, you might have decision rules like:</p>
+<ul>
+<li><strong>After 30 seeds</strong>: If mean germination &lt; 50%, reject the batch immediately</li>
+<li><strong>After 50 seeds</strong>: If 89% credible interval entirely below 65%, reject the batch</li>
+<li><strong>After 100 seeds</strong>: Make final accept/reject decision</li>
+</ul>
+<p><strong>With Bayesian inference, you can implement these rules without any statistical penalties.</strong> Your posterior after 100 seeds is valid regardless of how many times you peeked at the results.</p>
+</section>
+<section id="the-frequentist-problem-optional-stopping" class="level3">
+<h3 class="anchored" data-anchor-id="the-frequentist-problem-optional-stopping">The Frequentist Problem: Optional Stopping</h3>
+<p><strong>What would happen in frequentist inference?</strong></p>
+<p>In a frequentist framework, the <strong>validity of p-values depends on your sampling plan</strong>. If you peek at your data and decide whether to continue based on what you see, you inflate your Type I error rate (the probability of falsely rejecting a true null hypothesis).</p>
+<p><strong>Two scenarios:</strong></p>
+<ol type="1">
+<li><strong>Pre-planned sequential testing</strong> (e.g., “I will check after every 20 seeds”):
+<ul>
+<li>You must adjust your significance level to control overall Type I error</li>
+<li>Use methods like Bonferroni correction: <span class="math inline">\(\alpha = 0.05/5 = 0.01\)</span> for 5 planned looks</li>
+<li>Or apply formal <span class="math inline">\(\alpha\)</span>-spending functions (used in clinical trials)</li>
+<li>This “spends” your <span class="math inline">\(\alpha\)</span> budget across multiple looks</li>
+</ul></li>
+<li><strong>Optional stopping</strong> (e.g., “I’ll keep testing until I see something interesting”):
+<ul>
+<li>Even worse: your actual Type I error rate becomes unknown and is inflated</li>
+<li>You’re giving yourself unlimited chances to reject the null by accident</li>
+<li>The p-value assumes a fixed sample size and stopping rule – as defined in your power analysis – and changing these invalidates it.</li>
+<li>This is why “p-hacking” (testing until you find <span class="math inline">\(p &lt; 0.05\)</span>) is problematic</li>
+</ul></li>
+</ol>
+<div class="cell">
+<details class="code-fold">
+<summary>Show code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Frequentist scenario: testing H0: θ = 0.70 (acceptable germination)</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># We'll check after every 20 seeds</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>check_points <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">20</span>, <span class="dv">100</span>, <span class="at">by =</span> <span class="dv">20</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>frequentist_checks <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">seeds_tested =</span> check_points,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">germinated =</span> <span class="fu">numeric</span>(<span class="fu">length</span>(check_points)),</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">p_value =</span> <span class="fu">numeric</span>(<span class="fu">length</span>(check_points)),</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">decision_unadjusted =</span> <span class="fu">character</span>(<span class="fu">length</span>(check_points)),</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">decision_bonferroni =</span> <span class="fu">character</span>(<span class="fu">length</span>(check_points))</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(check_points)) {</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  n <span class="ot">&lt;-</span> check_points[i]</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  germ_observed <span class="ot">&lt;-</span> <span class="fu">sum</span>(germinations[<span class="dv">1</span><span class="sc">:</span>n])</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Test H0: θ = 0.70 (acceptable quality) vs H1: θ &lt; 0.70</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  p_val <span class="ot">&lt;-</span> <span class="fu">binom.test</span>(germ_observed, n, <span class="at">p =</span> <span class="fl">0.70</span>, <span class="at">alternative =</span> <span class="st">"less"</span>)<span class="sc">$</span>p.value</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  frequentist_checks<span class="sc">$</span>germinated[i] <span class="ot">&lt;-</span> germ_observed</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>  frequentist_checks<span class="sc">$</span>p_value[i] <span class="ot">&lt;-</span> p_val</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Decision with α = 0.05 (WRONG - doesn't account for multiple looks)</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>  frequentist_checks<span class="sc">$</span>decision_unadjusted[i] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(p_val <span class="sc">&lt;</span> <span class="fl">0.05</span>, </span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>                                                       <span class="st">"Reject batch"</span>, </span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>                                                       <span class="st">"Continue testing"</span>)</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Decision with Bonferroni correction: α = 0.05/5 = 0.01</span></span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>  frequentist_checks<span class="sc">$</span>decision_bonferroni[i] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(p_val <span class="sc">&lt;</span> <span class="fl">0.01</span>, </span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>                                                       <span class="st">"Reject batch"</span>, </span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>                                                       <span class="st">"Continue testing"</span>)</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(frequentist_checks,</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>      <span class="at">digits =</span> <span class="dv">4</span>,</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>      <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Seeds"</span>, <span class="st">"Germinated"</span>, <span class="st">"p-value"</span>,</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"Decision (α=0.05)"</span>, <span class="st">"Decision (Bonferroni)"</span>),</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>      <span class="at">caption =</span> <span class="st">"Frequentist sequential testing showing the impact of multiple testing correction"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Frequentist sequential testing showing the impact of multiple testing correction</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Seeds</th>
+<th style="text-align: right;">Germinated</th>
+<th style="text-align: right;">p-value</th>
+<th style="text-align: left;">Decision (α=0.05)</th>
+<th style="text-align: left;">Decision (Bonferroni)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0.2277</td>
+<td style="text-align: left;">Continue testing</td>
+<td style="text-align: left;">Continue testing</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0.0024</td>
+<td style="text-align: left;">Reject batch</td>
+<td style="text-align: left;">Reject batch</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">0.0100</td>
+<td style="text-align: left;">Reject batch</td>
+<td style="text-align: left;">Reject batch</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">0.0360</td>
+<td style="text-align: left;">Reject batch</td>
+<td style="text-align: left;">Continue testing</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">57</td>
+<td style="text-align: right;">0.0040</td>
+<td style="text-align: left;">Reject batch</td>
+<td style="text-align: left;">Reject batch</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><br> <strong>The frequentist dilemma:</strong></p>
+<ul>
+<li><strong>Without correction</strong> (<span class="math inline">\(\alpha = 0.05\)</span> at each look): You inflate your Type I error rate - you’re more likely to reject good batches by chance</li>
+<li><strong>With correction</strong> (Bonferroni <span class="math inline">\(\alpha = 0.01\)</span>): You lose power – it’s harder to detect truly poor batches</li>
+<li><strong>Most importantly</strong>: The p-value’s validity depends on whether you planned these looks in advance and adjusted properly</li>
+<li>If you decide to test more seeds <em>after</em> seeing results, your p-values become invalid</li>
+</ul>
+<p><strong>In Bayesian inference</strong>: Your posterior after testing 100 seeds is identical whether you:</p>
+<ul>
+<li>Tested all 100 seeds without looking at interim results</li>
+<li>Checked after every single seed<br>
+</li>
+<li>Stopped at 50 seeds, went on vacation, then tested 50 more</li>
+<li>Decided to continue based on disappointing early results</li>
+</ul>
+<p>The math doesn’t care about your peeking behavior – only the data you actually observed. Your inference remains valid regardless of your stopping rule.</p>
+</section>
+</section>
+<section id="why-this-matters-for-seed-testing" class="level2">
+<h2 class="anchored" data-anchor-id="why-this-matters-for-seed-testing">Why This Matters for Seed Testing</h2>
+<p>This property makes Bayesian methods particularly valuable for:</p>
+<ul>
+<li><strong>Batch quality control</strong>: Test small samples continuously as shipments arrive</li>
+<li><strong>Adaptive testing</strong>: Stop early if germination is clearly unacceptable (save time and resources)</li>
+<li><strong>Seasonal monitoring</strong>: Update beliefs about supplier quality over multiple growing seasons</li>
+<li><strong>Decision-making under uncertainty</strong>: Make accept/reject decisions as soon as you have sufficient evidence</li>
+</ul>
+<p>You can make decisions based on <strong>evidence accumulated so far</strong> without worrying about invalidating your statistical inference. This is exactly how quality control works in practice – you don’t wait for a predetermined sample size if the batch is obviously failing.</p>
+</section>
+</section>
+<section id="looking-forward" class="level1">
+<h1>Looking Forward</h1>
+<p>We’ve covered the foundations of Bayesian inference through a simple but powerful example: estimating a probability from coin flips. We’ve seen how priors encode beliefs, how data updates those beliefs into posteriors, how credible intervals directly quantify uncertainty, and how posterior predictive distributions let us make probabilistic forecasts.</p>
+<p>Throughout this post, we’ve occasionally compared Bayesian and frequentist approaches to help build intuition. <strong>From here forward, we’ll focus exclusively on Bayesian methods</strong>, exploring their full power and flexibility on their own terms.</p>
+<p><strong>In the next post</strong>, we’ll use the classic Black Cherry tree dataset to predict timber volume from tree diameter and height measurements. This familiar forestry example will show how Bayesian regression extends the same principles we’ve learned – priors, posteriors, credible intervals, and predictions – to models with multiple parameters and continuous predictors. We’ll explore:</p>
+<ul>
+<li>Specifying priors for multiple parameters (slopes, intercepts, error terms)</li>
+<li>Prior predictive checks to ensure our priors make sense</li>
+<li>Visualizing joint posterior distributions</li>
+<li>Making predictions for new observations with full uncertainty quantification</li>
+<li>Implementing Bayesian regression in R using modern tools</li>
+</ul>
+<p>The transition from coin flips to regression might seem like a big jump, but you’ll see that the fundamental logic remains exactly the same. We’re just trading a single parameter <span class="math inline">\(\theta\)</span> for multiple parameters <span class="math inline">\(\beta_0, \beta_1, \sigma\)</span>, and the Beta-Binomial model for a Normal linear model. The core Bayesian workflow – prior, likelihood, posterior, predictions – stays identical.</p>
+</section>
+<section id="key-takeaways" class="level1">
+<h1>Key Takeaways</h1>
+<ol type="1">
+<li><strong>Bayesian inference treats parameters as random variables</strong> with probability distributions, allowing direct probability statements about them.</li>
+<li><strong>Prior distributions</strong> encode initial uncertainty; posterior distributions combine prior and data via Bayes’ theorem.<br>
+</li>
+<li><strong>Credible intervals</strong> have intuitive interpretation: “There’s a 95% probability the parameter is in this interval”.</li>
+<li><strong>Priors are explicit</strong>, making assumptions transparent – all statistical methods involve choices, but Bayesian methods make them visible.</li>
+<li><strong>The Beta-Binomial model</strong> illustrates conjugate priors where posteriors stay in the same family as priors.</li>
+<li><strong>Posterior predictive distributions</strong> account for both parameter uncertainty and sampling variability.</li>
+<li><strong>Different priors lead to different posteriors</strong>, but with enough data, reasonable priors converge.</li>
+<li><strong>Bayesian updating is intuitive</strong>: it’s how we naturally reason in everyday life (like the fishing example).</li>
+<li><strong>Weakly informative priors</strong> often provide the best balance – constraining parameters to reasonable ranges without being overly restrictive.</li>
+<li><strong>Sequential learning without penalties</strong>: You can examine data at any time, stop and resume collection, or make interim decisions – your inference remains valid regardless of your stopping rule.</li>
+</ol>
+<p>The shift from thinking about procedures to thinking about beliefs is the essence of Bayesian inference. Once you internalize this shift through simple examples like coin flips, you’re ready to apply the same reasoning to arbitrarily complex models.</p>
+</section>
+<section id="references" class="level1">
+<h1>References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-berger2006case" class="csl-entry" role="listitem">
+Berger, J. (2006). The case for objective bayesian analysis. <em>Bayesian Analysis</em>, <em>1</em>(3), 385–402.
+</div>
+<div id="ref-betancourt2017conceptual" class="csl-entry" role="listitem">
+Betancourt, M. (2017). A conceptual introduction to hamiltonian monte carlo. <em>arXiv Preprint arXiv:1701.02434</em>.
+</div>
+<div id="ref-brooks2011handbook" class="csl-entry" role="listitem">
+Brooks, S., Gelman, A., Jones, G., &amp; Meng, X.-L. (2011). <em>Handbook of markov chain monte carlo</em>. CRC Press.
+</div>
+<div id="ref-gabry2019visualization" class="csl-entry" role="listitem">
+Gabry, J., Simpson, D., Vehtari, A., Betancourt, M., &amp; Gelman, A. (2019). Visualization in bayesian workflow. <em>Journal of the Royal Statistical Society: Series A (Statistics in Society)</em>, <em>182</em>(2), 389–402.
+</div>
+<div id="ref-gelman2006prior" class="csl-entry" role="listitem">
+Gelman, A. (2006). Prior distributions for variance parameters in hierarchical models (comment on article by <span>Browne</span> and <span>Draper</span>). <em>Bayesian Analysis</em>, <em>1</em>(3), 515–534.
+</div>
+<div id="ref-gelman2014beyond" class="csl-entry" role="listitem">
+Gelman, A., &amp; Carlin, J. (2014). Beyond power calculations: Assessing type s (sign) and type m (magnitude) errors. <em>Perspectives on Psychological Science</em>, <em>9</em>(6), 641–651.
+</div>
+<div id="ref-gelman2013bayesian" class="csl-entry" role="listitem">
+Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., &amp; Rubin, D. B. (2013). <em>Bayesian data analysis</em> (3rd ed.). CRC Press.
+</div>
+<div id="ref-gelman1996posterior" class="csl-entry" role="listitem">
+Gelman, A., Meng, X.-L., &amp; Stern, H. (1996). Posterior predictive assessment of model fitness via realized discrepancies. <em>Statistica Sinica</em>, <em>6</em>, 733–760.
+</div>
+<div id="ref-gelman2017prior" class="csl-entry" role="listitem">
+Gelman, A., Simpson, D., &amp; Betancourt, M. (2017). The prior can often only be understood in the context of the likelihood. <em>Entropy</em>, <em>19</em>(10), 555.
+</div>
+<div id="ref-jaynes2003probability" class="csl-entry" role="listitem">
+Jaynes, E. T. (2003). <em>Probability theory: The logic of science</em> (G. L. Bretthorst, Ed.). Cambridge University Press.
+</div>
+<div id="ref-kruschke2014doing" class="csl-entry" role="listitem">
+Kruschke, J. K. (2014). <em>Doing bayesian data analysis: A tutorial with r, JAGS, and stan</em> (2nd ed.). Academic Press.
+</div>
+<div id="ref-lindley2000philosophy" class="csl-entry" role="listitem">
+Lindley, D. V. (2000). The philosophy of statistics. <em>Journal of the Royal Statistical Society: Series D (The Statistician)</em>, <em>49</em>(3), 293–337.
+</div>
+<div id="ref-mcelreath2020statistical" class="csl-entry" role="listitem">
+McElreath, R. (2020). <em>Statistical rethinking: A bayesian course with examples in r and stan</em> (2nd ed.). CRC Press.
+</div>
+<div id="ref-morey2016fallacy" class="csl-entry" role="listitem">
+Morey, R. D., Hoekstra, R., Rouder, J. N., Lee, M. D., &amp; Wagenmakers, E.-J. (2016). The fallacy of placing confidence in confidence intervals. <em>Psychonomic Bulletin &amp; Review</em>, <em>23</em>(1), 103–123.
+</div>
+<div id="ref-robert2007bayesian" class="csl-entry" role="listitem">
+Robert, C. P. (2007). <em>The bayesian choice: From decision-theoretic foundations to computational implementation</em> (2nd ed.). Springer.
+</div>
+</div>
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{schreiber2025,
+  author = {Schreiber, Stefan},
+  title = {Understanding {Bayesian} {Inference:} {Foundations}},
+  date = {2025-10-20},
+  url = {https://envirostats.ca/posts/2025-10-20-understanding-bayesian-inference-foundations/},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-schreiber2025" class="csl-entry quarto-appendix-citeas" role="listitem">
+Schreiber, S. (2025, October 20). <em>Understanding Bayesian Inference:
+Foundations</em>. <a href="https://envirostats.ca/posts/2025-10-20-understanding-bayesian-inference-foundations/">https://envirostats.ca/posts/2025-10-20-understanding-bayesian-inference-foundations/</a>
+</div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/www\.envirostats\.ca");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Copyright 2025, EnviroStats Solutions Inc.</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

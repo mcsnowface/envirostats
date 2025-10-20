@@ -1,0 +1,953 @@
+---
+title: "Understanding Bayesian Inference: Foundations"
+subtitle: "From Priors to Predictions with a Simple Example"
+author: "Stefan Schreiber"
+date: 10-20-2025
+categories: [frequentist, inference, bayesian]
+
+# Local image for the page
+image: thomas_bayes.png
+image-alt: "When in doubt, just update your beliefs. ;P"
+
+# Open Graph metadata for social media (must use absolute URL for images)
+open-graph:
+  title: "Understanding Bayesian Inference: Foundations"
+  description: "From Priors to Predictions with a Simple Example"
+  image: "https://www.envirostats.ca/posts/2025-10-20-understanding-bayesian-inference-foundations/thomas_bayes.png"
+  url: "https://envirostats.ca/posts/2025-10-20-understanding-bayesian-inference-foundations/"
+
+citation:
+  url: https://envirostats.ca/posts/2025-10-20-understanding-bayesian-inference-foundations/
+
+bibliography: references.bib
+csl: apa.csl
+
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: true
+    code-summary: "Show code"
+    df-print: paged
+
+editor: source
+
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: true
+
+draft: false  
+---
+![When in doubt, just update your beliefs. ;P](thomas_bayes.png)
+
+
+# Introduction
+
+Imagine you're a medical researcher evaluating a new drug. Before seeing any patient data, you already have some knowledge: similar drugs showed modest effects, basic science suggests the mechanism is plausible, and pilot studies hint at promise. How should this prior information shape your interpretation of new trial results?
+
+This is precisely the kind of question Bayesian inference helps us answer. In a [previous post](https://www.envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/), we explored frequentist inference -- a framework built on the concept of repeated sampling, where parameters are treated as fixed unknowns and probability statements describe what would happen across hypothetical repetitions of an experiment.
+
+Bayesian inference offers a fundamentally different perspective [@gelman2013bayesian; @jaynes2003probability]. **Bayesian methods use probability distributions to represent our uncertainty about parameters**. We start with a **prior distribution** representing our initial beliefs, observe data, and use Bayes' theorem to produce a **posterior distribution** representing our updated beliefs.
+
+The fundamental equation is:
+
+$$
+P(\theta \mid \text{data}) 
+= \frac{P(\text{data} \mid \theta)\, P(\theta)}{P(\text{data})}
+\;\propto\;
+P(\text{data} \mid \theta)\, P(\theta)
+$$
+
+Here, $\theta$ (theta, a Greek letter) represents the parameter(s) we want to learn about -- for example, the true efficacy rate of a drug, or a regression slope.
+
+In plain language:
+
+> Our beliefs after seeing data depend on two factors: how well different parameter values predict what we observed, and how plausible those values seemed beforehand. Values that both fit the data well and matched our prior expectations get the highest probability.
+
+Breaking this down:
+
+- $P(\theta)$ is the **prior**: what we believed before seeing data.
+- $P(\text{data} \mid \theta)$ is the **likelihood**: how well different parameter values predict our data.
+- $P(\theta \mid \text{data})$ is the **posterior**: what we believe after seeing data.
+- $P(\text{data})$ is the **marginal likelihood** (or average probability of the data): a normalizing constant ensuring the posterior integrates to 1. In practice, we often work with the proportional form $P(\theta \mid \text{data}) \propto P(\text{data} \mid \theta)\, P(\theta)$ because $P(\text{data})$ doesn't depend on $\theta$ and can be computationally intractable.
+
+
+::: {.callout-note collapse="true" appearance="minimal"}
+## 🐰 Aaaand Down the Rabbit Hole We Go...🥕
+
+### What Does "Probability of a Parameter" Really Mean?
+
+When we say that Bayesian methods treat parameters as having probability distributions, we need to be precise about what that means. The true parameter value -- such as the actual efficacy of a drug -- is **fixed but unknown**; it doesn't fluctuate randomly. The probability distribution over that parameter represents our **epistemic uncertainty** (our state of knowledge about its value), not **aleatory randomness** (inherent randomness in the data-generating process). This distinction is subtle but fundamental: Bayesian probability quantifies belief about fixed quantities, not randomness in the world itself [@lindley2000philosophy].
+
+In contrast, frequentist statistics treats parameters as fixed constants, and randomness comes only from hypothetical repeated sampling.
+
+**Example:**
+
+Bayesian: After observing data, we might say
+
+> "There is a 95% probability that the drug efficacy is between 0.7 and 0.8."
+
+Frequentist: After observing data, we might say
+
+> "If we repeated this experiment many times, 95% of the constructed confidence intervals would contain the true drug efficacy."
+
+Notice the crucial difference: the frequentist statement makes a claim about the *procedure* (what would happen in repeated samples), not about the *parameter* (which either is or isn't in any particular interval). The Bayesian statement directly quantifies our uncertainty about the parameter itself.
+
+### Why We Can Ignore the Normalizing Constant
+
+We often express Bayes' theorem as a proportionality -- $P(\theta \mid \text{data}) \propto P(\text{data} \mid \theta)\, P(\theta)$ -- omitting $P(\text{data})$. This works because once we've observed our data, $P(\text{data})$ becomes a fixed constant that doesn't depend on $\theta$. Since it's the same for all possible parameter values, it doesn't affect which values are *relatively* more or less probable.
+
+However, in continuous parameter models, computing $P(\text{data})$ requires integrating the likelihood over all possible parameter values:
+
+$$
+P(\text{data}) = \int P(\text{data} \mid \theta)\, P(\theta)\, d\theta
+$$
+
+This integral is often **computationally intractable**, especially for high-dimensional or complex models.
+
+### Computational Solutions: Sampling from the Posterior
+
+Even when we can't compute the normalizing constant, we still need to characterize the posterior distribution -- to calculate means, medians, credible intervals, and other summaries. **Markov Chain Monte Carlo (MCMC)** methods solve this problem by generating samples from the posterior distribution [@brooks2011handbook; @betancourt2017conceptual]. These algorithms construct a Markov chain that explores the parameter space in proportion to the posterior density -- picture a dog sniffing around a park. It doesn't need a map showing where all the interesting smells are; it just follows its nose, naturally lingering longer where things are more interesting.
+
+Over many iterations, the frequency with which different parameter values appear in our samples reflects the true shape of the posterior distribution. This allows us to approximate the posterior empirically -- calculating means by averaging samples, constructing credible intervals from quantiles, and visualizing the distribution through histograms -- all without computing the normalizing constant.
+:::
+
+The Bayesian framework offers compelling advantages:
+
+- **Direct probability statements** about parameters: "There's an 89% probability the effect is positive".
+- **Natural incorporation** of prior knowledge from previous studies or expert opinion.
+- **Coherent sequential learning**: Update beliefs as data accumulate without inflating error rates.
+- **Full uncertainty quantification**: Every quantity has a probability distribution.
+
+But it also brings challenges:
+
+- **Prior specification** requires explicit modeling choices.
+- **Computational demands** can be substantial for complex models.
+- **Interpretation** requires understanding probability as degree of belief.
+
+In this post, we'll build intuition for Bayesian reasoning starting with a simple coin flipping example. In the next post, we'll extend these ideas to regression modeling with real data, exploring how to specify priors for multiple parameters, conduct prior predictive checks, and make predictions with full uncertainty quantification.
+
+# Why Priors Matter (and Why They're Less Controversial Than You Think)
+
+If you've only worked with frequentist models, the idea of a "prior" can sound suspicious, as though we're stacking the deck. But **priors are just part of how we reason every day** -- consider the following story:
+
+## The Fishing Story: Bayesian Reasoning in Daily Life
+
+My oldest son recently got into fishing and asked where we could try along the North Saskatchewan River. We didn't just pick a random spot -- we built a **prior**. We looked at fishing forums, asked in tackle shops, and thought about where fish like to hide (around structure like fallen trees). We also preferred places near parking so the walk wasn't too long. That's all prior information we used to narrow down our choices.
+
+Then we went out and **tested those beliefs**. After a few hours, my son had caught three small perch near a spot with a big willow tree and nothing at a location under the bridge. We **updated our beliefs**: the willow tree location moved up in our mental ranking, while the bridge spot moved down. Next weekend, we'll use this updated knowledge as our new prior -- starting at the willow tree instead of exploring randomly.
+
+**This process -- combining what you know ahead of time with what you observe -- is exactly how Bayesian inference works.**
+
+A frequentist approach would be different. You'd go to a spot with no prior assumptions and fish for a fixed period -- say 2 hours. If you caught 3 fish, you might construct a confidence interval: "If I fished here many times for 2 hours each, 95% of my confidence intervals would contain the true catch rate." Notice this doesn't tell you "there's a 95% chance the true rate is between X and Y" -- it's a statement about the procedure, not the parameter.
+
+Bayesian reasoning is always conditional on the data actually observed -- we update beliefs based on what really happened. Frequentist inference requires imagining repeated experiments under identical conditions, which is straightforward in controlled experiments but often artificial in observational studies or unique situations.
+
+## Types of Priors
+
+This fishing example used what we'd call a **weakly informative prior** -- we had some knowledge but weren't certain. Let's formalize the different types of priors you might use:
+
+**Non-informative (flat) priors:**
+
+- Deliberately vague, letting data dominate
+- Example: Uniform(0, 1) for a coin's probability of heads when you have no prior information
+- Can seem "objective" but often encode strong assumptions on transformed scales
+- May lead to improper posteriors or numerical instability
+
+**Weakly informative priors:**
+
+- Still wide, but rule out absurd values
+- Help stabilize estimation, especially with small samples
+- Example: Normal(0, 10) for a standardized regression slope -- expecting effects around zero but allowing substantial deviations. In original units, this might translate to "a 1-year increase in education increases log-income by somewhere between -20 and +20, with values near 0 most plausible."
+- Often the best default choice [@gelman2017prior; @gelman2006prior]
+
+**Informative priors:**
+
+- Based on previous research or expert knowledge
+- Can substantially improve inference when justified
+- Example: Beta(30, 70) for disease prevalence when meta-analysis of previous studies found approximately 30% prevalence rates
+- Require careful justification and sensitivity analysis
+
+::: {.callout-note collapse="true" appearance="minimal"}
+## 🐰 Wait, What's a Normal(0, 10)? A Quick Field Guide Through The Burrows 🗺
+
+### Common Distribution Families
+
+When we specify priors, we're choosing **probability distributions** that describe our beliefs about parameter values before seeing data. Here are the key concepts:
+
+**Uniform(a, b)** or $\theta \sim \text{Uniform}(a, b)$: Every value between $a$ and $b$ is equally likely. Example: $\text{Uniform}(0, 1)$ means we believe a probability parameter could be anywhere from 0 to 1 with equal plausibility. This is "flat" -- no value is preferred over another.
+
+**Normal(μ, σ)** or $\theta \sim \mathcal{N}(\mu, \sigma^2)$: The familiar bell curve, centered at mean $\mu$ with standard deviation $\sigma$. Note that in mathematical notation, the second parameter is often the *variance* $\sigma^2$, not the standard deviation. Example: $\theta \sim \mathcal{N}(0, 100)$ for a regression slope says we expect the effect to be around 0 with *standard deviation* $\sigma = 10$, but values within roughly $-20$ to $+20$ are plausible.
+
+**Beta(α, β)** or $\theta \sim \text{Beta}(\alpha, \beta)$: Restricted to values between 0 and 1, making it perfect for probabilities or proportions. The shape depends on $\alpha$ and $\beta$: $\text{Beta}(1, 1)$ is uniform, $\text{Beta}(2, 2)$ is slightly peaked in the middle, $\text{Beta}(10, 10)$ is strongly concentrated around 0.5.
+
+**Gamma(α, β)** or $\theta \sim \text{Gamma}(\alpha, \beta)$: Restricted to positive values, often used for scale parameters or rates. Warning: different software uses different parameterizations (shape/rate vs. shape/scale), so always check documentation!
+
+**Binomial(n, p)** or $Y \sim \text{Binomial}(n, p)$: Counts the number of successes in $n$ independent trials, each with probability $p$ of success. This is a discrete distribution with possible values 0, 1, 2, ..., $n$. Example: $\text{Binomial}(10, 0.3)$ represents flipping a weighted coin 10 times where each flip has a 30% chance of heads -- you might observe anywhere from 0 to 10 heads, with 3 being most likely.
+
+**Poisson(λ)** or $\theta \sim \text{Poisson}(\lambda)$: For count data (non-negative integers: 0, 1, 2, 3, ...) with no upper limit. The parameter $\lambda$ (lambda) is both the mean and variance. Example: $\text{Poisson}(5)$ is centered around 5 counts, with most probability on values between 1 and 10. Commonly used for rare events or occurrences over time/space.
+
+**Want to see what these distributions look like (and much more)?** Check out this [interactive distribution explorer](https://distribution-explorer.github.io/).
+
+
+### Probability Density vs. Probability Mass
+
+For **continuous parameters** (like temperature, height, or regression slopes), we use **probability density functions (PDFs)**. The density at a point doesn't give you a probability directly -- instead, probability comes from integrating the density over an interval. For example, with $\text{Normal}(0, 1)$, we can't say "the probability $\theta = 0$ is $X$", but we can say "the probability $\theta$ is between $-0.1$ and $0.1$ is $Y$".
+
+For **discrete parameters** (like counts or categories), we use **probability mass functions (PMFs)**. Here, each specific value *does* have a probability. For example, with a $\text{Poisson}(5)$ distribution, we can say "the probability of observing exactly 3 events is 0.14".
+
+In Bayesian inference, most parameters are continuous, so we work with probability densities. When we say "the prior is $\text{Normal}(0, 10)$", we mean the prior *density* follows that normal distribution.
+
+### What Makes a Prior "Informative"?
+
+The key is how much the prior constrains possible parameter values:
+
+- **Flat/non-informative**: $\text{Normal}(0, 1000)$ for a regression slope barely constrains anything -- it says slopes from $-2000$ to $+2000$ are all plausible.
+- **Weakly informative**: $\text{Normal}(0, 10)$ gently suggests the effect is moderate, ruling out absurdly large values while remaining open-minded.
+- **Informative**: $\text{Normal}(5, 1)$ strongly expects the parameter to be near 5, with most probability mass between 3 and 7.
+
+The "right" prior depends on your actual knowledge and the scale of your problem. A slope of 1000 might be absurd for predicting human height from weight, but perfectly reasonable for predicting income from education years.
+:::
+
+## Implicit Assumptions in Frequentist Methods
+
+**An important realization**: Frequentist methods also make implicit assumptions, they're just less visible [@robert2007bayesian]:
+
+- Choosing which test to use (t-test vs. Mann-Whitney)
+- Selecting significance levels ($\alpha = 0.05$ vs. $0.01$)
+- Deciding when to stop collecting data
+- Which variables to include in a model
+- How to handle outliers or missing data
+
+For example, when you choose to use a t-test instead of a nonparametric test, you're implicitly assuming normality -- that's an assumption about your data, just never stated as a probability distribution. When you select $\alpha = 0.05$ rather than $0.01$, you're making a judgment about the relative costs of Type I and Type II errors.
+
+**By making priors explicit, Bayesian analysis gives you control and transparency.** You can examine whether your assumptions are reasonable, test sensitivity to different priors, and clearly communicate what you're assuming. As @berger2006case argues, explicit modeling of prior information often leads to more honest and reproducible science than pretending we can analyze data without any prior assumptions.
+
+::: {.callout-note collapse="true" appearance="minimal"}
+## 🐰 But before we dive deeper, let's address some frequent misunderstandings 🧭
+
+### Common Misconceptions About Bayesian Inference
+
+**"Priors are subjective, so Bayesian inference is unscientific."**  
+All statistical methods involve choices (which test to use, what α-level, when to stop collecting data). Bayesian methods make these assumptions explicit and transparent. Moreover, with sufficient data, different reasonable priors converge to similar posteriors [@berger2006case].
+
+**"You need strong prior beliefs to use Bayesian methods."**  
+Not at all. Weakly informative priors that gently constrain parameters to reasonable ranges often work best [@gelman2017prior]. You can be quite uncertain in your prior while still gaining the benefits of the Bayesian framework.
+
+**"Bayesian credible intervals are the same as confidence intervals."**  
+They often give numerically similar results but have fundamentally different interpretations. A credible interval directly states the probability the parameter lies within it; a confidence interval describes properties of the procedure across repeated samples [@morey2016fallacy].
+
+**"The prior 'overwhelms' the data."**  
+For reasonable priors and moderate sample sizes, the data dominate. The prior matters most when data are sparse -- which is exactly when incorporating external knowledge is most valuable.
+:::
+
+
+
+# Starting Simple: A Seed Germination Example
+
+Before jumping to regression, let's build intuition with a relatable example: estimating germination rates for wildflower seeds.
+
+## The Scenario: Testing a New Seed Batch
+
+Imagine you're a seed supplier evaluating a new batch of *Echinacea purpurea* (Purple Coneflower) seeds from a different grower. You plant 20 seeds under controlled conditions and observe that 12 germinate successfully. What can you conclude about the true germination rate of this batch?
+
+Unlike flipping a coin, you're not starting from complete ignorance. You have relevant prior knowledge:
+
+- Published studies report 70-85% germination for fresh *Echinacea* seeds under optimal conditions
+- Your company's historical data from other suppliers shows similar rates
+- However, germination can vary by seed source, storage conditions, and growing season
+- Seeds from new suppliers sometimes underperform until growing practices are optimized
+
+This is a perfect scenario for Bayesian inference -- you have genuine prior information to incorporate, but also meaningful uncertainty to resolve with data.
+
+## The Beta-Binomial Model
+
+The natural Bayesian model for germination data is:
+
+- **Prior**: $\theta \sim \text{Beta}(\alpha, \beta)$ (germination probability)
+- **Likelihood**: Number germinating $\sim \text{Binomial}(n, \theta)$
+- **Posterior**: $\theta \sim \text{Beta}(\alpha + \text{germinated}, \beta + \text{failed})$
+
+The Beta distribution is perfect here because:
+
+1. It's defined on $[0,1]$, matching the range of probabilities
+2. It's the **conjugate prior** for the Binomial -- the posterior is also Beta, making calculations simple
+3. It's flexible, able to represent various beliefs from uniform (no information) to highly concentrated
+
+**Understanding Beta parameters intuitively:** You can think of the Beta prior $\text{Beta}(\alpha, \beta)$ as if you'd already observed pseudo-data from previous experiments. Specifically:
+- $\alpha - 1$ = number of prior "germinations" you've seen
+- $\beta - 1$ = number of prior "failures" you've seen
+
+For example, $\text{Beta}(15, 5)$ is like having previously tested $14 + 4 = 18$ seeds and observed 14 germinate (with a 78% success rate). **The prior is just data you saw before.** $\text{Beta}(1, 1)$ is like having tested 0 seeds -- complete ignorance.
+
+**The beautiful part:** When you observe new data, you simply add your actual observations to these pseudo-observations:
+
+$$
+\text{Beta}(\alpha, \beta) + \text{Data}(k \text{ germinate}, n-k \text{ fail}) = \text{Beta}(\alpha + k, \beta + n - k)
+$$
+
+::: {.callout-note collapse="true" appearance="minimal"}
+## 🐰 Another Burrow to Explore: Conjugate Priors Explained 🔦
+
+### What's a Conjugate Prior?
+
+A **conjugate prior** is a prior distribution that, when combined with a particular likelihood, produces a posterior in the **same family**. For the Binomial likelihood, the Beta distribution is conjugate -- meaning:
+
+> Beta prior + Binomial data = Beta posterior (still a Beta!)
+
+This is special because most combinations don't work this way. Usually, prior × likelihood gives you some complicated function that's hard to work with. But with conjugate pairs, the math stays clean.
+
+### The Simple Updating Rule
+
+Here's the beautiful part. If your prior is $\text{Beta}(\alpha, \beta)$ and you observe $k$ successes in $n$ trials, your posterior is:
+
+$$
+\text{Posterior} = \text{Beta}(\alpha_{\text{new}}, \beta_{\text{new}})
+$$
+
+where:
+
+$$
+\begin{align}
+\alpha_{\text{new}} &= \alpha + k \quad \text{(old } \alpha \text{ + successes observed)} \\
+\beta_{\text{new}} &= \beta + (n-k) \quad \text{(old } \beta \text{ + failures observed)}
+\end{align}
+$$
+
+**In plain English**: Take your starting $\alpha$ and add the number of seeds that germinated. Take your starting $\beta$ and add the number that failed. Done!
+
+### Why Does This Work? The Prior as Pseudo-Data
+
+Here's the key insight: **You can think of the Beta prior as if you'd already conducted some germination trials before your actual experiment.**
+
+The parameters $\alpha$ and $\beta$ translate to pseudo-observations like this:
+
+- $\alpha - 1$ = number of "prior germinations" 
+- $\beta - 1$ = number of "prior failures"
+
+**Why the "minus 1"?** It's a mathematical quirk of how the Beta distribution is defined. Just subtract 1 from each parameter to convert to counts.
+
+**Examples:**
+
+- $\text{Beta}(1, 1)$: That's $1-1=0$ prior germinations and $1-1=0$ prior failures. You're starting with a blank slate -- no prior information.
+
+- $\text{Beta}(15, 5)$: That's $15-1=14$ prior germinations and $5-1=4$ prior failures. It's as if you'd already tested 18 seeds and seen 14 germinate. This encodes a belief that germination rate is probably around 75-80%.
+
+- $\text{Beta}(40, 10)$: That's $40-1=39$ prior germinations and $10-1=9$ prior failures. This represents stronger prior knowledge (48 pseudo-observations) with similar 80% germination expectation, but with more certainty.
+
+### Bayesian Updating is Just Adding New Data to Old Data
+
+When you observe real data, you're literally **adding your new observations to your pseudo-observations**. 
+
+**Full example:**
+
+You start with prior $\text{Beta}(15, 5)$ based on historical data. Converting to counts:
+
+- Prior pseudo-germinations: $15 - 1 = 14$
+- Prior pseudo-failures: $5 - 1 = 4$
+
+Then you actually test seeds and observe 12 germinations and 8 failures. Add them together:
+
+- Total germinations: $14 + 12 = 26$
+- Total failures: $4 + 8 = 12$
+
+Now convert back to Beta parameters (add 1 to each count):
+
+- New $\alpha = 26 + 1 = 27$
+- New $\beta = 12 + 1 = 13$
+- Posterior: $\text{Beta}(27, 13)$
+
+**Or use the shortcut:** Just add observed counts directly to the old parameters:
+
+- $\alpha_{\text{new}} = 15 + 12 = 27$
+- $\beta_{\text{new}} = 5 + 8 = 13$
+
+Same answer, less thinking about the "-1" and "+1"!
+
+:::
+
+Let's visualize different prior beliefs:
+
+```{r}
+library(tidyverse)
+library(patchwork)
+
+# Create sequence of probability values
+theta <- seq(0, 1, length.out = 200)
+
+# Define three different priors representing different states of knowledge
+prior_df <- bind_rows(
+  # Uniform prior: no prior knowledge
+  tibble(
+    theta = theta,
+    density = dbeta(theta, 1, 1),
+    prior_type = "Beta(1,1): Uniform\n(No prior knowledge)"
+  ),
+  # Weakly informative: general knowledge about Echinacea
+  tibble(
+    theta = theta,
+    density = dbeta(theta, 15, 5),
+    prior_type = "Beta(15,5): Centered at 0.75\n(Literature suggests 70-85%)"
+  ),
+  # Informative prior: strong historical data from your company
+  tibble(
+    theta = theta,
+    density = dbeta(theta, 40, 10),
+    prior_type = "Beta(40,10): Strong belief at 0.80\n(Extensive company records)"
+  )
+)
+
+# Plot the three priors
+ggplot(prior_df, aes(x = theta, y = density, color = prior_type)) +
+  geom_line(linewidth = 1.2) +
+  scale_color_manual(values = c("#1b9e77", "#d95f02", "#7570b3")) +
+  labs(
+    title = "Different Prior Beliefs About Echinacea Germination Rate",
+    subtitle = "Beta distributions representing various states of prior knowledge",
+    caption = "Three different prior beliefs about germination rates for Purple Coneflower seeds.",
+    x = "Germination rate (θ)",
+    y = "Density",
+    color = "Prior Distribution"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "top",
+        legend.text = element_text(size = 8),
+        legend.title = element_text(size = 9)
+        )
+```
+
+## Bayesian Updating in Action
+
+Now let's see how these priors update when we observe 12 germinations out of 20 seeds:
+
+```{r}
+#| fig-height: 8
+
+library(tidyverse)
+
+# Our observed data
+n_germinated <- 12
+n_failed <- 8
+
+# Calculate prior and posterior densities for each prior
+# Prior 1: Uniform (Beta(1,1))
+prior1_prior <- dbeta(theta, 1, 1)
+prior1_post <- dbeta(theta, 1 + n_germinated, 1 + n_failed)
+
+# Prior 2: Literature-based (Beta(15,5))
+prior2_prior <- dbeta(theta, 15, 5)
+prior2_post <- dbeta(theta, 15 + n_germinated, 5 + n_failed)
+
+# Prior 3: Strong company data (Beta(40,10))
+prior3_prior <- dbeta(theta, 40, 10)
+prior3_post <- dbeta(theta, 40 + n_germinated, 10 + n_failed)
+
+# Combine all priors and posteriors into one dataframe
+updating_df <- bind_rows(
+  tibble(theta = theta, density = prior1_prior, distribution = "Prior", prior_type = "No Prior Knowledge"),
+  tibble(theta = theta, density = prior1_post, distribution = "Posterior", prior_type = "No Prior Knowledge"),
+  tibble(theta = theta, density = prior2_prior, distribution = "Prior", prior_type = "Literature-Based Prior"),
+  tibble(theta = theta, density = prior2_post, distribution = "Posterior", prior_type = "Literature-Based Prior"),
+  tibble(theta = theta, density = prior3_prior, distribution = "Prior", prior_type = "Strong Company Data"),
+  tibble(theta = theta, density = prior3_post, distribution = "Posterior", prior_type = "Strong Company Data")
+)
+
+# Plot priors and posteriors for comparison
+ggplot(updating_df, aes(x = theta, y = density, 
+                        color = distribution, linetype = distribution)) +
+  geom_line(linewidth = 1) +
+  facet_wrap(~ prior_type, ncol = 1) +
+  # Add vertical line at observed proportion (12/20 = 0.60)
+  geom_vline(xintercept = 12/20, linetype = "dashed", color = "grey40") +
+  scale_color_manual(values = c("Prior" = "#7570b3", "Posterior" = "#d95f02")) +
+  labs(
+    title = "Bayesian Updating: How Germination Data Changes Our Beliefs",
+    subtitle = "Data: 12 seeds germinated out of 20 | Dashed line shows observed rate (0.60)",
+    caption = "How different priors update with the same data.",
+    color = "Distribution", 
+    linetype = "Distribution",
+    x = "Germination rate (θ)",
+    y = "Density"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "top")
+```
+
+**Key insights:** 
+
+- All posteriors shift toward the observed data ($12/20 = 0.60$), regardless of starting beliefs
+- Different priors lead to different posteriors -- your starting beliefs matter, especially with limited data
+- Stronger priors (more peaked) require more data to substantially shift, while weak priors let the data dominate quickly
+- With enough data, all *reasonable* priors eventually converge to similar posteriors
+- This illustrates a fundamental principle: **Bayesian inference represents a compromise between prior beliefs and observed data**
+- The weight given to each depends on their relative certainty -- weak priors defer to data, strong data overwhelms priors
+
+## Credible Intervals: Direct Probability Statements
+
+Now let's quantify our **uncertainty about the germination rate** using the posterior distribution.
+
+Unlike frequentist confidence intervals, Bayesian **credible intervals** have a direct probability interpretation [@kruschke2014doing; @morey2016fallacy].
+
+A 95% credible interval is simply the range containing 95% of the posterior probability. We'll calculate an **equal-tailed interval**, which places 2.5% of probability in each tail (there's also a "highest posterior density" interval that finds the narrowest 95% region, but for symmetric posteriors like ours, they're nearly identical).
+
+In Bayesian inference, the **posterior distribution is the final product** -- it fully describes our updated beliefs about the parameter after seeing the data. Any interval you report (e.g., 80%, 89%, 90%, or 95%) is just a way of summarizing that posterior. The chosen level is not dictated by the method; it's a **communication choice**, not a fixed error-control convention.
+
+In contrast, **frequentist confidence intervals** are tied to a pre-specified error rate (the $\alpha$-level, such as 0.05 for 95% coverage). The level determines the long-run frequency properties of the procedure: if repeated infinitely, 95% of intervals constructed this way would contain the true value of $\theta$. Changing the level changes the frequentist procedure itself.
+
+As @mcelreath2020statistical [p. 58] notes, "It is not easy to defend the choice of 95% (5%), outside of pleas of convention." @gelman2014beyond and @kruschke2014doing make the same point: since the posterior fully represents uncertainty, **the interval percentage is a matter of reporting style, not of statistical principle.**
+
+```{r}
+library(tidyverse)
+
+# Calculate posterior (using uniform prior)
+alpha_post <- 1 + n_germinated  # 13
+beta_post <- 1 + n_failed       # 9
+
+# Calculate 89% credible interval (equal-tailed)
+lower <- qbeta(0.055, alpha_post, beta_post)
+upper <- qbeta(0.945, alpha_post, beta_post)
+post_mean <- alpha_post / (alpha_post + beta_post)
+
+# Create data for plotting
+posterior_data <- tibble(theta = theta, density = dbeta(theta, alpha_post, beta_post))
+# Extract only the data within the credible interval for shading
+ci_data <- posterior_data %>% filter(theta >= lower & theta <= upper)
+
+# Plot posterior with shaded credible interval
+ggplot(posterior_data, aes(x = theta, y = density)) +
+  geom_line(linewidth = 1.2, color = "#d95f02") +
+  # Shade the 89% credible interval
+  geom_area(data = ci_data, aes(x = theta, y = density), 
+            fill = "#d95f02", alpha = 0.3) +
+  # Add posterior mean line
+  geom_vline(xintercept = post_mean, linetype = "dashed", color = "grey40") +
+  # Annotate with posterior mean
+  annotate("text", x = post_mean, y = max(posterior_data$density) * 1.05,
+           label = sprintf("Posterior mean = %.3f", post_mean),
+           hjust = 0.5, size = 4) +
+  # Annotate with credible interval bounds
+  annotate("text", x = post_mean, y = max(posterior_data$density) * 0.3,
+           label = sprintf("89%% Credible Interval:\n[%.3f, %.3f]", lower, upper),
+           hjust = 0.5, size = 4, color = "#d95f02", fontface = "bold") +
+  labs(
+    title = "89% Bayesian Credible Interval for Germination Rate",
+    subtitle = "The shaded region contains 89% of the posterior probability",
+    x = "Germination rate (θ)",
+    y = "Posterior density",
+    caption = "This is the interpretation most people intuitively expect from any interval estimate.\nAnd there is no reason why it should be 95% other than convention."
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+**Key insights:** 
+
+- The crucial difference between confidence and credible intervals lies in their interpretation
+- A **confidence interval** (frequentist) means "If we repeated this procedure infinitely, 95% of intervals would capture $\theta$" -- a statement about the procedure, not the parameter
+- A **credible interval** (Bayesian) means "There is a 95% probability that $\theta$ lies in this interval" -- a direct statement about the parameter itself
+- For this seed batch, we can say with 89% confidence: **"The true germination rate is between 42% and 75%"**
+- This is the statement seed suppliers and customers actually care about -- it directly quantifies our uncertainty about this specific batch's quality
+- The Bayesian statement is what most people think a confidence interval means, and in Bayesian inference, it actually does mean that
+
+## Posterior Predictions: What Happens Next?
+
+One of Bayesian inference's most powerful features is that we can use our posterior distribution to predict future observations, accounting for all our uncertainty [@gelman1996posterior; @gabry2019visualization]. **This is huge** -- instead of just estimating "the germination rate is probably around 59%," we can directly answer questions like **"If I plant 10 seeds from this batch in a customer's garden, how many will germinate?"** 
+
+For a seed supplier, this is far more useful than a point estimate. You need to:
+- Set realistic customer expectations
+- Decide whether to accept or reject the batch
+- Determine appropriate pricing
+- Estimate how many seeds to include per packet
+
+### The Question
+
+We tested 20 seeds and observed 12 germinations, giving us a posterior $\text{Beta}(13, 9)$ for the germination rate $\theta$. Now suppose a customer plants 10 seeds from this batch in their garden. How many should we expect to germinate?
+
+### Two Sources of Uncertainty
+
+A good prediction must account for:
+
+1. **Parameter uncertainty**: We're not completely sure what $\theta$ is (we have a posterior distribution, not a single value)
+2. **Sampling variability**: Even if we knew $\theta$ exactly, germination is inherently variable -- weather, soil conditions, planting depth, and random chance all matter. We wouldn't get exactly $10 \times \theta$ germinations even with perfect knowledge of $\theta$.
+
+The **posterior predictive distribution** accounts for both by:
+
+- Drawing a plausible $\theta$ value from our posterior
+- Simulating seed germinations using that $\theta$
+- Repeating this many times to build up a distribution of predictions
+
+**Think of it this way:** Imagine asking "How many *Echinacea* seedlings will emerge in my garden?" rather than "What is the true germination rate of this batch?" The first question (prediction) naturally incorporates both your uncertainty about the batch quality *and* the randomness inherent in any particular planting.
+
+Let's see this in action:
+
+```{r}
+library(tidyverse)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Calculate posterior (using uniform prior)
+alpha_post <- 1 + n_germinated  # 13
+beta_post <- 1 + n_failed       # 9
+
+# Number of seeds customer will plant
+n_future <- 10
+n_sims <- 10000
+
+# Simulate from posterior predictive distribution
+# Step 1: Draw theta values from posterior Beta(13, 9)
+theta_samples <- rbeta(n_sims, alpha_post, beta_post)
+
+# Step 2: For each theta, simulate seed germinations
+future_germinations <- rbinom(n_sims, size = n_future, prob = theta_samples)
+
+# Create dataframe for plotting
+predictive_df <- tibble(future_germinations = future_germinations)
+
+# Calculate posterior mean prediction (for comparison)
+posterior_mean_theta <- alpha_post / (alpha_post + beta_post)
+point_prediction <- n_future * posterior_mean_theta
+
+# Plot the posterior predictive distribution
+ggplot(predictive_df, aes(x = future_germinations)) +
+  geom_bar(aes(y = after_stat(count) / sum(after_stat(count))),
+           fill = "#d95f02", alpha = 0.7) +
+  geom_vline(xintercept = point_prediction, 
+             linetype = "dashed", color = "#1b9e77", linewidth = 1) +
+  annotate("text", x = point_prediction + 1.6, y = 0.21,
+           label = sprintf("Point estimate:\n%.1f germinations", point_prediction),
+           color = "#1b9e77", size = 3.5) +
+  scale_x_continuous(breaks = 0:10) +
+  labs(
+    title = "Predicting Germinations for a Customer's Planting",
+    subtitle = sprintf("Based on posterior from 12 germinations in 20 seeds | Mean prediction: %.1f germinations", 
+                      mean(future_germinations)),
+    x = "Number of germinations out of 10 seeds planted",
+    y = "Probability",
+    caption = "The distribution captures both parameter uncertainty and natural variation in germination."
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(plot.subtitle = element_text(size = 10))
+```
+
+```{r}
+library(knitr)
+
+# Summary statistics for the posterior predictive distribution
+summary_stats <- tibble(
+  Metric = c("Mean prediction", 
+             "Most likely outcome", 
+             "89% Prediction Interval"),
+  Value = c(
+    sprintf("%.1f germinations", mean(future_germinations)),
+    sprintf("%d germinations (%.1f%% probability)",
+            as.numeric(names(sort(table(future_germinations), decreasing = TRUE)[1])),
+            100 * max(table(future_germinations)) / n_sims),
+    sprintf("[%d, %d] germinations",
+            quantile(future_germinations, 0.055),
+            quantile(future_germinations, 0.945))
+  )
+)
+
+kable(summary_stats, 
+      caption = "Posterior predictive summary for 10 seeds from this batch.",
+      align = c("l", "r"))
+```
+<br>
+**Key insights:** 
+
+- The distribution is wider than you might expect -- this honest uncertainty reflects our uncertainty about $\theta$ plus natural variation in germination
+- It's naturally discrete (whole numbers only), matching the reality that you can't have fractional germinations
+- While the mean is near our point estimate ($10 \times 0.59 \approx 5.9$ germinations), the full distribution shows all plausible outcomes
+- We can say: **"There's an 89% chance a customer planting 10 seeds will see between 3 and 8 germinate"**
+
+**For practical decision-making**, we can say: **"There's an 89% chance a customer planting 10 seeds will see between 3 and 8 germinate."** This helps you:
+
+- **Set customer expectations**: Don't promise 80% germination when the data suggest 60%
+- **Make batch acceptance decisions**: Is 3-8 germinations per 10 seeds acceptable?
+- **Adjust seed packet counts**: Maybe include 15 seeds instead of 10 to ensure customers get enough plants
+- **Decide on further testing**: The wide uncertainty (3-8 is a big range) suggests testing more seeds would be valuable
+
+This also enables **model checking**: if you test another batch and get results far outside your predictive distribution, something's wrong with your model assumptions [@gelman1996posterior]. Perhaps germination varies by seed lot more than you thought, or environmental factors matter more than your simple model assumes.
+
+This same logic—priors, likelihoods, posteriors, and predictions—extends to any statistical model, from simple proportions to complex regression and beyond.
+
+
+::: {.callout-note collapse="true" appearance="minimal"}
+## 🐰 Emerging from the Burrow: Posterior Predictions 🌅
+
+### Posterior and Prior Predictive Distributions
+
+Mathematically, the **posterior predictive distribution** is:
+
+$$
+P(\tilde{y} \mid y_{\text{obs}}) = \int P(\tilde{y} \mid \theta)\, P(\theta \mid y_{\text{obs}})\, d\theta
+$$
+
+In words: **the probability of future (or new) data** $\tilde{y}$ **is the average of the likelihoods**, weighted by how plausible each parameter value $\theta$ is under the posterior.
+
+For each possible $\theta$:
+
+1. Compute how likely the future data are under that parameter: $P(\tilde{y} \mid \theta)$  
+2. Weight that likelihood by the posterior probability: $P(\theta \mid y_{\text{obs}})$  
+3. Integrate over all possible $\theta$
+
+This expresses the **predictive uncertainty** that combines both parameter uncertainty and data variability.
+
+### Why We Simulate Instead of Integrate
+
+For simple models (like the Beta-Binomial), the integral above has a closed form. But in most real problems, it doesn't -- so we **simulate** instead.
+
+**Posterior Predictive Simulation Algorithm:**
+
+1. Draw parameter samples $\theta^{(i)} \sim P(\theta \mid y_{\text{obs}})$  
+2. For each draw, simulate future data $\tilde{y}^{(i)} \sim P(\tilde{y} \mid \theta^{(i)})$  
+3. Repeat many times  
+4. The collection $\{\tilde{y}^{(1)}, \tilde{y}^{(2)}, \ldots\}$ approximates $P(\tilde{y} \mid y_{\text{obs}})$  
+
+This process is called **ancestral sampling** because we first sample "ancestors" (parameters) and then simulate "descendants" (data). It works for **any Bayesian model**, no matter how complex.
+
+### Prior Predictive Checks: Simulating Before Observing Data
+
+Before seeing data, we can simulate from the **prior predictive distribution**:
+
+$$
+P(\tilde{y}) = \int P(\tilde{y} \mid \theta)\, P(\theta)\, d\theta
+$$
+
+This answers:
+
+> "If my prior beliefs were true, what kinds of data would I expect to see?"
+
+If your prior predictive simulations yield implausible outcomes (e.g., negative germination rates or rates greater than 100%), that's a clear sign your **prior needs revision** [@gabry2019visualization]. We'll use this technique extensively in the next post when working with regression models.
+:::
+
+
+
+# Sequential Learning: Testing Seeds Over Time
+
+One of Bayesian inference's most powerful features is **sequential learning**: today's posterior becomes tomorrow's prior.
+
+**Unlike frequentist methods, Bayesian inference doesn't penalize you for examining data mid-study.** In frequentist hypothesis testing, looking at your data before reaching a predetermined sample size inflates your Type I error rate—you're "spending" your alpha budget with each peek. But in Bayesian inference, your posterior after 100 observations is identical whether you looked at your data 0 times, 10 times, or 100 times along the way.
+
+This means you can:
+
+- Test seeds in small batches as they arrive
+- Examine your results after each batch
+- Decide whether to continue testing or accept/reject the lot
+- Resume testing later without any statistical penalties
+
+**Critically**: None of these actions inflate your error rates or invalidate your conclusions.
+
+## Demonstration: Sequential Germination Testing
+
+Imagine you're evaluating a large shipment of *Echinacea* seeds. Rather than testing all at once, you test them in batches of 10 seeds as time and resources permit. Let's watch how your beliefs evolve:
+```{r}
+set.seed(456)
+
+# Simulate testing 100 seeds total from a batch with 60% germination rate
+n_seeds <- 100
+true_germ_rate <- 0.60
+germinations <- rbinom(n_seeds, 1, true_germ_rate)
+
+# Start with a weakly informative prior based on literature: Beta(15,5)
+# This represents belief that Echinacea typically germinates around 75%
+alpha <- 15  # prior "germinations"
+beta <- 5    # prior "failures"
+
+# Create a dataframe to track how our beliefs evolve
+posterior_evolution <- tibble(
+  seeds_tested = 0:n_seeds,
+  alpha_param = numeric(n_seeds + 1),
+  beta_param = numeric(n_seeds + 1),
+  mean = numeric(n_seeds + 1),
+  lower = numeric(n_seeds + 1),
+  upper = numeric(n_seeds + 1)
+)
+
+# Record initial prior
+posterior_evolution$alpha_param[1] <- alpha
+posterior_evolution$beta_param[1] <- beta
+posterior_evolution$mean[1] <- alpha / (alpha + beta)
+posterior_evolution$lower[1] <- qbeta(0.055, alpha, beta)
+posterior_evolution$upper[1] <- qbeta(0.945, alpha, beta)
+
+# Update beliefs after each seed test
+# This is the sequential update formula: α_new = α_old + germinated, β_new = β_old + failed
+for (i in 1:n_seeds) {
+  if (germinations[i] == 1) {
+    alpha <- alpha + 1  # observed a germination
+  } else {
+    beta <- beta + 1    # observed a failure
+  }
+  
+  # Record the updated posterior
+  posterior_evolution$alpha_param[i+1] <- alpha
+  posterior_evolution$beta_param[i+1] <- beta
+  posterior_evolution$mean[i+1] <- alpha / (alpha + beta)
+  posterior_evolution$lower[i+1] <- qbeta(0.055, alpha, beta)
+  posterior_evolution$upper[i+1] <- qbeta(0.945, alpha, beta)
+}
+
+# Visualize the evolution of our beliefs
+ggplot(posterior_evolution, aes(x = seeds_tested)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), fill = "#d95f02", alpha = 0.3) +
+  geom_line(aes(y = mean), color = "#d95f02", linewidth = 1.2) +
+  geom_hline(yintercept = true_germ_rate, linetype = "dashed", color = "grey40") +
+  annotate("text", x = 85, y = true_germ_rate + 0.05, 
+           label = "True germination rate (0.60)", size = 4, color = "grey40") +
+  labs(
+    title = "Sequential Bayesian Learning: No Penalty for Looking",
+    subtitle = "Posterior mean and 89% credible interval converge to truth as data accumulate",
+    x = "Number of seeds tested",
+    y = "Estimated germination rate (θ)",
+    caption = "Orange line = posterior mean | Shaded region = 89% credible interval"
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+## What This Shows
+
+1. **Starting point matters initially**: We began with a prior centered around 75% germination (based on literature), but as data accumulate, we learn the true rate is closer to 60%
+2. **Uncertainty shrinks**: The credible interval (shaded region) narrows as we test more seeds
+3. **Beliefs converge**: Our estimate approaches the true germination rate as evidence accumulates
+4. **No stopping penalty**: We could have stopped at seed 20, examined results, then continued -- our final answer would be identical
+5. **Coherent updates**: Each seed test updates our beliefs in a mathematically principled way
+
+### Making Decisions Along the Way
+
+As a seed supplier, you might have decision rules like:
+
+- **After 30 seeds**: If mean germination < 50%, reject the batch immediately
+- **After 50 seeds**: If 89% credible interval entirely below 65%, reject the batch
+- **After 100 seeds**: Make final accept/reject decision
+
+**With Bayesian inference, you can implement these rules without any statistical penalties.** Your posterior after 100 seeds is valid regardless of how many times you peeked at the results.
+
+### The Frequentist Problem: Optional Stopping
+
+**What would happen in frequentist inference?**
+
+In a frequentist framework, the **validity of p-values depends on your sampling plan**. If you peek at your data and decide whether to continue based on what you see, you inflate your Type I error rate (the probability of falsely rejecting a true null hypothesis).
+
+**Two scenarios:**
+
+1. **Pre-planned sequential testing** (e.g., "I will check after every 20 seeds"):
+   - You must adjust your significance level to control overall Type I error
+   - Use methods like Bonferroni correction: $\alpha = 0.05/5 = 0.01$ for 5 planned looks
+   - Or apply formal $\alpha$-spending functions (used in clinical trials)
+   - This "spends" your $\alpha$ budget across multiple looks
+
+2. **Optional stopping** (e.g., "I'll keep testing until I see something interesting"):
+   - Even worse: your actual Type I error rate becomes unknown and is inflated
+   - You're giving yourself unlimited chances to reject the null by accident
+   - The p-value assumes a fixed sample size and stopping rule -- as defined in your power analysis -- and changing these invalidates it.
+   - This is why "p-hacking" (testing until you find $p < 0.05$) is problematic
+```{r}
+library(knitr)
+
+# Frequentist scenario: testing H0: θ = 0.70 (acceptable germination)
+# We'll check after every 20 seeds
+
+check_points <- seq(20, 100, by = 20)
+frequentist_checks <- tibble(
+  seeds_tested = check_points,
+  germinated = numeric(length(check_points)),
+  p_value = numeric(length(check_points)),
+  decision_unadjusted = character(length(check_points)),
+  decision_bonferroni = character(length(check_points))
+)
+
+for (i in seq_along(check_points)) {
+  n <- check_points[i]
+  germ_observed <- sum(germinations[1:n])
+  
+  # Test H0: θ = 0.70 (acceptable quality) vs H1: θ < 0.70
+  p_val <- binom.test(germ_observed, n, p = 0.70, alternative = "less")$p.value
+  
+  frequentist_checks$germinated[i] <- germ_observed
+  frequentist_checks$p_value[i] <- p_val
+  
+  # Decision with α = 0.05 (WRONG - doesn't account for multiple looks)
+  frequentist_checks$decision_unadjusted[i] <- ifelse(p_val < 0.05, 
+                                                       "Reject batch", 
+                                                       "Continue testing")
+  
+  # Decision with Bonferroni correction: α = 0.05/5 = 0.01
+  frequentist_checks$decision_bonferroni[i] <- ifelse(p_val < 0.01, 
+                                                       "Reject batch", 
+                                                       "Continue testing")
+}
+
+kable(frequentist_checks,
+      digits = 4,
+      col.names = c("Seeds", "Germinated", "p-value",
+                    "Decision (α=0.05)", "Decision (Bonferroni)"),
+      caption = "Frequentist sequential testing showing the impact of multiple testing correction")
+```
+<br>
+**The frequentist dilemma:**
+
+- **Without correction** ($\alpha = 0.05$ at each look): You inflate your Type I error rate - you're more likely to reject good batches by chance
+- **With correction** (Bonferroni $\alpha = 0.01$): You lose power -- it's harder to detect truly poor batches
+- **Most importantly**: The p-value's validity depends on whether you planned these looks in advance and adjusted properly
+- If you decide to test more seeds *after* seeing results, your p-values become invalid
+
+**In Bayesian inference**: Your posterior after testing 100 seeds is identical whether you:
+
+- Tested all 100 seeds without looking at interim results
+- Checked after every single seed  
+- Stopped at 50 seeds, went on vacation, then tested 50 more
+- Decided to continue based on disappointing early results
+
+The math doesn't care about your peeking behavior -- only the data you actually observed. Your inference remains valid regardless of your stopping rule.
+
+## Why This Matters for Seed Testing
+
+This property makes Bayesian methods particularly valuable for:
+
+- **Batch quality control**: Test small samples continuously as shipments arrive
+- **Adaptive testing**: Stop early if germination is clearly unacceptable (save time and resources)
+- **Seasonal monitoring**: Update beliefs about supplier quality over multiple growing seasons
+- **Decision-making under uncertainty**: Make accept/reject decisions as soon as you have sufficient evidence
+
+You can make decisions based on **evidence accumulated so far** without worrying about invalidating your statistical inference. This is exactly how quality control works in practice -- you don't wait for a predetermined sample size if the batch is obviously failing.
+
+
+# Looking Forward
+
+We've covered the foundations of Bayesian inference through a simple but powerful example: estimating a probability from coin flips. We've seen how priors encode beliefs, how data updates those beliefs into posteriors, how credible intervals directly quantify uncertainty, and how posterior predictive distributions let us make probabilistic forecasts.
+
+Throughout this post, we've occasionally compared Bayesian and frequentist approaches to help build intuition. **From here forward, we'll focus exclusively on Bayesian methods**, exploring their full power and flexibility on their own terms.
+
+**In the next post**, we'll use the classic Black Cherry tree dataset to predict timber volume from tree diameter and height measurements. This familiar forestry example will show how Bayesian regression extends the same principles we've learned -- priors, posteriors, credible intervals, and predictions -- to models with multiple parameters and continuous predictors. We'll explore:
+
+- Specifying priors for multiple parameters (slopes, intercepts, error terms)
+- Prior predictive checks to ensure our priors make sense
+- Visualizing joint posterior distributions
+- Making predictions for new observations with full uncertainty quantification
+- Implementing Bayesian regression in R using modern tools
+
+The transition from coin flips to regression might seem like a big jump, but you'll see that the fundamental logic remains exactly the same. We're just trading a single parameter $\theta$ for multiple parameters $\beta_0, \beta_1, \sigma$, and the Beta-Binomial model for a Normal linear model. The core Bayesian workflow -- prior, likelihood, posterior, predictions -- stays identical.
+
+# Key Takeaways
+
+1. **Bayesian inference treats parameters as random variables** with probability distributions, allowing direct probability statements about them.
+2. **Prior distributions** encode initial uncertainty; posterior distributions combine prior and data via Bayes' theorem.  
+3. **Credible intervals** have intuitive interpretation: "There's a 95% probability the parameter is in this interval".
+4. **Priors are explicit**, making assumptions transparent -- all statistical methods involve choices, but Bayesian methods make them visible.
+5. **The Beta-Binomial model** illustrates conjugate priors where posteriors stay in the same family as priors.
+6. **Posterior predictive distributions** account for both parameter uncertainty and sampling variability.
+7. **Different priors lead to different posteriors**, but with enough data, reasonable priors converge.
+8. **Bayesian updating is intuitive**: it's how we naturally reason in everyday life (like the fishing example).
+9. **Weakly informative priors** often provide the best balance -- constraining parameters to reasonable ranges without being overly restrictive.
+10. **Sequential learning without penalties**: You can examine data at any time, stop and resume collection, or make interim decisions -- your inference remains valid regardless of your stopping rule.
+
+The shift from thinking about procedures to thinking about beliefs is the essence of Bayesian inference. Once you internalize this shift through simple examples like coin flips, you're ready to apply the same reasoning to arbitrarily complex models.
+
+
+# References
+
+::: {#refs}
+:::
