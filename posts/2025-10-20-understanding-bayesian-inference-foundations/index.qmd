@@ -377,7 +377,6 @@ Let's visualize different prior beliefs:
 
 ```{r}
 library(tidyverse)
-library(patchwork)
 
 # Create sequence of probability values
 theta <- seq(0, 1, length.out = 200)
@@ -638,6 +637,7 @@ ggplot(predictive_df, aes(x = future_germinations)) +
 ```
 
 ```{r}
+library(tidyverse)
 library(knitr)
 
 # Summary statistics for the posterior predictive distribution
@@ -748,6 +748,9 @@ This means you can:
 
 Imagine you're evaluating a large shipment of *Echinacea* seeds. Rather than testing all at once, you test them in batches of 10 seeds as time and resources permit. Let's watch how your beliefs evolve:
 ```{r}
+library(tidyverse)
+library(knitr)
+
 set.seed(456)
 
 # Simulate testing 100 seeds total from a batch with 60% germination rate
@@ -819,7 +822,7 @@ ggplot(posterior_evolution, aes(x = seeds_tested)) +
 4. **No stopping penalty**: We could have stopped at seed 20, examined results, then continued -- our final answer would be identical
 5. **Coherent updates**: Each seed test updates our beliefs in a mathematically principled way
 
-### Making Decisions Along the Way
+## Making Decisions Along the Way
 
 As a seed supplier, you might have decision rules like:
 
@@ -829,76 +832,40 @@ As a seed supplier, you might have decision rules like:
 
 **With Bayesian inference, you can implement these rules without any statistical penalties.** Your posterior after 100 seeds is valid regardless of how many times you peeked at the results.
 
-### The Frequentist Problem: Optional Stopping
+## The Frequentist Problem: Optional Stopping
 
 **What would happen in frequentist inference?**
 
 In a frequentist framework, the **validity of p-values depends on your sampling plan**. If you peek at your data and decide whether to continue based on what you see, you inflate your Type I error rate (the probability of falsely rejecting a true null hypothesis).
 
-**Two scenarios:**
+### Two Scenarios
 
 1. **Pre-planned sequential testing** (e.g., "I will check after every 20 seeds"):
    - You must adjust your significance level to control overall Type I error
-   - Use methods like Bonferroni correction: $\alpha = 0.05/5 = 0.01$ for 5 planned looks
+   - Use methods like Bonferroni correction: $alpha= 0.05/5 = 0.01$ for 5 planned looks
    - Or apply formal $\alpha$-spending functions (used in clinical trials)
-   - This "spends" your $\alpha$ budget across multiple looks
+   - This "spends" your α budget across multiple looks
 
 2. **Optional stopping** (e.g., "I'll keep testing until I see something interesting"):
+
    - Even worse: your actual Type I error rate becomes unknown and is inflated
    - You're giving yourself unlimited chances to reject the null by accident
-   - The p-value assumes a fixed sample size and stopping rule -- as defined in your power analysis -- and changing these invalidates it.
+   - The p-value assumes a fixed sample size and stopping rule -- as defined in your power analysis -- and changing these invalidates it
    - This is why "p-hacking" (testing until you find $p < 0.05$) is problematic
-```{r}
-library(knitr)
 
-# Frequentist scenario: testing H0: θ = 0.70 (acceptable germination)
-# We'll check after every 20 seeds
 
-check_points <- seq(20, 100, by = 20)
-frequentist_checks <- tibble(
-  seeds_tested = check_points,
-  germinated = numeric(length(check_points)),
-  p_value = numeric(length(check_points)),
-  decision_unadjusted = character(length(check_points)),
-  decision_bonferroni = character(length(check_points))
-)
+Suppose your company's policy requires a minimum 70% germination rate for acceptable seed batches. In the frequentist framework, we test the null hypothesis $H_0 : \theta = 0.70$ against the alternative $H_1 : \theta < 0.70$. However, because we're checking the results multiple times (after every 20 seeds) over the course of testing 100 seeds, we face the multiple testing problem. Each time we look at the data and perform a test, we increase the chance of falsely rejecting an actually acceptable batch.
 
-for (i in seq_along(check_points)) {
-  n <- check_points[i]
-  germ_observed <- sum(germinations[1:n])
-  
-  # Test H0: θ = 0.70 (acceptable quality) vs H1: θ < 0.70
-  p_val <- binom.test(germ_observed, n, p = 0.70, alternative = "less")$p.value
-  
-  frequentist_checks$germinated[i] <- germ_observed
-  frequentist_checks$p_value[i] <- p_val
-  
-  # Decision with α = 0.05 (WRONG - doesn't account for multiple looks)
-  frequentist_checks$decision_unadjusted[i] <- ifelse(p_val < 0.05, 
-                                                       "Reject batch", 
-                                                       "Continue testing")
-  
-  # Decision with Bonferroni correction: α = 0.05/5 = 0.01
-  frequentist_checks$decision_bonferroni[i] <- ifelse(p_val < 0.01, 
-                                                       "Reject batch", 
-                                                       "Continue testing")
-}
+### The Frequentist Dilemma
 
-kable(frequentist_checks,
-      digits = 4,
-      col.names = c("Seeds", "Germinated", "p-value",
-                    "Decision (α=0.05)", "Decision (Bonferroni)"),
-      caption = "Frequentist sequential testing showing the impact of multiple testing correction")
-```
-<br>
-**The frequentist dilemma:**
-
-- **Without correction** ($\alpha = 0.05$ at each look): You inflate your Type I error rate - you're more likely to reject good batches by chance
+- **Without correction** ($\alpha = 0.05$ at each look): You inflate your Type I error rate -- you're more likely to reject good batches by chance
 - **With correction** (Bonferroni $\alpha = 0.01$): You lose power -- it's harder to detect truly poor batches
 - **Most importantly**: The p-value's validity depends on whether you planned these looks in advance and adjusted properly
 - If you decide to test more seeds *after* seeing results, your p-values become invalid
 
-**In Bayesian inference**: Your posterior after testing 100 seeds is identical whether you:
+### The Bayesian Advantage
+
+Your posterior after testing 100 seeds is identical whether you:
 
 - Tested all 100 seeds without looking at interim results
 - Checked after every single seed  
@@ -906,6 +873,7 @@ kable(frequentist_checks,
 - Decided to continue based on disappointing early results
 
 The math doesn't care about your peeking behavior -- only the data you actually observed. Your inference remains valid regardless of your stopping rule.
+
 
 ## Why This Matters for Seed Testing
 
