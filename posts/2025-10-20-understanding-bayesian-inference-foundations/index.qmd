@@ -47,7 +47,7 @@ draft: false
 
 Imagine you're a medical researcher evaluating a new drug. Before seeing any patient data, you already have some knowledge: similar drugs showed modest effects, basic science suggests the mechanism is plausible, and pilot studies hint at promise. How should this prior information shape your interpretation of new trial results?
 
-**This is Part 2 in a series on statistical inference.** In [Part 1](https://www.envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/), we explored frequentist inference—a framework built on repeated sampling, where parameters are treated as fixed unknowns and probability statements describe what would happen across hypothetical repetitions. If you're new to the series, starting there will provide helpful background, though this post is designed to stand alone. Fair warning: we're about to go down some 🐰 rabbit holes -- but don't worry, we'll emerge with posterior predictions intact!
+**This is Part 2 in a series on statistical inference.** In [Part 1](https://www.envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/), we explored frequentist inference -- a framework built on repeated sampling, where parameters are treated as fixed unknowns and probability statements describe what would happen across hypothetical repetitions. If you're new to the series, starting there will provide helpful background, though this post is designed to stand alone. Fair warning: we're about to go down some 🐰 rabbit holes -- but don't worry, we'll emerge with posterior predictions intact!
 
 Bayesian inference offers a fundamentally different perspective [@gelman2013bayesian; @jaynes2003probability]. **Bayesian methods use probability distributions to represent our uncertainty about parameters**. We start with a **prior distribution** representing our initial beliefs, observe data, and use Bayes' theorem to produce a **posterior distribution** representing our updated beliefs.
 
@@ -75,7 +75,7 @@ Breaking this down:
 
 
 ::: {.callout-note collapse="true" appearance="minimal"}
-## 🐰 Aaaand Down the Rabbit Hole We Go...🥕
+## 🐰 Aaaaand Down the Rabbit Hole We Go...🥕
 
 ### What Does "Probability of a Parameter" Really Mean?
 
@@ -129,7 +129,7 @@ But it also brings challenges:
 
 In this post, we'll build intuition for Bayesian reasoning through a seed germination example -- from specifying priors to making predictions -- and explore one of Bayesian inference's most practical advantages: sequential learning without penalties for examining data along the way. In the next post, we'll extend these ideas to regression modeling with real data, exploring how to specify priors for multiple parameters, conduct prior predictive checks, and make predictions with full uncertainty quantification.
 
-:::: {.callout-tip}
+::: {.callout-tip}
 ## Reader's Guide
 
 This is a comprehensive introduction to Bayesian inference. If you're short on time:
@@ -138,7 +138,7 @@ This is a comprehensive introduction to Bayesian inference. If you're short on t
 - **Skip the 🐰 rabbit holes** on first reading (they're collapsible for a reason!)
 - **Return later** for "Sequential Learning" and "Why This Matters for Seed Testing"
 
-Or settle in with coffee and read straight through—the full journey is worth it. ☕
+Or settle in with coffee and read straight through -- the full journey is worth it. ☕
 :::
 
 # Why Priors Matter (and Why They're Less Controversial Than You Think)
@@ -594,7 +594,7 @@ ggplot(posterior_data, aes(x = theta, y = density)) +
 - Making predictions with uncertainty
 - Sequential learning without penalties
 
-You're over halfway there! The hard conceptual work is done—now we get to see the payoff. 
+You're over halfway there! The hard conceptual work is done -- now we get to see the payoff. 
 
 ---
 
@@ -942,7 +942,7 @@ You can make decisions based on **evidence accumulated so far** without worrying
 
 We've covered the foundations of Bayesian inference through a relatable example: estimating germination rates for wildflower seeds. We've seen how priors encode beliefs, how data updates those beliefs into posteriors, how credible intervals directly quantify uncertainty, and how posterior predictive distributions let us make probabilistic forecasts.
 
-Throughout this post, we've occasionally compared Bayesian and frequentist approaches to help build intuition. **From here forward, we'll focus exclusively on Bayesian methods**, exploring their full power and flexibility on their own terms.
+Throughout this post, we've occasionally compared Bayesian and frequentist approaches to help build intuition. **In the next post (and subsequent posts in this series), we'll focus exclusively on Bayesian methods**, exploring their full power and flexibility on their own terms.
 
 **In the next post**, we'll use the classic Black Cherry tree dataset to predict timber volume from tree diameter and height measurements. This familiar forestry example will show how Bayesian regression extends the same principles we've learned -- priors, posteriors, credible intervals, and predictions -- to models with multiple parameters and continuous predictors. We'll explore:
 

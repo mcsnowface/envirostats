@@ -312,7 +312,7 @@ window.Quarto = {
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
 <p>Imagine you’re a medical researcher evaluating a new drug. Before seeing any patient data, you already have some knowledge: similar drugs showed modest effects, basic science suggests the mechanism is plausible, and pilot studies hint at promise. How should this prior information shape your interpretation of new trial results?</p>
-<p><strong>This is Part 2 in a series on statistical inference.</strong> In <a href="https://www.envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/">Part 1</a>, we explored frequentist inference—a framework built on repeated sampling, where parameters are treated as fixed unknowns and probability statements describe what would happen across hypothetical repetitions. If you’re new to the series, starting there will provide helpful background, though this post is designed to stand alone. Fair warning: we’re about to go down some 🐰 rabbit holes – but don’t worry, we’ll emerge with posterior predictions intact!</p>
+<p><strong>This is Part 2 in a series on statistical inference.</strong> In <a href="https://www.envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/">Part 1</a>, we explored frequentist inference – a framework built on repeated sampling, where parameters are treated as fixed unknowns and probability statements describe what would happen across hypothetical repetitions. If you’re new to the series, starting there will provide helpful background, though this post is designed to stand alone. Fair warning: we’re about to go down some 🐰 rabbit holes – but don’t worry, we’ll emerge with posterior predictions intact!</p>
 <p>Bayesian inference offers a fundamentally different perspective <span class="citation" data-cites="gelman2013bayesian jaynes2003probability">(<a href="#ref-gelman2013bayesian" role="doc-biblioref">Gelman et al., 2013</a>; <a href="#ref-jaynes2003probability" role="doc-biblioref">Jaynes, 2003</a>)</span>. <strong>Bayesian methods use probability distributions to represent our uncertainty about parameters</strong>. We start with a <strong>prior distribution</strong> representing our initial beliefs, observe data, and use Bayes’ theorem to produce a <strong>posterior distribution</strong> representing our updated beliefs.</p>
 <p>The fundamental equation is:</p>
 <p><span class="math display">\[
@@ -339,7 +339,7 @@ P(\text{data} \mid \theta)\, P(\theta)
 <i class="callout-icon no-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-🐰 Aaaand Down the Rabbit Hole We Go…🥕
+🐰 Aaaaand Down the Rabbit Hole We Go…🥕
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
@@ -407,7 +407,7 @@ Reader’s Guide
 <li><strong>Skip the 🐰 rabbit holes</strong> on first reading (they’re collapsible for a reason!)</li>
 <li><strong>Return later</strong> for “Sequential Learning” and “Why This Matters for Seed Testing”</li>
 </ul>
-<p>Or settle in with coffee and read straight through—the full journey is worth it. ☕</p>
+<p>Or settle in with coffee and read straight through – the full journey is worth it. ☕</p>
 </div>
 </div>
 </section>
@@ -803,44 +803,48 @@ For reasonable priors and moderate sample sizes, the data dominate. The prior ma
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create sequence of probability values</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>theta <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">length.out =</span> <span class="dv">200</span>)</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate posterior (using uniform prior)</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>alpha_post <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">+</span> n_germinated  <span class="co"># 13</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>beta_post <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">+</span> n_failed       <span class="co"># 9</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Our observed data</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>n_germinated <span class="ot">&lt;-</span> <span class="dv">12</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>n_failed <span class="ot">&lt;-</span> <span class="dv">8</span></span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate 89% credible interval (equal-tailed)</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>lower <span class="ot">&lt;-</span> <span class="fu">qbeta</span>(<span class="fl">0.055</span>, alpha_post, beta_post)</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>upper <span class="ot">&lt;-</span> <span class="fu">qbeta</span>(<span class="fl">0.945</span>, alpha_post, beta_post)</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>post_mean <span class="ot">&lt;-</span> alpha_post <span class="sc">/</span> (alpha_post <span class="sc">+</span> beta_post)</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Create data for plotting</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>posterior_data <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">theta =</span> theta, <span class="at">density =</span> <span class="fu">dbeta</span>(theta, alpha_post, beta_post))</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract only the data within the credible interval for shading</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>ci_data <span class="ot">&lt;-</span> posterior_data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(theta <span class="sc">&gt;=</span> lower <span class="sc">&amp;</span> theta <span class="sc">&lt;=</span> upper)</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot posterior with shaded credible interval</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(posterior_data, <span class="fu">aes</span>(<span class="at">x =</span> theta, <span class="at">y =</span> density)) <span class="sc">+</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="fl">1.2</span>, <span class="at">color =</span> <span class="st">"#d95f02"</span>) <span class="sc">+</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Shade the 89% credible interval</span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> ci_data, <span class="fu">aes</span>(<span class="at">x =</span> theta, <span class="at">y =</span> density), </span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> <span class="st">"#d95f02"</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add posterior mean line</span></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> post_mean, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"grey40"</span>) <span class="sc">+</span></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Annotate with posterior mean</span></span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> post_mean, <span class="at">y =</span> <span class="fu">max</span>(posterior_data<span class="sc">$</span>density) <span class="sc">*</span> <span class="fl">1.05</span>,</span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>           <span class="at">label =</span> <span class="fu">sprintf</span>(<span class="st">"Posterior mean = %.3f"</span>, post_mean),</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>           <span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Annotate with credible interval bounds</span></span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> post_mean, <span class="at">y =</span> <span class="fu">max</span>(posterior_data<span class="sc">$</span>density) <span class="sc">*</span> <span class="fl">0.3</span>,</span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>           <span class="at">label =</span> <span class="fu">sprintf</span>(<span class="st">"89%% Credible Interval:</span><span class="sc">\n</span><span class="st">[%.3f, %.3f]"</span>, lower, upper),</span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>           <span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">4</span>, <span class="at">color =</span> <span class="st">"#d95f02"</span>, <span class="at">fontface =</span> <span class="st">"bold"</span>) <span class="sc">+</span></span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"89% Bayesian Credible Interval for Germination Rate"</span>,</span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"The shaded region contains 89% of the posterior probability"</span>,</span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Germination rate (θ)"</span>,</span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Posterior density"</span>,</span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"This is the interpretation most people intuitively expect from any interval estimate.</span><span class="sc">\n</span><span class="st">And there is no reason why it should be 95% other than convention."</span></span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">13</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate posterior (using uniform prior)</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>alpha_post <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">+</span> n_germinated  <span class="co"># 13</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>beta_post <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">+</span> n_failed       <span class="co"># 9</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate 89% credible interval (equal-tailed)</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>lower <span class="ot">&lt;-</span> <span class="fu">qbeta</span>(<span class="fl">0.055</span>, alpha_post, beta_post)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>upper <span class="ot">&lt;-</span> <span class="fu">qbeta</span>(<span class="fl">0.945</span>, alpha_post, beta_post)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>post_mean <span class="ot">&lt;-</span> alpha_post <span class="sc">/</span> (alpha_post <span class="sc">+</span> beta_post)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Create data for plotting</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>posterior_data <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">theta =</span> theta, <span class="at">density =</span> <span class="fu">dbeta</span>(theta, alpha_post, beta_post))</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract only the data within the credible interval for shading</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>ci_data <span class="ot">&lt;-</span> posterior_data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(theta <span class="sc">&gt;=</span> lower <span class="sc">&amp;</span> theta <span class="sc">&lt;=</span> upper)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot posterior with shaded credible interval</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(posterior_data, <span class="fu">aes</span>(<span class="at">x =</span> theta, <span class="at">y =</span> density)) <span class="sc">+</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="fl">1.2</span>, <span class="at">color =</span> <span class="st">"#d95f02"</span>) <span class="sc">+</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Shade the 89% credible interval</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> ci_data, <span class="fu">aes</span>(<span class="at">x =</span> theta, <span class="at">y =</span> density), </span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> <span class="st">"#d95f02"</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add posterior mean line</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> post_mean, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"grey40"</span>) <span class="sc">+</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Annotate with posterior mean</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> post_mean, <span class="at">y =</span> <span class="fu">max</span>(posterior_data<span class="sc">$</span>density) <span class="sc">*</span> <span class="fl">1.05</span>,</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>           <span class="at">label =</span> <span class="fu">sprintf</span>(<span class="st">"Posterior mean = %.3f"</span>, post_mean),</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>           <span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Annotate with credible interval bounds</span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> post_mean, <span class="at">y =</span> <span class="fu">max</span>(posterior_data<span class="sc">$</span>density) <span class="sc">*</span> <span class="fl">0.3</span>,</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>           <span class="at">label =</span> <span class="fu">sprintf</span>(<span class="st">"89%% Credible Interval:</span><span class="sc">\n</span><span class="st">[%.3f, %.3f]"</span>, lower, upper),</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>           <span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">4</span>, <span class="at">color =</span> <span class="st">"#d95f02"</span>, <span class="at">fontface =</span> <span class="st">"bold"</span>) <span class="sc">+</span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"89% Bayesian Credible Interval for Germination Rate"</span>,</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"The shaded region contains 89% of the posterior probability"</span>,</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Germination rate (θ)"</span>,</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Posterior density"</span>,</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"This is the interpretation most people intuitively expect from any interval estimate.</span><span class="sc">\n</span><span class="st">And there is no reason why it should be 95% other than convention."</span></span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">13</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -872,7 +876,7 @@ For reasonable priors and moderate sample sizes, the data dominate. The prior ma
 <p><strong>You’ve learned:</strong> - ✅ How priors encode beliefs - ✅ How Bayes’ theorem updates those beliefs<br>
 - ✅ How to construct credible intervals - ✅ What makes 89% such a beautiful number</p>
 <p><strong>Still to come:</strong> - Making predictions with uncertainty - Sequential learning without penalties</p>
-<p>You’re over halfway there! The hard conceptual work is done—now we get to see the payoff.</p>
+<p>You’re over halfway there! The hard conceptual work is done – now we get to see the payoff.</p>
 <hr>
 <p><strong>Quick breather - Bad Statistics Joke:</strong> Why did the Bayesian seed always germinate?</p>
 <p>Because it had <em>prior</em> experience! 🌱</p>
@@ -1271,7 +1275,7 @@ P(\tilde{y}) = \int P(\tilde{y} \mid \theta)\, P(\theta)\, d\theta
 <section id="looking-forward" class="level1">
 <h1>Looking Forward</h1>
 <p>We’ve covered the foundations of Bayesian inference through a relatable example: estimating germination rates for wildflower seeds. We’ve seen how priors encode beliefs, how data updates those beliefs into posteriors, how credible intervals directly quantify uncertainty, and how posterior predictive distributions let us make probabilistic forecasts.</p>
-<p>Throughout this post, we’ve occasionally compared Bayesian and frequentist approaches to help build intuition. <strong>From here forward, we’ll focus exclusively on Bayesian methods</strong>, exploring their full power and flexibility on their own terms.</p>
+<p>Throughout this post, we’ve occasionally compared Bayesian and frequentist approaches to help build intuition. <strong>In the next post (and subsequent posts in this series), we’ll focus exclusively on Bayesian methods</strong>, exploring their full power and flexibility on their own terms.</p>
 <p><strong>In the next post</strong>, we’ll use the classic Black Cherry tree dataset to predict timber volume from tree diameter and height measurements. This familiar forestry example will show how Bayesian regression extends the same principles we’ve learned – priors, posteriors, credible intervals, and predictions – to models with multiple parameters and continuous predictors. We’ll explore:</p>
 <ul>
 <li>Specifying priors for multiple parameters (slopes, intercepts, error terms)</li>
