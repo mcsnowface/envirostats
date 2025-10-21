@@ -840,9 +840,9 @@ In a frequentist framework, the **validity of p-values depends on your sampling 
 
 ### Two Scenarios
 
-1. **Pre-planned sequential testing** (e.g., "I will check after every 20 seeds"):
+1. **Pre-planned sequential testing** (e.g., "I will check after every 20 seeds."):
    - You must adjust your significance level to control overall Type I error
-   - Use methods like Bonferroni correction: $alpha= 0.05/5 = 0.01$ for 5 planned looks
+   - Use methods like Bonferroni correction: $\alpha= 0.05/5 = 0.01$ for 5 planned looks
    - Or apply formal $\alpha$-spending functions (used in clinical trials)
    - This "spends" your α budget across multiple looks
 
