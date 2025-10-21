@@ -47,7 +47,9 @@ draft: false
 
 Imagine you're a medical researcher evaluating a new drug. Before seeing any patient data, you already have some knowledge: similar drugs showed modest effects, basic science suggests the mechanism is plausible, and pilot studies hint at promise. How should this prior information shape your interpretation of new trial results?
 
-**This is Part 2 in a series on statistical inference.** In [Part 1](https://www.envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/), we explored frequentist inference -- a framework built on repeated sampling, where parameters are treated as fixed unknowns and probability statements describe what would happen across hypothetical repetitions. If you're new to the series, starting there will provide helpful background, though this post is designed to stand alone. Fair warning: we're about to go down some 🐰 rabbit holes -- but don't worry, we'll emerge with posterior predictions intact!
+**This is Part 2 in a series on statistical inference.** In [Part 1](https://www.envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/), we explored frequentist inference -- a framework built on repeated sampling, where parameters are treated as fixed unknowns and probability statements describe what would happen across hypothetical repetitions. If you're new to the series, starting there will provide helpful background, though this post is designed to stand alone.
+
+Fair warning: we're about to go down some 🐰 rabbit holes -- but don't worry, we'll emerge with posterior predictions!
 
 Bayesian inference offers a fundamentally different perspective [@gelman2013bayesian; @jaynes2003probability]. **Bayesian methods use probability distributions to represent our uncertainty about parameters**. We start with a **prior distribution** representing our initial beliefs, observe data, and use Bayes' theorem to produce a **posterior distribution** representing our updated beliefs.
 
@@ -134,9 +136,9 @@ In this post, we'll build intuition for Bayesian reasoning through a seed germin
 
 This is a comprehensive introduction to Bayesian inference. If you're short on time:
 
-- **Core concepts**: Read "Starting Simple" (including the subsections on updating, credible intervals, and posterior predictions) (~20 min)
+- **Core concepts**: Read "Why Priors Matter" and "Starting Simple" (including the subsections on updating, credible intervals, and posterior predictions) (~20 min)
 - **Skip the 🐰 rabbit holes** on first reading (they're collapsible for a reason!)
-- **Return later** for "Sequential Learning" and "Why This Matters for Seed Testing"
+- **Return later** for "Sequential Learning" 
 
 Or settle in with coffee and read straight through -- the full journey is worth it. ☕
 :::
@@ -314,11 +316,12 @@ A **conjugate prior** is a prior distribution that, when combined with a particu
 
 > Beta prior + Binomial data = Beta posterior (still a Beta!)
 
-This is special because most combinations don't work this way. Usually, prior × likelihood gives you some complicated function that's hard to work with. But with conjugate pairs, the math stays clean.
+This is special because most combinations don't work this way. Usually, prior × likelihood gives you some complicated function that's hard to work with. But with conjugate pairs, the math stays clean. That said, modern computational tools like MCMC (Markov Chain Monte Carlo) let us combine any prior with any likelihood -- we're no longer restricted to conjugate pairs for mathematical convenience. Conjugate priors are still useful (fast and intuitive), but computational methods have made Bayesian inference practical even when the math isn't neat.
+
 
 ### The Simple Updating Rule
 
-Here's the beautiful part. If your prior is $\text{Beta}(\alpha, \beta)$ and you observe $k$ successes in $n$ trials, your posterior is:
+**Here's the beautiful part of using the Beta-Binomial model.**. If your prior is $\text{Beta}(\alpha, \beta)$ and you observe $k$ successes in $n$ trials, your posterior is:
 
 $$
 \text{Posterior} = \text{Beta}(\alpha_{\text{new}}, \beta_{\text{new}})
@@ -585,12 +588,14 @@ ggplot(posterior_data, aes(x = theta, y = density)) +
 ## 🎉 Progress Check!
 
 **You've learned:**
+
 - ✅ How priors encode beliefs
 - ✅ How Bayes' theorem updates those beliefs  
 - ✅ How to construct credible intervals
 - ✅ What makes 89% such a beautiful number
 
 **Still to come:**
+
 - Making predictions with uncertainty
 - Sequential learning without penalties
 
