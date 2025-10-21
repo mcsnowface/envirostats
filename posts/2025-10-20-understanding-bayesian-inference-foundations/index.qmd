@@ -47,7 +47,7 @@ draft: false
 
 Imagine you're a medical researcher evaluating a new drug. Before seeing any patient data, you already have some knowledge: similar drugs showed modest effects, basic science suggests the mechanism is plausible, and pilot studies hint at promise. How should this prior information shape your interpretation of new trial results?
 
-This is precisely the kind of question Bayesian inference helps us answer. In a [previous post](https://www.envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/), we explored frequentist inference -- a framework built on the concept of repeated sampling, where parameters are treated as fixed unknowns and probability statements describe what would happen across hypothetical repetitions of an experiment.
+**This is Part 2 in a series on statistical inference.** In [Part 1](https://www.envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/), we explored frequentist inference—a framework built on repeated sampling, where parameters are treated as fixed unknowns and probability statements describe what would happen across hypothetical repetitions. If you're new to the series, starting there will provide helpful background, though this post is designed to stand alone. Fair warning: we're about to go down some 🐰 rabbit holes -- but don't worry, we'll emerge with posterior predictions intact!
 
 Bayesian inference offers a fundamentally different perspective [@gelman2013bayesian; @jaynes2003probability]. **Bayesian methods use probability distributions to represent our uncertainty about parameters**. We start with a **prior distribution** representing our initial beliefs, observe data, and use Bayes' theorem to produce a **posterior distribution** representing our updated beliefs.
 
@@ -127,7 +127,19 @@ But it also brings challenges:
 - **Computational demands** can be substantial for complex models.
 - **Interpretation** requires understanding probability as degree of belief.
 
-In this post, we'll build intuition for Bayesian reasoning starting with a simple coin flipping example. In the next post, we'll extend these ideas to regression modeling with real data, exploring how to specify priors for multiple parameters, conduct prior predictive checks, and make predictions with full uncertainty quantification.
+In this post, we'll build intuition for Bayesian reasoning through a seed germination example -- from specifying priors to making predictions -- and explore one of Bayesian inference's most practical advantages: sequential learning without penalties for examining data along the way. In the next post, we'll extend these ideas to regression modeling with real data, exploring how to specify priors for multiple parameters, conduct prior predictive checks, and make predictions with full uncertainty quantification.
+
+:::: {.callout-tip}
+## Reader's Guide
+
+This is a comprehensive introduction to Bayesian inference. If you're short on time:
+
+- **Core concepts**: Read "Starting Simple" (including the subsections on updating, credible intervals, and posterior predictions) (~20 min)
+- **Skip the 🐰 rabbit holes** on first reading (they're collapsible for a reason!)
+- **Return later** for "Sequential Learning" and "Why This Matters for Seed Testing"
+
+Or settle in with coffee and read straight through—the full journey is worth it. ☕
+:::
 
 # Why Priors Matter (and Why They're Less Controversial Than You Think)
 
@@ -231,7 +243,7 @@ For example, when you choose to use a t-test instead of a nonparametric test, yo
 ### Common Misconceptions About Bayesian Inference
 
 **"Priors are subjective, so Bayesian inference is unscientific."**  
-All statistical methods involve choices (which test to use, what α-level, when to stop collecting data). Bayesian methods make these assumptions explicit and transparent. Moreover, with sufficient data, different reasonable priors converge to similar posteriors [@berger2006case].
+All statistical methods involve choices (which test to use, what $\alpha$-level, when to stop collecting data). Bayesian methods make these assumptions explicit and transparent. Moreover, with sufficient data, different reasonable priors converge to similar posteriors [@berger2006case].
 
 **"You need strong prior beliefs to use Bayesian methods."**  
 Not at all. Weakly informative priors that gently constrain parameters to reasonable ranges often work best [@gelman2017prior]. You can be quite uncertain in your prior while still gaining the benefits of the Bayesian framework.
@@ -431,6 +443,9 @@ Now let's see how these priors update when we observe 12 germinations out of 20 
 
 library(tidyverse)
 
+# Create sequence of probability values
+theta <- seq(0, 1, length.out = 200)
+
 # Our observed data
 n_germinated <- 12
 n_failed <- 8
@@ -500,10 +515,22 @@ In Bayesian inference, the **posterior distribution is the final product** -- it
 
 In contrast, **frequentist confidence intervals** are tied to a pre-specified error rate (the $\alpha$-level, such as 0.05 for 95% coverage). The level determines the long-run frequency properties of the procedure: if repeated infinitely, 95% of intervals constructed this way would contain the true value of $\theta$. Changing the level changes the frequentist procedure itself.
 
-As @mcelreath2020statistical [p. 58] notes, "It is not easy to defend the choice of 95% (5%), outside of pleas of convention." @gelman2014beyond and @kruschke2014doing make the same point: since the posterior fully represents uncertainty, **the interval percentage is a matter of reporting style, not of statistical principle.**
+**To see this difference concretely:**
+
+- **Bayesian 89%**: "I'm reporting 89% of my posterior. I could have reported 80% or 95 -- all are valid summaries of the **same posterior distribution**."
+- **Frequentist 95%**: "I chose $\alpha = 0.05$ to control long-run error rates. This determines the procedure's coverage properties. But the coverage is about the procedure in general, not about this specific interval capturing this specific parameter."
+
+As @mcelreath2020statistical [p. 58] notes, "It is not easy to defend the choice of 95% (5%), outside of pleas of convention." @gelman2014beyond and @kruschke2014doing make the same point: since the posterior fully represents uncertainty, **the interval percentage is a matter of reporting style, not of statistical principle.** So why not go with 89% throughout this series? It's such a beautiful number :)
 
 ```{r}
 library(tidyverse)
+
+# Create sequence of probability values
+theta <- seq(0, 1, length.out = 200)
+
+# Our observed data
+n_germinated <- 12
+n_failed <- 8
 
 # Calculate posterior (using uniform prior)
 alpha_post <- 1 + n_germinated  # 13
@@ -553,6 +580,30 @@ ggplot(posterior_data, aes(x = theta, y = density)) +
 - For this seed batch, we can say with 89% confidence: **"The true germination rate is between 42% and 75%"**
 - This is the statement seed suppliers and customers actually care about -- it directly quantifies our uncertainty about this specific batch's quality
 - The Bayesian statement is what most people think a confidence interval means, and in Bayesian inference, it actually does mean that
+
+::: {.callout-note icon=false}
+## 🎉 Progress Check!
+
+**You've learned:**
+- ✅ How priors encode beliefs
+- ✅ How Bayes' theorem updates those beliefs  
+- ✅ How to construct credible intervals
+- ✅ What makes 89% such a beautiful number
+
+**Still to come:**
+- Making predictions with uncertainty
+- Sequential learning without penalties
+
+You're over halfway there! The hard conceptual work is done—now we get to see the payoff. 
+
+---
+
+**Quick breather - Bad Statistics Joke:** Why did the Bayesian seed always germinate?
+
+Because it had *prior* experience! 🌱
+
+*(I'll see myself out... but first, let's talk about posterior predictions!)* 😅
+:::
 
 ## Posterior Predictions: What Happens Next?
 
@@ -844,7 +895,7 @@ In a frequentist framework, the **validity of p-values depends on your sampling 
    - You must adjust your significance level to control overall Type I error
    - Use methods like Bonferroni correction: $\alpha= 0.05/5 = 0.01$ for 5 planned looks
    - Or apply formal $\alpha$-spending functions (used in clinical trials)
-   - This "spends" your α budget across multiple looks
+   - This "spends" your $\alpha$ budget across multiple looks
 
 2. **Optional stopping** (e.g., "I'll keep testing until I see something interesting"):
 
@@ -889,7 +940,7 @@ You can make decisions based on **evidence accumulated so far** without worrying
 
 # Looking Forward
 
-We've covered the foundations of Bayesian inference through a simple but powerful example: estimating a probability from coin flips. We've seen how priors encode beliefs, how data updates those beliefs into posteriors, how credible intervals directly quantify uncertainty, and how posterior predictive distributions let us make probabilistic forecasts.
+We've covered the foundations of Bayesian inference through a relatable example: estimating germination rates for wildflower seeds. We've seen how priors encode beliefs, how data updates those beliefs into posteriors, how credible intervals directly quantify uncertainty, and how posterior predictive distributions let us make probabilistic forecasts.
 
 Throughout this post, we've occasionally compared Bayesian and frequentist approaches to help build intuition. **From here forward, we'll focus exclusively on Bayesian methods**, exploring their full power and flexibility on their own terms.
 
@@ -901,7 +952,7 @@ Throughout this post, we've occasionally compared Bayesian and frequentist appro
 - Making predictions for new observations with full uncertainty quantification
 - Implementing Bayesian regression in R using modern tools
 
-The transition from coin flips to regression might seem like a big jump, but you'll see that the fundamental logic remains exactly the same. We're just trading a single parameter $\theta$ for multiple parameters $\beta_0, \beta_1, \sigma$, and the Beta-Binomial model for a Normal linear model. The core Bayesian workflow -- prior, likelihood, posterior, predictions -- stays identical.
+The transition from seed germination to regression might seem like a big jump, but you'll see that the fundamental logic remains exactly the same. We're just trading a single parameter $\theta$ for multiple parameters $\beta_0, \beta_1, \sigma$, and the Beta-Binomial model for a Normal linear model. The core Bayesian workflow -- prior, likelihood, posterior, predictions -- stays identical.
 
 # Key Takeaways
 
@@ -916,7 +967,7 @@ The transition from coin flips to regression might seem like a big jump, but you
 9. **Weakly informative priors** often provide the best balance -- constraining parameters to reasonable ranges without being overly restrictive.
 10. **Sequential learning without penalties**: You can examine data at any time, stop and resume collection, or make interim decisions -- your inference remains valid regardless of your stopping rule.
 
-The shift from thinking about procedures to thinking about beliefs is the essence of Bayesian inference. Once you internalize this shift through simple examples like coin flips, you're ready to apply the same reasoning to arbitrarily complex models.
+The shift from thinking about procedures to thinking about beliefs is the essence of Bayesian inference. Once you internalize this shift through simple examples like germination rates, you're ready to apply the same reasoning to arbitrarily complex models.
 
 
 # References
