@@ -144,8 +144,11 @@ In our seed germination example, we compared different priors (uniform, weakly i
 
 But regression introduces new challenges: **multiple parameters on different scales that interact**. This is where the "flat priors are objective" misconception becomes especially dangerous.
 
-Recall from the frequentist post that all statistical methods involve choices -- which test to use, what $\alpha$-level, when to stop data collection. The Bayesian framework makes these choices explicit through prior specification. But what happens when we try to be "objective" by using very vague priors in regression?
+Recall from the frequentist post that all statistical methods involve choices -- which test to use, what $\alpha$-level, when to stop data collection. The Bayesian framework makes these choices explicit through prior specification. 
 
+**An important nuance**: With large sample sizes, even poor priors will eventually be overwhelmed by the data, and the posterior will converge to reasonable estimates. The danger of flat priors is most acute in small-sample situations where prior information could stabilize estimates, or when priors allow parameter combinations that produce absurd predictions. Prior predictive checks help us catch these problems before fitting -- they reveal whether our priors encode sensible beliefs about the data-generating process, regardless of how much data we have.
+
+Let's see what happens when we use very vague "objective" priors in regression and apply prior predictive checks.
 
 ## What Happens with Flat Priors?
 
@@ -1159,7 +1162,7 @@ The high probability of positive ROI across all margin scenarios (assuming our v
 
 ## Real-World Application: The Alberta Tree Improvement Investment Problem
 
-**How would this analysis work in practice for an Alberta forest company?** The simplified example above illustrates the Bayesian workflow clearly, but real forestry decisions involve additional layers of complexity -- particularly around regulatory approval. Does this interest you? Just follow the rabbit down the hole 🐰 
+**How would this analysis work in practice for an Alberta forest company?** The simplified example above illustrates the Bayesian workflow clearly, but real forestry decisions involve additional layers of complexity -- particularly around regulatory approval. Does this interest you? Just expand the box below and follow the rabbit down the hole 🐰 
 
 ::: {.callout-note collapse="true"}
 
