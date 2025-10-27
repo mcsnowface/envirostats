@@ -70,7 +70,7 @@ So how did we end up with this confusing terminology? Galton's discovery of regr
 
 **In modern usage**: When we fit a regression model to predict tree heights from diameters, we're using the same linear equation framework that Galton developed—but we're not studying regression-to-the-mean. We're simply modeling how one variable relates to another. The historical origin of the name is now just an interesting footnote.
 
-**Karl Pearson** (1857-1936), Galton's protégé, formalized these ideas into the regression methods we use today, developing the mathematics of correlation and least squares estimation [@pearson1896mathematical]. Interestingly, while Galton and Pearson developed their methods in a frequentist framework -- focusing on best-fit lines through data -- the Bayesian approach we'll use asks slightly different questions: not just "*what line best fits this data?*" but "given this data, what can we believe about the relationship?"
+**Karl Pearson** (1857-1936), Galton's protégé, formalized these ideas into the regression methods we use today, developing the mathematics of correlation and least squares estimation [@pearson1896mathematical]. Interestingly, while Galton and Pearson developed their methods in a frequentist framework -- focusing on best-fit lines through data -- the Bayesian approach we'll use asks slightly different questions: not just "what line best fits this data?" but "given this data, what can we believe about the relationship?"
 
 The tree data we'll analyze follows Galton's original spirit: we're exploring biological relationships where larger individuals tend to have other larger characteristics, though with considerable variation around the trend.
 
@@ -151,8 +151,6 @@ Recall from the frequentist post that all statistical methods involve choices --
 Let's see what happens when we use very vague "objective" priors in regression and apply prior predictive checks.
 
 ## What Happens with Flat Priors?
-
-Let's use the same philosophy as Beta(1,1) for germination – expressing "complete ignorance" through very vague priors:
 
 Suppose we use very vague priors that express "ignorance". This seems "objective" -- we're not favoring any particular values. But watch what happens when we use prior predictive checks (the same technique from the seed germination post) to see what kinds of predictions these priors produce before seeing any real data.
 
