@@ -417,6 +417,7 @@ y_i &amp;\sim \text{Normal}(\mu_i, \sigma) \\
 <li><span class="math inline">\(\text{Normal}(1, 1)\)</span> for slope (<span class="math inline">\(\beta\)</span>): height increases by roughly 1 meter per 10 cm increase in DBH</li>
 <li><span class="math inline">\(\text{Exponential}(0.5)\)</span> for residual standard deviation (<span class="math inline">\(\sigma\)</span>): constrains variation to be positive</li>
 </ul></li>
+<li><strong>Why we scale the diameter predictor</strong>: We center DBH (subtract the mean) and divide by 10 cm to make the slope coefficient more interpretable. After scaling, <span class="math inline">\(\beta\)</span> represents “change in height per 10 cm increase in diameter” rather than “per 1 cm increase.” This makes prior specification easier (we can think in meaningful units like “does height increase by ~1 meter per 10 cm of diameter?”) and helps the MCMC sampler run more efficiently.</li>
 <li><strong>Why these priors work</strong>: They encode basic domain knowledge (trees are positive heights, larger diameter → taller) while remaining weak enough that the data can easily override them if reality differs</li>
 </ul>
 </section>
@@ -962,7 +963,12 @@ y_i &amp;\sim \text{Normal}(\mu_i, \sigma) \\
 <li><span class="math inline">\(\text{Normal}(0, 1)\)</span> for intercept (<span class="math inline">\(\alpha\)</span>) and slopes (<span class="math inline">\(\beta_1\)</span>, <span class="math inline">\(\beta_2\)</span>)</li>
 <li><span class="math inline">\(\text{Exponential}(1)\)</span> for residual standard deviation (<span class="math inline">\(\sigma\)</span>)</li>
 </ul></li>
-<li><strong>Why these priors work</strong>: Since predictors are scaled (standardized to mean 0, SD 1), these priors:
+<li><strong>Why we standardize the predictors</strong>: We transform both DBH and height to have mean 0 and SD 1. This accomplishes two things:
+<ul>
+<li><strong>Comparable effect sizes</strong>: Coefficients now represent “effect per standard deviation change,” letting us directly compare which predictor matters more</li>
+<li><strong>Easier prior specification</strong>: All coefficients are on the same scale, so we can use the same prior (Normal(0,1)) for both without thinking about their original units</li>
+</ul></li>
+<li><strong>Why these priors work</strong>: With standardized predictors, Normal(0,1) priors:
 <ul>
 <li>Encode weak prior information (expect modest-sized effects)</li>
 <li>Allow the data to dominate the posterior</li>

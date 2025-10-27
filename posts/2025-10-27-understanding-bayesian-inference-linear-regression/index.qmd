@@ -136,7 +136,9 @@ $$
   - $\text{Normal}(20, 3)$ for intercept ($\alpha$): expected height at mean DBH is around 20 meters
   - $\text{Normal}(1, 1)$ for slope ($\beta$): height increases by roughly 1 meter per 10 cm increase in DBH
   - $\text{Exponential}(0.5)$ for residual standard deviation ($\sigma$): constrains variation to be positive
+- **Why we scale the diameter predictor**: We center DBH (subtract the mean) and divide by 10 cm to make the slope coefficient more interpretable. After scaling, $\beta$ represents "change in height per 10 cm increase in diameter" rather than "per 1 cm increase." This makes prior specification easier (we can think in meaningful units like "does height increase by ~1 meter per 10 cm of diameter?") and helps the MCMC sampler run more efficiently.
 - **Why these priors work**: They encode basic domain knowledge (trees are positive heights, larger diameter → taller) while remaining weak enough that the data can easily override them if reality differs
+
 
 ## Why Prior Choice Matters: Revisiting a Key Lesson
 
@@ -530,7 +532,10 @@ $$
 - **What the priors represent**: Our uncertainty in the model parameters before seeing the data
   - $\text{Normal}(0, 1)$ for intercept ($\alpha$) and slopes ($\beta_1$, $\beta_2$)
   - $\text{Exponential}(1)$ for residual standard deviation ($\sigma$)
-- **Why these priors work**: Since predictors are scaled (standardized to mean 0, SD 1), these priors:
+- **Why we standardize the predictors**: We transform both DBH and height to have mean 0 and SD 1. This accomplishes two things:
+  - **Comparable effect sizes**: Coefficients now represent "effect per standard deviation change," letting us directly compare which predictor matters more
+  - **Easier prior specification**: All coefficients are on the same scale, so we can use the same prior (Normal(0,1)) for both without thinking about their original units
+- **Why these priors work**: With standardized predictors, Normal(0,1) priors:
   - Encode weak prior information (expect modest-sized effects)
   - Allow the data to dominate the posterior
   - Prevent extreme parameter values that would produce nonsensical predictions
