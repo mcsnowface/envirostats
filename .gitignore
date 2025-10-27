@@ -1,10 +1,12 @@
+# R/RStudio
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
-.rds
 
+# Quarto build artifacts (don't commit these - large/temporary)
 /.quarto/
-
-_cache/
-_freeze/
+*_cache/
+*_files/
+*.rds
+*.RDS
