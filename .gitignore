@@ -2,5 +2,9 @@
 .Rhistory
 .RData
 .Ruserdata
+.rds
 
 /.quarto/
+
+_cache/
+_freeze/
