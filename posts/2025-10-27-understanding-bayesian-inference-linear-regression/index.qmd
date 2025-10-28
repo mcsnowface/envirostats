@@ -41,20 +41,18 @@ draft: false
 
 In our [previous post](https://www.envirostats.ca/posts/2025-10-20-understanding-bayesian-inference-foundations/), we explored the foundations of Bayesian inference through a simple example: estimating germination rates from seed trials. We learned how to specify priors, update beliefs with data through Bayes' theorem, and make probabilistic predictions. The key insight was treating parameters as random variables with probability distributions, allowing us to make direct statements like "there's a 95% probability the germination rate is between 0.42 and 0.75."
 
-That example involved estimating a single parameter -- a probability $\theta$. But most real-world problems involve relationships between variables: How does tree height relate to diameter? How does drug dosage affect blood pressure? How do temperature and rainfall predict crop yield? These questions require regression models with **multiple parameters**: slopes, intercepts, and error terms.
+That example involved estimating a single parameter -- a probability $\theta$. The Beta-Binomial model was simple: one probability to estimate, one prior to specify. But most real-world problems involve relationships between variables: How does tree height relate to diameter? How does drug dosage affect blood pressure? How do temperature and rainfall predict crop yield? These questions require regression models with **multiple parameters**: slopes, intercepts, and error terms.
 
-In that first post on seed germination, we worked with a single parameter $\theta$ (the germination rate). The Beta-Binomial model was simple: one probability to estimate, one prior to specify. You might be wondering: does Bayesian inference scale to more complex problems? What happens when we have multiple parameters that interact?
+You might be wondering: does Bayesian inference scale to more complex problems? What happens when we have multiple parameters that interact?
 
 The answer is both simple and profound: **the logic doesn't change at all**. Whether you have 1 parameter or 100, the Bayesian workflow remains identical. You specify priors for each parameter, observe data, apply Bayes' theorem, and make predictions. The mathematics gets more complex, but the conceptual framework is exactly the same.
 
-This post demonstrates that claim by extending everything you learned about seed germination to linear regression with multiple predictors. If you understood how to update beliefs about germination rates, you already understand Bayesian regression -- we're just applying the same principles to familiar statistical models.
-
-In this post, we'll apply Bayesian inference to linear regression using real forestry data. We'll work through two examples:
+This post demonstrates that claim by extending everything you learned about seed germination to linear regression with multiple predictors. We'll work through two examples:
 
 - **Example 1**: Predicting tree height from diameter -- learning why prior choice matters
 - **Example 2**: Evaluating tree improvement programs -- making economic decisions with uncertainty
 
-By the end, you'll see that Bayesian regression is simply Bayesian inference applied to familiar statistical models. The principles you learned from seed germination transfer directly -- we're just working with more parameters simultaneously.
+By the end, you'll see that if you understood how to update beliefs about germination rates, you already understand Bayesian regression -- we're just working with more parameters simultaneously.
 
 # A Brief Historical Note: Francis Galton and the Origins of Regression
 
@@ -208,7 +206,7 @@ ggplot(prior_pred_subset, aes(x = dbh, y = height, group = draw)) +
 **Problems with flat priors:**
 
 - **Allows negative tree heights** (biologically impossible)
-- **Allows negative slopes** (taller trees have larger diameters)
+- **Allows negative slopes** (shorter trees have larger diameters)
 - **Allows impossibly tall trees** (100+ meters for black cherry)
 - **Wastes probability mass** on parameter combinations that could never occur
 
