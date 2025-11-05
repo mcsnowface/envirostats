@@ -31,7 +31,9 @@ execute:
 
 draft: false  
 ---
+
 ![From uncertainty, form arises — the flow from belief to prediction](bayesian_prediction.png)
+
 <br>
 
 So you've just fit your first Bayesian model using `brms` or `rstanarm`. Maybe you were surprised by how easy it was -- the syntax looked almost exactly like `lm()` for a simple linear regression. You hit run, waited a bit longer than usual, and got... output. Lots of output.
