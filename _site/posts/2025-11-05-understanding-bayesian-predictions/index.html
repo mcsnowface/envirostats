@@ -215,7 +215,7 @@ window.Quarto = {
   <li><a href="#the-solution-mcmc-explores-the-joint-probability-space" id="toc-the-solution-mcmc-explores-the-joint-probability-space" class="nav-link" data-scroll-target="#the-solution-mcmc-explores-the-joint-probability-space">The solution: MCMC explores the joint probability space</a></li>
   </ul></li>
   <li><a href="#a-simple-example-the-matrix-structure" id="toc-a-simple-example-the-matrix-structure" class="nav-link" data-scroll-target="#a-simple-example-the-matrix-structure">A simple example: the matrix structure</a></li>
-  <li><a href="#the-three-level-hierarchy" id="toc-the-three-level-hierarchy" class="nav-link" data-scroll-target="#the-three-level-hierarchy">The three-level hierarchy</a></li>
+  <li><a href="#the-three-level-prediction-pipeline" id="toc-the-three-level-prediction-pipeline" class="nav-link" data-scroll-target="#the-three-level-prediction-pipeline">The three-level prediction pipeline</a></li>
   <li><a href="#understanding-the-two-kinds-of-predictions" id="toc-understanding-the-two-kinds-of-predictions" class="nav-link" data-scroll-target="#understanding-the-two-kinds-of-predictions">Understanding the two kinds of predictions</a>
   <ul class="collapse">
   <li><a href="#expected-predictions-etildeymid-d" id="toc-expected-predictions-etildeymid-d" class="nav-link" data-scroll-target="#expected-predictions-etildeymid-d">Expected predictions: <span class="math inline">\(E[\tilde{y}\mid D]\)</span></a></li>
@@ -280,10 +280,9 @@ window.Quarto = {
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="bayesian_prediction.png" class="img-fluid figure-img"></p>
-<figcaption>From uncertainty, form arises — the flow from belief to prediction</figcaption>
+<figcaption>From uncertainty, form arises — the flow from belief to prediction.</figcaption>
 </figure>
 </div>
-<p><br></p>
 <p>So you’ve just fit your first Bayesian model using <code>brms</code> or <code>rstanarm</code>. Maybe you were surprised by how easy it was – the syntax looked almost exactly like <code>lm()</code> for a simple linear regression. You hit run, waited a bit longer than usual, and got… output. Lots of output.</p>
 <p>You look at the summary. There are means and standard deviations, credible intervals, and mysterious diagnostics like “Rhat” and “ESS”. But wait – where are the p-values? And how do you actually make predictions? People keep talking about “posterior predictions” and “posterior distributions” – what do those actually mean, and how do you work with them?</p>
 <p>If you’ve ever felt confused by the terminology around Bayesian predictions – posterior predictive distributions, expected predictions, prediction intervals – you’re not alone. But here’s the secret: once your Bayesian model calculates the posterior distribution, <strong>everything else is just computing means, quantiles, and other summary statistics</strong>. Let me show you what I mean.</p>
@@ -481,8 +480,8 @@ p(\alpha \mid D) \;=\; \int p(\alpha,\beta \mid D)\,d\beta.
 <li>Next we’ll add <span class="math inline">\(\sigma\)</span> to generate draws of <span class="math inline">\(\tilde{y}\)</span> ⇒ <span class="math inline">\(p(\tilde{y}\mid D)\)</span> and prediction intervals</li>
 </ul>
 </section>
-<section id="the-three-level-hierarchy" class="level2">
-<h2 class="anchored" data-anchor-id="the-three-level-hierarchy">The three-level hierarchy</h2>
+<section id="the-three-level-prediction-pipeline" class="level2">
+<h2 class="anchored" data-anchor-id="the-three-level-prediction-pipeline">The three-level prediction pipeline</h2>
 <p>To pull our ideas together, here’s the compact relationship we’ll now use repeatedly:</p>
 <pre><code>Parameters θ  →  Data y
 p(θ|D)        →  p(ỹ|D)      →  E[ỹ|D]

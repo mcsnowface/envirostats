@@ -32,9 +32,7 @@ execute:
 draft: false  
 ---
 
-![From uncertainty, form arises — the flow from belief to prediction](bayesian_prediction.png)
-
-<br>
+![From uncertainty, form arises — the flow from belief to prediction.](bayesian_prediction.png)
 
 So you've just fit your first Bayesian model using `brms` or `rstanarm`. Maybe you were surprised by how easy it was -- the syntax looked almost exactly like `lm()` for a simple linear regression. You hit run, waited a bit longer than usual, and got... output. Lots of output.
 
@@ -206,7 +204,7 @@ Once predictions are organized this way, everything reduces to simple arithmetic
 - **Credible intervals** for the **mean response**: rowwise quantiles of $\mu_i$
 - Next we’ll add $\sigma$ to generate draws of $\tilde{y}$ ⇒ $p(\tilde{y}\mid D)$ and prediction intervals
 
-## The three-level hierarchy
+## The three-level prediction pipeline
 
 To pull our ideas together, here’s the compact relationship we’ll now use repeatedly:
 

@@ -361,7 +361,7 @@
     "href": "posts/2025-11-05-understanding-bayesian-predictions/index.html",
     "title": "Understanding Bayesian Predictions",
     "section": "",
-    "text": "From uncertainty, form arises — the flow from belief to prediction\nSo you’ve just fit your first Bayesian model using brms or rstanarm. Maybe you were surprised by how easy it was – the syntax looked almost exactly like lm() for a simple linear regression. You hit run, waited a bit longer than usual, and got… output. Lots of output.\nYou look at the summary. There are means and standard deviations, credible intervals, and mysterious diagnostics like “Rhat” and “ESS”. But wait – where are the p-values? And how do you actually make predictions? People keep talking about “posterior predictions” and “posterior distributions” – what do those actually mean, and how do you work with them?\nIf you’ve ever felt confused by the terminology around Bayesian predictions – posterior predictive distributions, expected predictions, prediction intervals – you’re not alone. But here’s the secret: once your Bayesian model calculates the posterior distribution, everything else is just computing means, quantiles, and other summary statistics. Let me show you what I mean."
+    "text": "From uncertainty, form arises — the flow from belief to prediction.\nSo you’ve just fit your first Bayesian model using brms or rstanarm. Maybe you were surprised by how easy it was – the syntax looked almost exactly like lm() for a simple linear regression. You hit run, waited a bit longer than usual, and got… output. Lots of output.\nYou look at the summary. There are means and standard deviations, credible intervals, and mysterious diagnostics like “Rhat” and “ESS”. But wait – where are the p-values? And how do you actually make predictions? People keep talking about “posterior predictions” and “posterior distributions” – what do those actually mean, and how do you work with them?\nIf you’ve ever felt confused by the terminology around Bayesian predictions – posterior predictive distributions, expected predictions, prediction intervals – you’re not alone. But here’s the secret: once your Bayesian model calculates the posterior distribution, everything else is just computing means, quantiles, and other summary statistics. Let me show you what I mean."
   },
   {
     "objectID": "posts/2025-11-05-understanding-bayesian-predictions/index.html#the-core-insight",
@@ -432,5 +432,12 @@
     "title": "Understanding Bayesian Predictions",
     "section": "Further reading",
     "text": "Further reading\n\nMcElreath’s Statistical Rethinking has excellent coverage of posterior prediction and makes these concepts very intuitive\nThe tidybayes documentation provides great examples of working with posterior draws in a tidy format\nGelman et al.’s Bayesian Data Analysis (Chapter 7) covers posterior predictive checking in detail\nKay’s tidybayes vignettes show practical workflows for Bayesian analysis in R"
+  },
+  {
+    "objectID": "posts/2025-11-05-understanding-bayesian-predictions/index.html#the-three-level-prediction-pipeline",
+    "href": "posts/2025-11-05-understanding-bayesian-predictions/index.html#the-three-level-prediction-pipeline",
+    "title": "Understanding Bayesian Predictions",
+    "section": "The three-level prediction pipeline",
+    "text": "The three-level prediction pipeline\nTo pull our ideas together, here’s the compact relationship we’ll now use repeatedly:\nParameters θ  →  Data y\np(θ|D)        →  p(ỹ|D)      →  E[ỹ|D]\nposterior        posterior       mean of the\ndistribution     predictive       posterior predictive\n                 distribution     (expected prediction)\n\n\n\n\n\n\n\n\n\nLevel\nDistribution\nWhat it describes\nUncertainty captured\n\n\n\n\n1\n\\(p(\\theta\\mid D)\\)\nWhat we believe about parameters after seeing data\nParameter uncertainty\n\n\n2\n\\(p(\\tilde{y}\\mid D)\\)\nWhat we believe about future/unobserved data\nParameter + observation uncertainty\n\n\n3\n\\(E[\\tilde{y}\\mid D]\\)\nMean of the posterior predictive distribution\nCenter only (a summary)\n\n\n\nPlain language: posterior over parameters ⇒ simulate data from it ⇒ average those simulations."
   }
 ]
