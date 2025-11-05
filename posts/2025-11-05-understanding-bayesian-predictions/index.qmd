@@ -5,6 +5,10 @@ author: "Stefan Schreiber"
 date: 2025-11-05
 categories: [bayesian, prediction, inference]
 
+# Local image for the page
+image: bayesian_prediction.png
+image-alt: "Bayesian Prediction"
+
 citation:
   url: https://envirostats.ca/posts/2025-11-05-understanding-bayesian-predictions/
 
@@ -23,8 +27,9 @@ execute:
   warning: false
   message: false
   cache: true
+  freeze: auto
 
-draft: false
+draft: false  
 ---
 
 So you've just fit your first Bayesian model using `brms` or `rstanarm`. Maybe you were surprised by how easy it was -- the syntax looked almost exactly like `lm()` for a simple linear regression. You hit run, waited a bit longer than usual, and got... output. Lots of output.
