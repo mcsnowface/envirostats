@@ -7,6 +7,5 @@
 # Quarto build artifacts (don't commit these - large/temporary)
 /.quarto/
 *_cache/
-*_files/
 *.rds
 *.RDS
