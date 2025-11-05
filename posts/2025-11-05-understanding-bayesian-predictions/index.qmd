@@ -1,0 +1,480 @@
+---
+title: "Understanding Bayesian Predictions"
+subtitle: "From Complex MCMC Algorithms to Simple Matrix Arithmetic"
+author: "Stefan Schreiber"
+date: 2025-11-05
+categories: [bayesian, prediction, inference]
+
+citation:
+  url: https://envirostats.ca/posts/2025-11-05-understanding-bayesian-predictions/
+
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: show
+    code-summary: "Show code"
+    df-print: paged
+
+editor: source
+
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: true
+
+draft: false
+---
+
+So you've just fit your first Bayesian model using `brms` or `rstanarm`. Maybe you were surprised by how easy it was -- the syntax looked almost exactly like `lm()` for a simple linear regression. You hit run, waited a bit longer than usual, and got... output. Lots of output.
+
+You look at the summary. There are means and standard deviations, credible intervals, and mysterious diagnostics like "Rhat" and "ESS". But wait -- where are the p-values? And how do you actually make predictions? People keep talking about "posterior predictions" and "posterior distributions" -- what do those actually mean, and how do you work with them?
+
+If you've ever felt confused by the terminology around Bayesian predictions -- posterior predictive distributions, expected predictions, prediction intervals -- you're not alone. But here's the secret: once your Bayesian model calculates the posterior distribution, **everything else is just computing means, quantiles, and other summary statistics**. Let me show you what I mean.
+
+
+## The Core Insight
+
+Bayesian inference has two phases:
+
+1. **The hard part**: Computing the posterior distribution $p(\theta\mid D)$ (this is where MCMC).
+2. **The easy part**: Summarizing that posterior and quantities derived from it -- means, standard deviations, quantiles, etc.
+
+Once you have posterior samples from $p(\theta\mid D)$, you can simulate the posterior predictive distribution $p(\tilde{y}\mid D)$ and summarize it with its mean $E[\tilde{y}\mid D]$. We’ll return to this trio when it becomes most helpful.
+
+## Why is the hard part hard?
+
+Before the “easy part,” a quick sketch of why computing the posterior is challenging (you don't have to master this to *use* Bayesian methods, but the intuition helps).
+
+### The goal: a joint probability over all parameters
+
+Bayes' theorem:
+
+$$
+p(\theta \mid D) \;=\; \frac{p(D \mid \theta)\,p(\theta)}{p(D)}
+$$
+
+- $p(\theta \mid D)$: **posterior** -- what we believe about parameters after seeing data  
+- $p(D \mid \theta)$: **likelihood** -- how well parameters explain the data  
+- $p(\theta)$: **prior** -- what we believed before seeing data  
+- $p(D)$: **marginal likelihood / evidence** -- a normalizing constant
+
+Because $p(D)$ is often intractable, we work with $p(\theta \mid D) \propto p(D \mid \theta)\, p(\theta)$. For a simple regression with parameters $\alpha,\beta,\sigma$:
+
+$$
+p(\alpha,\beta,\sigma \mid D) \propto p(D \mid \alpha,\beta,\sigma)\, p(\alpha,\beta,\sigma).
+$$
+
+This is a joint distribution in a high-dimensional space. More parameters ⇒ higher dimension.
+
+### Starting simple: grid approximation
+
+Suppose you’re a fish biologist interested in the hatching rate of rainbow trout. You run an experiment and **4 out of 10 eggs hatched** -- what’s the hatching rate $\theta$? With one parameter, a **grid approximation** shows the mechanics explicitly.
+
+```{r}
+#| label: grid-approximation
+#| message: false
+#| warning: false
+
+library(ggplot2)
+
+# Define a grid of possible hatching rates from 0 to 1
+theta_grid <- seq(from = 0, to = 1, length.out = 100)
+
+# Prior: assume all values equally plausible (flat prior)
+prior_flat <- rep(1, 100)
+
+# Prior options:
+prior_flat <- rep(1, 100)                        # Uninformative
+prior_conservative <- dbeta(theta_grid, 5, 5)    # Moderate rates likely
+prior_optimistic <- dbeta(theta_grid, 8, 2)      # High rates likely
+prior_skeptical <- dbeta(theta_grid, 2, 8)       # Low rates likely
+
+# 👉 CHANGE THIS LINE to try different priors:
+prior <- prior_flat   
+
+# Likelihood: how likely is observing 4/10 for each possible θ?
+# Observed data: 4 hatched out of 10 eggs
+successes <- 4
+trials <- 10
+observed_rate <- successes / trials
+
+likelihood <- dbinom(successes, size = trials, prob = theta_grid)
+
+# Posterior ∝ Likelihood × Prior, then normalize
+posterior <- likelihood * prior
+posterior <- posterior / sum(posterior)
+
+# Visualize the posterior distribution
+data.frame(theta = theta_grid, posterior = posterior) |>
+  ggplot(aes(x = theta, y = posterior)) +
+  geom_line() +
+  geom_area(alpha = 0.3) +
+# Dashed red line = observed rate (from data), stays fixed
+# Shows how different priors shift the posterior relative to observed data
+  geom_vline(xintercept = observed_rate, linetype = "dashed", color = "red") +
+  labs(x = "Hatching rate (θ)",
+       y = "Posterior probability",
+       title = "Posterior distribution with 100 grid points") +
+  theme_minimal()
+```
+
+**Quick tie-in:** From this posterior $p(\theta\mid D)$, we can simulate a posterior predictive distribution $p(\tilde{y}\mid D)$ (e.g., future hatch counts) and summarize it with the expected prediction $E[\tilde{y}\mid D]$.
+
+
+### The curse of dimensionality (and continuity)
+
+- 1 parameter, 100 grid points ⇒ 100 evaluations  
+- 2 parameters ⇒ $100^2 = 10{,}000$  
+- 3 parameters ⇒ $100^3 = 1{,}000{,}000$  
+- 10 parameters ⇒ $100^{10}$ (astronomical)
+
+Most parameters are also **continuous**, so inference involves integrals over infinitely many values. For instance, marginalizing $\beta$:
+
+$$
+p(\alpha \mid D) \;=\; \int p(\alpha,\beta \mid D)\,d\beta.
+$$
+
+Analytical solutions exist for special conjugate cases; real-world models usually require computation.
+
+### The solution: MCMC explores the joint probability space
+
+**Markov chain Monte Carlo (MCMC)** avoids gridding and intractable integrals by *sampling* parameter values, spending more time in high-probability regions of the **joint posterior space**. After convergence and warm-up, the draws are (approximately) samples from the posterior $p(\theta \mid D)$.
+
+The result is a table of draws (rows = draws, columns = parameters). **That table is the payoff.** From here, we move to predictions via the posterior predictive distribution $p(\tilde{y} \mid D)$ and summaries such as its expectation $E[\tilde{y} \mid D]$.
+
+
+## A simple example: the matrix structure
+
+Now, how do posterior **parameter** draws become **predictions**? Think in matrices.
+
+Each column corresponds to one posterior draw of $(\alpha,\beta,\sigma)$. For each draw and each observation $i$, compute the linear predictor $\mu_i = \alpha + \beta x_i$. Stack those $\mu$ values into a matrix: rows = observations, columns = draws.
+
+```{r}
+#| label: prediction-matrix
+
+# IMPORTANT: This uses only 3 draws for illustration.
+# Real analyses use 1,000–4,000+ draws.
+
+predicted_matrix <- matrix(c(
+  2.0, 2.1, 1.9,  # Obs 1: μ₁ from posterior draws 1, 2, 3
+  1.0, 1.2, 1.1,  # Obs 2: μ₂ from posterior draws 1, 2, 3
+  4.0, 3.8, 4.2,  # Obs 3: μ₃ from posterior draws 1, 2, 3
+  1.0, 1.1, 0.9   # Obs 4: μ₄ from posterior draws 1, 2, 3
+), nrow = 4, byrow = TRUE)
+
+rownames(predicted_matrix) <- c("Obs 1", "Obs 2", "Obs 3", "Obs 4")
+colnames(predicted_matrix) <- c("Draw 1", "Draw 2", "Draw 3")
+```
+
+**Why this matters for our trio:**  
+- The columns come from $p(\theta\mid D)$.  
+- The matrix of $\mu$ values is the scaffold we use to simulate $p(\tilde{y}\mid D)$.  
+- Row summaries of that simulated distribution give $E[\tilde{y}\mid D]$ and intervals.
+
+Let's display the matrix with row means (i.e., expected predictions of the mean response for this toy example):
+
+```{r}
+#| label: matrix-table
+#| echo: false
+
+library(knitr)
+
+matrix_with_means <- cbind(predicted_matrix,
+                           "Row Mean" = rowMeans(predicted_matrix))
+
+kable(matrix_with_means,
+      digits = 2,
+      caption = "Prediction Matrix: Each row is an observation, each column is a posterior draw")
+```
+
+Once predictions are organized this way, everything reduces to simple arithmetic across columns:
+
+- **Expected predictions** $E[\tilde{y}\mid D]$: row means of $\mu_i$
+- **Credible intervals** for the **mean response**: rowwise quantiles of $\mu_i$
+- Next we’ll add $\sigma$ to generate draws of $\tilde{y}$ ⇒ $p(\tilde{y}\mid D)$ and prediction intervals
+
+## The three-level hierarchy
+
+To pull our ideas together, here’s the compact relationship we’ll now use repeatedly:
+
+```
+Parameters θ  →  Data y
+p(θ|D)        →  p(ỹ|D)      →  E[ỹ|D]
+posterior        posterior       mean of the
+distribution     predictive       posterior predictive
+                 distribution     (expected prediction)
+```
+
+| Level | Distribution | What it describes | Uncertainty captured |
+|------:|--------------|-------------------|----------------------|
+| 1 | $p(\theta\mid D)$ | What we believe about parameters after seeing data | **Parameter** uncertainty |
+| 2 | $p(\tilde{y}\mid D)$ | What we believe about future/unobserved data | **Parameter + observation** uncertainty |
+| 3 | $E[\tilde{y}\mid D]$ | Mean of the posterior predictive distribution | Center only (a summary) |
+
+Plain language: posterior over parameters ⇒ simulate data from it ⇒ average those simulations.
+
+## Understanding the two kinds of predictions
+
+### Expected predictions: $E[\tilde{y}\mid D]$
+
+For a Normal linear regression with $y_i \sim \text{Normal}(\mu_i,\sigma)$ and $\mu_i = \alpha + \beta x_i$, $E[y\mid\mu,\sigma] = \mu$, so $E[\tilde{y}\mid D] = E[\mu\mid D]$. We can compute this as the mean of the $\mu_i$ across posterior draws.
+
+**Why this works:** The Normal distribution is centered at $\mu$. When we 
+average over many possible future observations (each drawn from $\text{Normal}(\mu, \sigma)$), 
+we get $\mu$ back -- the noise $\sigma$ averages out to zero. Then we just average 
+those $\mu$ values across our posterior draws.
+
+**When this breaks:** In logistic regression, your linear predictor might 
+average to 0, but $\text{logit}^{-1}(0) = 0.5$ while the average probability 
+could be 0.6. Non-linear transformations don't commute with averaging. This is 
+why we simulate full draws from $p(\tilde{y}|D)$ first, then summarize -- it 
+works for any model.
+
+```{r}
+#| label: expected-predictions
+
+# Expected predictions: mean of μᵢ across posterior draws
+epred <- rowMeans(predicted_matrix)
+print(epred)
+```
+
+
+### Posterior predictions: samples from $p(\tilde{y}\mid D)$
+
+To see the full range of plausible observations (not just the mean response), we add observation noise $\sigma$ to the $\mu$ values and simulate $\tilde{y}$.
+
+```{r}
+#| label: posterior-predictions
+
+set.seed(123)
+
+# Posterior draws of σ (one for each column)
+sigma_draws <- c(0.5, 0.6, 0.55)
+
+# Generate ỹᵢ ~ Normal(μᵢ, σ) for each draw
+y_pred_matrix <- predicted_matrix
+for (j in 1:3) {
+  y_pred_matrix[, j] <- predicted_matrix[, j] + rnorm(4, 0, sigma_draws[j])
+}
+```
+```{r}
+#| label: show-ypred
+#| echo: false
+
+kable(y_pred_matrix,
+      digits = 2,
+      caption = "Posterior predictions: samples from p(ỹ|D)")
+```
+
+These $\tilde{y}$ values vary more than the $\mu$ values because they include $\sigma$: the *irreducible* variation around the mean response.
+
+### Two types of intervals (and what they mean)
+
+**Credible intervals (for the mean response)**--from the $\mu_i$ matrix (parameter uncertainty only):
+
+```{r}
+#| label: credible-intervals
+
+apply(predicted_matrix, 1, quantile, probs = c(0.025, 0.975))
+```
+
+**Prediction intervals (for future observations)**--from the $\tilde{y}$ matrix (parameter + observation uncertainty):
+
+```{r}
+#| label: prediction-intervals
+
+apply(y_pred_matrix, 1, quantile, probs = c(0.025, 0.975))
+```
+
+Prediction intervals are always wider: they include both uncertainty about the mean response and the natural spread of outcomes.
+
+::: callout-tip
+## Decision guide (tidybayes/R workflow)
+
+| Question | Use | What you get | Function |
+|----------|-----|--------------|----------|
+| What's the average outcome? | Expected predictions | $E[\tilde{y}\mid D]$ | `add_epred_draws()` |
+| What might I observe? | Posterior predictions | draws from $p(\tilde{y}\mid D)$ | `add_predicted_draws()` |
+| Is my model realistic? | Posterior predictions | compare simulations to data | `add_predicted_draws()` |
+| What's the effect of X? | Expected predictions | change in $E[\tilde{y}\mid D]$ | `add_epred_draws()` |
+| Do I need prediction intervals? | Posterior predictions | full uncertainty range | `add_predicted_draws()` |
+:::
+
+**Mini-recap:** we start with $p(\theta\mid D)$, simulate $p(\tilde{y}\mid D)$, and summarize with $E[\tilde{y}\mid D]$.
+
+## A complete example with real tools
+
+Let's fit a model and produce both kinds of predictions with `rstanarm` and `tidybayes`.
+```{r}
+#| label: fit-model
+library(rstanarm)
+library(tidybayes)
+library(dplyr)
+library(ggplot2)
+
+# Simulate some data: y = 2 + 0.5x + noise
+set.seed(123)
+n <- 100
+x <- rnorm(n)
+y <- 2 + 0.5 * x + rnorm(n, sd = 1)
+data <- data.frame(x = x, y = y)
+
+# Fit Bayesian regression (MCMC to get posterior samples)
+fit <- stan_glm(y ~ x, data = data,
+                family = gaussian(),
+                chains = 4, iter = 2000,
+                refresh = 0)
+```
+
+## Posterior predictive checks: Is your model any good?
+
+Before we use our model for predictions, we should check: **does data simulated from our model look like our actual data?** If not, our model is missing something important.
+```{r}
+#| label: ppc-visual
+
+library(bayesplot)
+
+# Extract posterior predictive samples
+y_rep <- posterior_predict(fit)
+
+# Compare distribution of observed vs. simulated data
+ppc_dens_overlay(y, y_rep[1:100, ]) +
+  labs(title = "Posterior predictive check: Density comparison",
+       subtitle = "Light blue = 100 draws from p(ỹ|D), Dark blue = observed data") +
+  theme_minimal()
+```
+
+**What to look for:** Do the light blue curves (simulated data) cover the dark blue curve (observed data)? If observed data looks like "just another draw" from the model, that's good. If it's systematically different (e.g., observed has heavier tails, bimodality, etc.), your model may need revision.
+
+**In our case:** The simulated data (light blue curves) nicely envelope the observed data (dark blue), suggesting our Normal linear model with constant variance is reasonable for this dataset.
+
+### When PPCs reveal problems
+
+If posterior predictive checks fail, common issues include:
+
+- **Outliers not captured**: Consider robust likelihoods (Student-t instead of Normal)
+- **Non-constant variance**: Add variance modeling (e.g., `sigma ~ x`)
+- **Non-linearity missed**: Add polynomial terms or smooths
+- **Clustering ignored**: Consider hierarchical/mixed models
+
+
+## Visualizing predictions
+
+Now that we've validated our model, let's see both types of predictions in action:
+```{r}
+#| label: visualize-predictions
+
+# Now we can extract both types of predictions:
+# - add_epred_draws(): expected predictions E[ỹ|D]
+# - add_predicted_draws(): full posterior predictive samples p(ỹ|D)
+# Let's visualize both simultaneously:
+
+data |>
+  add_epred_draws(fit) |>
+  ggplot(aes(x = x, y = y)) +
+  # Blue bands: credible intervals for E[μ|D]
+  stat_lineribbon(aes(y = .epred), .width = c(0.61, 0.89)) +
+  # Black points: observed data
+  geom_point(data = data, size = 2, alpha = 0.8) +
+  # Red points: 50 samples from p(ỹ|D) showing full predictive distribution
+  geom_point(data = data |> add_predicted_draws(fit) |> sample_draws(50),
+             aes(y = .prediction),
+             color = "red", alpha = 0.15, size = 1) +
+  scale_fill_brewer() +
+  labs(title = "Expected predictions (blue) vs. Posterior predictions (red)",
+       subtitle = "Blue bands: E[μ|D] credible intervals; Red: samples from p(ỹ|D)",
+       caption = "Black = observed data | Blue = credible intervals for mean response | Red = posterior prediction samples") +
+  theme_minimal()
+```
+
+### What the figure is showing
+
+- **Black points**: observed data  
+- **Blue bands**: credible intervals for the mean response $E[\mu\mid D] = E[\tilde{y}\mid D]$ (for this linear-Gaussian model)  
+- **Red points**: samples from $p(\tilde{y}\mid D)$--plausible observations that include $\sigma$
+
+Why are the red points more dispersed? They include $\sigma$, the irreducible variation around the mean response. If you re-ran the same study, new observations would scatter around the blue line much like those red points.
+
+
+### Comparing credible intervals vs. prediction intervals
+
+The plot above shows both types of uncertainty, but let's make the distinction even clearer with a direct comparison:
+```{r}
+#| label: interval-comparison
+#| fig.width: 10
+#| fig.height: 4
+
+library(patchwork)
+
+# Create new data for prediction
+newdata <- data.frame(x = seq(-2, 2, length.out = 50))
+
+# Get both types of intervals
+epred_intervals <- newdata |>
+  add_epred_draws(fit) |>
+  median_qi(.epred, .width = 0.89)
+
+pred_intervals <- newdata |>
+  add_predicted_draws(fit) |>
+  median_qi(.prediction, .width = 0.89)
+
+# Plot credible intervals (for mean response)
+p1 <- ggplot(epred_intervals, aes(x = x, y = .epred)) +
+  geom_ribbon(aes(ymin = .lower, ymax = .upper), alpha = 0.3, fill = "blue") +
+  geom_line(color = "blue", size = 1) +
+  geom_point(data = data, aes(x = x, y = y), alpha = 0.3, size = 1) +
+  labs(title = "89% Credible Intervals for E[μ|D]",
+       subtitle = "Where we expect the mean response to be",
+       y = "y") +
+  theme_minimal() +
+  coord_cartesian(ylim = c(-3, 6))
+
+# Plot prediction intervals (for observations)
+p2 <- ggplot(pred_intervals, aes(x = x, y = .prediction)) +
+  geom_ribbon(aes(ymin = .lower, ymax = .upper), alpha = 0.3, fill = "red") +
+  geom_line(color = "red", size = 1) +
+  geom_point(data = data, aes(x = x, y = y), alpha = 0.3, size = 1) +
+  labs(title = "89% Prediction Intervals for p(ỹ|D)",
+       subtitle = "Where we expect future observations to fall",
+       y = "y") +
+  theme_minimal() +
+  coord_cartesian(ylim = c(-3, 6))
+
+p1 + p2
+```
+
+**Key insight:** Both plots show the same fitted line, but:
+
+- **Left (blue)**: Narrow bands showing uncertainty about the *average* relationship. "If I could repeat this experiment infinite times, where would the mean response at each $x$ value fall?"
+
+- **Right (red)**: Wide bands showing uncertainty about *individual observations*. "If I collect one new data point at this $x$ value, where will it likely fall?"
+
+Notice how the observed data points (black dots) mostly fall within the red bands but often outside the blue bands -- exactly as they should. The blue bands don't try to capture individual observations; they capture the mean trend.
+
+**Practical implication:** 
+
+- Planning a policy based on expected outcomes? Use credible intervals (blue).
+- Predicting whether a specific patient will respond? Use prediction intervals (red).
+- Building a forecast with uncertainty bounds? Use prediction intervals (red).
+
+
+## Takeaway: from complex to simple
+
+**Hard part:** compute $p(\theta\mid D)$ with MCMC (explore a high-dimensional space; replace intractable integrals with samples).
+
+**Easy part:** treat those samples like columns in a matrix and do arithmetic to move through the trio:
+
+- Posterior $p(\theta\mid D)$ ⇒ simulate the linear predictor $\mu$ for each draw  
+- Add noise to get posterior predictive draws $p(\tilde{y}\mid D)$  
+- Summarize by row means/quantiles to get $E[\tilde{y}\mid D]$, credible intervals (for means), and prediction intervals (for outcomes)
+
+Keep the trio in mind and everything else becomes mechanical.
+
+## Further reading
+
+- McElreath's [Statistical Rethinking](https://xcelab.net/rm/statistical-rethinking/) has excellent coverage of posterior prediction and makes these concepts very intuitive
+- The [`tidybayes` documentation](https://mjskay.github.io/tidybayes/) provides great examples of working with posterior draws in a tidy format
+- Gelman et al.'s *Bayesian Data Analysis* (Chapter 7) covers posterior predictive checking in detail
+- Kay's [`tidybayes` vignettes](https://mjskay.github.io/tidybayes/articles/) show practical workflows for Bayesian analysis in R
