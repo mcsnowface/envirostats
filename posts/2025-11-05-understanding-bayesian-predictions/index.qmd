@@ -319,7 +319,9 @@ Prediction intervals are always wider: they include both uncertainty about the m
 
 ## A complete example with real tools
 
-Let's fit a model and produce both kinds of predictions with `rstanarm` and `tidybayes`.
+Let's fit a model with `rstanarm` using default priors (see `help('prior_summary')` for more details) and inspect the output.
+
+
 ```{r}
 #| label: fit-model
 library(rstanarm)
@@ -339,7 +341,39 @@ fit <- stan_glm(y ~ x, data = data,
                 family = gaussian(),
                 chains = 4, iter = 2000,
                 refresh = 0)
+
+summary(fit)
 ```
+
+::: {.callout-note icon=true}
+## Understanding the output
+
+**Model Info** (top):
+
+- `function: stan_glm` -- we're using Stan's generalized linear model
+- `family: gaussian [identity]` -- Normal distribution with identity link (standard linear regression)
+- `sample: 4000` -- we have 4000 posterior draws (4 chains × 2000 iterations, after warmup)
+- `observations: 100, predictors: 2` -- confirms our data structure (intercept + x)
+
+**Estimates table**: 
+
+- `(Intercept)`: mean = 1.9 (we simulated with 2.0) ✓
+- `x`: mean = 0.4 (we simulated with 0.5) ✓
+- `sigma`: mean = 1.0 (we simulated with sd = 1) ✓
+
+The model recovered our true parameters! The `sd` column shows posterior uncertainty -- how much each parameter varies across draws. The percentiles (10%, 50%, 90%) give you credible intervals.
+
+**MCMC Diagnostics** (bottom table):
+
+- `Rhat = 1.0` for all parameters → chains converged ✓
+- `n_eff > 1700` for all → plenty of effective samples ✓
+
+These diagnostics tell us we can trust our posterior samples. Always check these before using your model!
+
+**The key insight**: This summary is just describing *columns* of the posterior draws matrix. Each parameter gets one row showing its column mean, column SD, and column quantiles. After MCMC does the hard work, everything else is simple arithmetic on those columns.
+:::
+
+Now let's check if this model is any good before using it for predictions.
 
 ## Posterior predictive checks: Is your model any good?
 
@@ -375,7 +409,8 @@ If posterior predictive checks fail, common issues include:
 
 ## Visualizing predictions
 
-Now that we've validated our model, let's see both types of predictions in action:
+Now that we've validated our model, let's see both types of predictions in action by leveraging the `tidybayes` package and the two key functions `add_epred_draws()` and `add_predicted_draws()`.
+
 ```{r}
 #| label: visualize-predictions
 
