@@ -31,6 +31,8 @@ execute:
 
 draft: false  
 ---
+![From uncertainty, form arises — the flow from belief to prediction](bayesian_prediction.png)
+<br>
 
 So you've just fit your first Bayesian model using `brms` or `rstanarm`. Maybe you were surprised by how easy it was -- the syntax looked almost exactly like `lm()` for a simple linear regression. You hit run, waited a bit longer than usual, and got... output. Lots of output.
 
@@ -194,6 +196,8 @@ kable(matrix_with_means,
       caption = "Prediction Matrix: Each row is an observation, each column is a posterior draw")
 ```
 
+<br>
+
 Once predictions are organized this way, everything reduces to simple arithmetic across columns:
 
 - **Expected predictions** $E[\tilde{y}\mid D]$: row means of $\mu_i$
@@ -272,6 +276,8 @@ kable(y_pred_matrix,
       digits = 2,
       caption = "Posterior predictions: samples from p(ỹ|D)")
 ```
+
+<br> 
 
 These $\tilde{y}$ values vary more than the $\mu$ values because they include $\sigma$: the *irreducible* variation around the mean response.
 

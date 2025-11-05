@@ -277,6 +277,7 @@ window.Quarto = {
 </header>
 
 
+<p><img src="bayesian_prediction.png" class="img-fluid" alt="From uncertainty, form arises — the flow from belief to prediction"> <br></p>
 <p>So you’ve just fit your first Bayesian model using <code>brms</code> or <code>rstanarm</code>. Maybe you were surprised by how easy it was – the syntax looked almost exactly like <code>lm()</code> for a simple linear regression. You hit run, waited a bit longer than usual, and got… output. Lots of output.</p>
 <p>You look at the summary. There are means and standard deviations, credible intervals, and mysterious diagnostics like “Rhat” and “ESS”. But wait – where are the p-values? And how do you actually make predictions? People keep talking about “posterior predictions” and “posterior distributions” – what do those actually mean, and how do you work with them?</p>
 <p>If you’ve ever felt confused by the terminology around Bayesian predictions – posterior predictive distributions, expected predictions, prediction intervals – you’re not alone. But here’s the secret: once your Bayesian model calculates the posterior distribution, <strong>everything else is just computing means, quantiles, and other summary statistics</strong>. Let me show you what I mean.</p>
@@ -466,6 +467,7 @@ p(\alpha \mid D) \;=\; \int p(\alpha,\beta \mid D)\,d\beta.
 </table>
 </div>
 </div>
+<p><br></p>
 <p>Once predictions are organized this way, everything reduces to simple arithmetic across columns:</p>
 <ul>
 <li><strong>Expected predictions</strong> <span class="math inline">\(E[\tilde{y}\mid D]\)</span>: row means of <span class="math inline">\(\mu_i\)</span></li>
@@ -598,6 +600,7 @@ distribution     predictive       posterior predictive
 </table>
 </div>
 </div>
+<p><br></p>
 <p>These <span class="math inline">\(\tilde{y}\)</span> values vary more than the <span class="math inline">\(\mu\)</span> values because they include <span class="math inline">\(\sigma\)</span>: the <em>irreducible</em> variation around the mean response.</p>
 </section>
 <section id="two-types-of-intervals-and-what-they-mean" class="level3">
