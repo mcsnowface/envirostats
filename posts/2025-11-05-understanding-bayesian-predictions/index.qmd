@@ -40,6 +40,8 @@ You look at the summary. There are means and standard deviations, credible inter
 
 If you've ever felt confused by the terminology around Bayesian predictions -- posterior predictive distributions, expected predictions, prediction intervals -- you're not alone. But here's the secret: once your Bayesian model calculates the posterior distribution, **everything else is just computing means, quantiles, and other summary statistics**. Let me show you what I mean.
 
+> **Note:** All examples in this post were built using R with the `rstanarm`, `tidybayes`, and `ggplot2` packages. You can follow along by copying and pasting the code -- everything is self-contained and reproducible.
+
 
 ## The Core Insight
 

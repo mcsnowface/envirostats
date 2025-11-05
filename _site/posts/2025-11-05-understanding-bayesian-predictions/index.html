@@ -286,6 +286,9 @@ window.Quarto = {
 <p>So you’ve just fit your first Bayesian model using <code>brms</code> or <code>rstanarm</code>. Maybe you were surprised by how easy it was – the syntax looked almost exactly like <code>lm()</code> for a simple linear regression. You hit run, waited a bit longer than usual, and got… output. Lots of output.</p>
 <p>You look at the summary. There are means and standard deviations, credible intervals, and mysterious diagnostics like “Rhat” and “ESS”. But wait – where are the p-values? And how do you actually make predictions? People keep talking about “posterior predictions” and “posterior distributions” – what do those actually mean, and how do you work with them?</p>
 <p>If you’ve ever felt confused by the terminology around Bayesian predictions – posterior predictive distributions, expected predictions, prediction intervals – you’re not alone. But here’s the secret: once your Bayesian model calculates the posterior distribution, <strong>everything else is just computing means, quantiles, and other summary statistics</strong>. Let me show you what I mean.</p>
+<blockquote class="blockquote">
+<p><strong>Note:</strong> All examples in this post were built using R with the <code>rstanarm</code>, <code>tidybayes</code>, and <code>ggplot2</code> packages. You can follow along by copying and pasting the code – everything is self-contained and reproducible.</p>
+</blockquote>
 <section id="the-core-insight" class="level2">
 <h2 class="anchored" data-anchor-id="the-core-insight">The Core Insight</h2>
 <p>Bayesian inference has two phases:</p>
