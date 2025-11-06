@@ -209,13 +209,13 @@ window.Quarto = {
   <li><a href="#the-core-insight" id="toc-the-core-insight" class="nav-link active" data-scroll-target="#the-core-insight">The Core Insight</a></li>
   <li><a href="#why-is-the-hard-part-hard" id="toc-why-is-the-hard-part-hard" class="nav-link" data-scroll-target="#why-is-the-hard-part-hard">Why is the hard part hard?</a>
   <ul class="collapse">
-  <li><a href="#the-goal-a-joint-probability-over-all-parameters" id="toc-the-goal-a-joint-probability-over-all-parameters" class="nav-link" data-scroll-target="#the-goal-a-joint-probability-over-all-parameters">The goal: a joint probability over all parameters</a></li>
-  <li><a href="#starting-simple-grid-approximation" id="toc-starting-simple-grid-approximation" class="nav-link" data-scroll-target="#starting-simple-grid-approximation">Starting simple: grid approximation</a></li>
+  <li><a href="#the-goal-a-joint-probability-over-all-parameters" id="toc-the-goal-a-joint-probability-over-all-parameters" class="nav-link" data-scroll-target="#the-goal-a-joint-probability-over-all-parameters">The goal: a <strong>joint probability over all parameters</strong></a></li>
+  <li><a href="#starting-simple-grid-approximation" id="toc-starting-simple-grid-approximation" class="nav-link" data-scroll-target="#starting-simple-grid-approximation">Starting simple: Grid approximation</a></li>
   <li><a href="#the-curse-of-dimensionality-and-continuity" id="toc-the-curse-of-dimensionality-and-continuity" class="nav-link" data-scroll-target="#the-curse-of-dimensionality-and-continuity">The curse of dimensionality (and continuity)</a></li>
   <li><a href="#the-solution-mcmc-explores-the-joint-probability-space" id="toc-the-solution-mcmc-explores-the-joint-probability-space" class="nav-link" data-scroll-target="#the-solution-mcmc-explores-the-joint-probability-space">The solution: MCMC explores the joint probability space</a></li>
   </ul></li>
   <li><a href="#a-simple-example-the-matrix-structure" id="toc-a-simple-example-the-matrix-structure" class="nav-link" data-scroll-target="#a-simple-example-the-matrix-structure">A simple example: the matrix structure</a></li>
-  <li><a href="#the-three-level-prediction-pipeline" id="toc-the-three-level-prediction-pipeline" class="nav-link" data-scroll-target="#the-three-level-prediction-pipeline">The three-level prediction pipeline</a></li>
+  <li><a href="#the-three-stages-of-bayesian-prediction" id="toc-the-three-stages-of-bayesian-prediction" class="nav-link" data-scroll-target="#the-three-stages-of-bayesian-prediction">The three stages of Bayesian prediction</a></li>
   <li><a href="#understanding-the-two-kinds-of-predictions" id="toc-understanding-the-two-kinds-of-predictions" class="nav-link" data-scroll-target="#understanding-the-two-kinds-of-predictions">Understanding the two kinds of predictions</a>
   <ul class="collapse">
   <li><a href="#expected-predictions-etildeymid-d" id="toc-expected-predictions-etildeymid-d" class="nav-link" data-scroll-target="#expected-predictions-etildeymid-d">Expected predictions: <span class="math inline">\(E[\tilde{y}\mid D]\)</span></a></li>
@@ -284,7 +284,7 @@ window.Quarto = {
 </figure>
 </div>
 <p>So you’ve just fit your first Bayesian model using <code>brms</code> or <code>rstanarm</code>. Maybe you were surprised by how easy it was – the syntax looked almost exactly like <code>lm()</code> for a simple linear regression. You hit run, waited a bit longer than usual, and got… output. Lots of output.</p>
-<p>You look at the summary. There are means and standard deviations, credible intervals, and mysterious diagnostics like “Rhat” and “ESS”. But wait – where are the p-values? And how do you actually make predictions? People keep talking about “posterior predictions” and “posterior distributions” – what do those actually mean, and how do you work with them?</p>
+<p>You look at the summary. There are means and standard deviations, credible intervals, and mysterious diagnostics like “Rhat” and “ESS”. But wait – where are the p-values 😜 And how do you actually make predictions? People keep talking about “posterior predictions” and “posterior distributions” – what do those actually mean, and how do you work with them?</p>
 <p>If you’ve ever felt confused by the terminology around Bayesian predictions – posterior predictive distributions, expected predictions, prediction intervals – you’re not alone. But here’s the secret: once your Bayesian model calculates the posterior distribution, <strong>everything else is just computing means, quantiles, and other summary statistics</strong>. Let me show you what I mean.</p>
 <blockquote class="blockquote">
 <p><strong>Note:</strong> All examples in this post were built using R with the <code>rstanarm</code>, <code>tidybayes</code>, and <code>ggplot2</code> packages. You can follow along by copying and pasting the code – everything is self-contained and reproducible.</p>
@@ -293,16 +293,16 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="the-core-insight">The Core Insight</h2>
 <p>Bayesian inference has two phases:</p>
 <ol type="1">
-<li><strong>The hard part</strong>: Computing the posterior distribution <span class="math inline">\(p(\theta\mid D)\)</span> (this is where MCMC).</li>
+<li><strong>The hard part</strong>: Computing the posterior distribution <span class="math inline">\(p(\theta\mid D)\)</span> (this is where MCMC comes in).</li>
 <li><strong>The easy part</strong>: Summarizing that posterior and quantities derived from it – means, standard deviations, quantiles, etc.</li>
 </ol>
-<p>Once you have posterior samples from <span class="math inline">\(p(\theta\mid D)\)</span>, you can simulate the posterior predictive distribution <span class="math inline">\(p(\tilde{y}\mid D)\)</span> and summarize it with its mean <span class="math inline">\(E[\tilde{y}\mid D]\)</span>. We’ll return to this trio when it becomes most helpful.</p>
+<p>Once you have posterior samples from <span class="math inline">\(p(\theta\mid D)\)</span>, you can simulate the posterior predictive distribution <span class="math inline">\(p(\tilde{y}\mid D)\)</span> and summarize it with its mean <span class="math inline">\(E[\tilde{y}\mid D]\)</span>. We’ll return to these three stages of Bayesian prediction when it becomes most helpful.</p>
 </section>
 <section id="why-is-the-hard-part-hard" class="level2">
 <h2 class="anchored" data-anchor-id="why-is-the-hard-part-hard">Why is the hard part hard?</h2>
-<p>Before the “easy part,” a quick sketch of why computing the posterior is challenging (you don’t have to master this to <em>use</em> Bayesian methods, but the intuition helps).</p>
+<p>Before the “easy part”, a quick sketch of why computing the posterior is challenging (you don’t have to master this to <em>use</em> Bayesian methods, but the intuition helps).</p>
 <section id="the-goal-a-joint-probability-over-all-parameters" class="level3">
-<h3 class="anchored" data-anchor-id="the-goal-a-joint-probability-over-all-parameters">The goal: a joint probability over all parameters</h3>
+<h3 class="anchored" data-anchor-id="the-goal-a-joint-probability-over-all-parameters">The goal: a <strong>joint probability over all parameters</strong></h3>
 <p>Bayes’ theorem:</p>
 <p><span class="math display">\[
 p(\theta \mid D) \;=\; \frac{p(D \mid \theta)\,p(\theta)}{p(D)}
@@ -323,8 +323,14 @@ p(\alpha,\beta,\sigma \mid D) \propto p(D \mid \alpha,\beta,\sigma)\, p(\alpha,\
 <p>This is a joint distribution in a high-dimensional space. More parameters ⇒ higher dimension.</p>
 </section>
 <section id="starting-simple-grid-approximation" class="level3">
-<h3 class="anchored" data-anchor-id="starting-simple-grid-approximation">Starting simple: grid approximation</h3>
-<p>Suppose you’re a fish biologist interested in the hatching rate of rainbow trout. You run an experiment and <strong>4 out of 10 eggs hatched</strong> – what’s the hatching rate <span class="math inline">\(\theta\)</span>? With one parameter, a <strong>grid approximation</strong> shows the mechanics explicitly.</p>
+<h3 class="anchored" data-anchor-id="starting-simple-grid-approximation">Starting simple: Grid approximation</h3>
+<p>You’re a fish biologist studying the hatching rate, denoted by <span class="math inline">\(\theta\)</span>, of rainbow trout. In an experiment, <strong>4 out of 10 eggs hatched</strong>.</p>
+<p>Instead of chasing a single “best” estimate, we want the <strong>entire posterior distribution</strong> of plausible hatching rates given both our data and prior beliefs. This is the key idea in Bayesian inference — we quantify <em>uncertainty</em> rather than ignore it.</p>
+<p>To make this concrete, we use a <strong>grid approximation</strong>. We choose a fine grid of possible hatching rates, <span class="math display">\[
+\theta \in [0, 1],
+\]</span> meaning <span class="math inline">\(\theta\)</span> can take any value between 0 (no eggs hatch) and 1 (all eggs hatch).</p>
+<p>For each possible value of <span class="math inline">\(\theta\)</span>, we compute how likely it is to observe 4 hatched eggs out of 10, multiply that by the prior belief about <span class="math inline">\(\theta\)</span>, and normalize so the probabilities sum to one.</p>
+<p>The result is a <strong>posterior distribution</strong> over <span class="math inline">\(\theta\)</span>: it shows not just which hatching rate is most plausible, but how confident we are about different possibilities — allowing us to summarize uncertainty with quantities like the posterior mean, median, mode (MAP), or credible intervals.</p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Show code</summary>
@@ -333,42 +339,39 @@ p(\alpha,\beta,\sigma \mid D) \propto p(D \mid \alpha,\beta,\sigma)\, p(\alpha,\
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Define a grid of possible hatching rates from 0 to 1</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>theta_grid <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">length.out =</span> <span class="dv">100</span>)</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Prior: assume all values equally plausible (flat prior)</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>prior_flat <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">100</span>)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Prior options:</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>prior_flat <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">100</span>)                        <span class="co"># Uninformative</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>prior_conservative <span class="ot">&lt;-</span> <span class="fu">dbeta</span>(theta_grid, <span class="dv">5</span>, <span class="dv">5</span>)    <span class="co"># Moderate rates likely</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>prior_optimistic <span class="ot">&lt;-</span> <span class="fu">dbeta</span>(theta_grid, <span class="dv">8</span>, <span class="dv">2</span>)      <span class="co"># High rates likely</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>prior_skeptical <span class="ot">&lt;-</span> <span class="fu">dbeta</span>(theta_grid, <span class="dv">2</span>, <span class="dv">8</span>)       <span class="co"># Low rates likely</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Prior options:</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>prior_flat <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">100</span>)                        <span class="co"># Uninformative (flat)</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>prior_conservative <span class="ot">&lt;-</span> <span class="fu">dbeta</span>(theta_grid, <span class="dv">5</span>, <span class="dv">5</span>)    <span class="co"># Moderate rates likely</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>prior_optimistic <span class="ot">&lt;-</span> <span class="fu">dbeta</span>(theta_grid, <span class="dv">8</span>, <span class="dv">2</span>)      <span class="co"># High rates likely</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>prior_skeptical <span class="ot">&lt;-</span> <span class="fu">dbeta</span>(theta_grid, <span class="dv">2</span>, <span class="dv">8</span>)       <span class="co"># Low rates likely</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># 👉 CHANGE THIS LINE to try different priors:</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">&lt;-</span> prior_flat   </span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># 👉 CHANGE THIS LINE to try different priors:</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">&lt;-</span> prior_flat   </span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Likelihood: how likely is observing 4/10 for each possible θ?</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Observed data: 4 hatched out of 10 eggs</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>successes <span class="ot">&lt;-</span> <span class="dv">4</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>trials <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>observed_rate <span class="ot">&lt;-</span> successes <span class="sc">/</span> trials</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>likelihood <span class="ot">&lt;-</span> <span class="fu">dbinom</span>(successes, <span class="at">size =</span> trials, <span class="at">prob =</span> theta_grid)</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Posterior ∝ Likelihood × Prior, then normalize</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">&lt;-</span> likelihood <span class="sc">*</span> prior</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">&lt;-</span> posterior <span class="sc">/</span> <span class="fu">sum</span>(posterior)</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize the posterior distribution</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">theta =</span> theta_grid, <span class="at">posterior =</span> posterior) <span class="sc">|&gt;</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> theta, <span class="at">y =</span> posterior)) <span class="sc">+</span></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(<span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Dashed red line = observed rate (from data), stays fixed</span></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Shows how different priors shift the posterior relative to observed data</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> observed_rate, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Hatching rate (θ)"</span>,</span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Posterior probability"</span>,</span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Posterior distribution with 100 grid points"</span>) <span class="sc">+</span></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Likelihood: how likely is observing 4/10 for each possible θ?</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Observed data: 4 hatched out of 10 eggs</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>successes <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>trials <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>observed_rate <span class="ot">&lt;-</span> successes <span class="sc">/</span> trials</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>likelihood <span class="ot">&lt;-</span> <span class="fu">dbinom</span>(successes, <span class="at">size =</span> trials, <span class="at">prob =</span> theta_grid)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Posterior ∝ Likelihood × Prior, then normalize</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">&lt;-</span> likelihood <span class="sc">*</span> prior</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">&lt;-</span> posterior <span class="sc">/</span> <span class="fu">sum</span>(posterior)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize the posterior distribution</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">theta =</span> theta_grid, <span class="at">posterior =</span> posterior) <span class="sc">|&gt;</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> theta, <span class="at">y =</span> posterior)) <span class="sc">+</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(<span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Dashed red line = observed rate (from data), stays fixed</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Shows how different priors shift the posterior relative to observed data</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> observed_rate, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Hatching rate (θ)"</span>,</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Posterior probability"</span>,</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Posterior distribution with 100 grid points"</span>) <span class="sc">+</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -378,6 +381,7 @@ p(\alpha,\beta,\sigma \mid D) \propto p(D \mid \alpha,\beta,\sigma)\, p(\alpha,\
 </div>
 </div>
 </div>
+<p>Try changing the prior (e.g., <code>prior_conservative</code>, <code>prior_optimistic</code>, or <code>prior_skeptical</code>) and re-running the code to see how different prior beliefs influence the posterior. This highlights one of the most important insights in Bayesian inference – <strong>the posterior reflects both the data and the prior assumptions</strong>.</p>
 <p><strong>Quick tie-in:</strong> From this posterior <span class="math inline">\(p(\theta\mid D)\)</span>, we can simulate a posterior predictive distribution <span class="math inline">\(p(\tilde{y}\mid D)\)</span> (e.g., future hatch counts) and summarize it with the expected prediction <span class="math inline">\(E[\tilde{y}\mid D]\)</span>.</p>
 </section>
 <section id="the-curse-of-dimensionality-and-continuity" class="level3">
@@ -424,10 +428,14 @@ p(\alpha \mid D) \;=\; \int p(\alpha,\beta \mid D)\,d\beta.
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(predicted_matrix) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Draw 1"</span>, <span class="st">"Draw 2"</span>, <span class="st">"Draw 3"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p><strong>Why this matters for our trio:</strong><br>
-- The columns come from <span class="math inline">\(p(\theta\mid D)\)</span>.<br>
-- The matrix of <span class="math inline">\(\mu\)</span> values is the scaffold we use to simulate <span class="math inline">\(p(\tilde{y}\mid D)\)</span>.<br>
-- Row summaries of that simulated distribution give <span class="math inline">\(E[\tilde{y}\mid D]\)</span> and intervals.</p>
+<p><strong>Connecting this back to the three stages of Bayesian prediction:</strong></p>
+<ul>
+<li>The columns come from <span class="math inline">\(p(\theta\mid D)\)</span>.<br>
+</li>
+<li>The matrix of <span class="math inline">\(\mu\)</span> values is the scaffold we use to simulate <span class="math inline">\(p(\tilde{y}\mid D)\)</span>.<br>
+</li>
+<li>Row summaries of that simulated distribution give <span class="math inline">\(E[\tilde{y}\mid D]\)</span> and intervals.</li>
+</ul>
 <p>Let’s display the matrix with row means (i.e., expected predictions of the mean response for this toy example):</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -483,8 +491,8 @@ p(\alpha \mid D) \;=\; \int p(\alpha,\beta \mid D)\,d\beta.
 <li>Next we’ll add <span class="math inline">\(\sigma\)</span> to generate draws of <span class="math inline">\(\tilde{y}\)</span> ⇒ <span class="math inline">\(p(\tilde{y}\mid D)\)</span> and prediction intervals</li>
 </ul>
 </section>
-<section id="the-three-level-prediction-pipeline" class="level2">
-<h2 class="anchored" data-anchor-id="the-three-level-prediction-pipeline">The three-level prediction pipeline</h2>
+<section id="the-three-stages-of-bayesian-prediction" class="level2">
+<h2 class="anchored" data-anchor-id="the-three-stages-of-bayesian-prediction">The three stages of Bayesian prediction</h2>
 <p>To pull our ideas together, here’s the compact relationship we’ll now use repeatedly:</p>
 <pre><code>Parameters θ  →  Data y
 p(θ|D)        →  p(ỹ|D)      →  E[ỹ|D]
@@ -959,7 +967,7 @@ Understanding the output
 </li>
 <li>Summarize by row means/quantiles to get <span class="math inline">\(E[\tilde{y}\mid D]\)</span>, credible intervals (for means), and prediction intervals (for outcomes)</li>
 </ul>
-<p>Keep the trio in mind and everything else becomes mechanical.</p>
+<p>Keep the three stages of Bayesian prediction in mind and everything else becomes mechanical.</p>
 </section>
 <section id="further-reading" class="level2">
 <h2 class="anchored" data-anchor-id="further-reading">Further reading</h2>

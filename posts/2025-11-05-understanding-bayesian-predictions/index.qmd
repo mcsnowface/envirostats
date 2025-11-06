@@ -36,7 +36,7 @@ draft: false
 
 So you've just fit your first Bayesian model using `brms` or `rstanarm`. Maybe you were surprised by how easy it was -- the syntax looked almost exactly like `lm()` for a simple linear regression. You hit run, waited a bit longer than usual, and got... output. Lots of output.
 
-You look at the summary. There are means and standard deviations, credible intervals, and mysterious diagnostics like "Rhat" and "ESS". But wait -- where are the p-values? And how do you actually make predictions? People keep talking about "posterior predictions" and "posterior distributions" -- what do those actually mean, and how do you work with them?
+You look at the summary. There are means and standard deviations, credible intervals, and mysterious diagnostics like "Rhat" and "ESS". But wait -- where are the p-values 😜 And how do you actually make predictions? People keep talking about "posterior predictions" and "posterior distributions" -- what do those actually mean, and how do you work with them?
 
 If you've ever felt confused by the terminology around Bayesian predictions -- posterior predictive distributions, expected predictions, prediction intervals -- you're not alone. But here's the secret: once your Bayesian model calculates the posterior distribution, **everything else is just computing means, quantiles, and other summary statistics**. Let me show you what I mean.
 
@@ -47,16 +47,16 @@ If you've ever felt confused by the terminology around Bayesian predictions -- p
 
 Bayesian inference has two phases:
 
-1. **The hard part**: Computing the posterior distribution $p(\theta\mid D)$ (this is where MCMC).
+1. **The hard part**: Computing the posterior distribution $p(\theta\mid D)$ (this is where MCMC comes in).
 2. **The easy part**: Summarizing that posterior and quantities derived from it -- means, standard deviations, quantiles, etc.
 
-Once you have posterior samples from $p(\theta\mid D)$, you can simulate the posterior predictive distribution $p(\tilde{y}\mid D)$ and summarize it with its mean $E[\tilde{y}\mid D]$. We’ll return to this trio when it becomes most helpful.
+Once you have posterior samples from $p(\theta\mid D)$, you can simulate the posterior predictive distribution $p(\tilde{y}\mid D)$ and summarize it with its mean $E[\tilde{y}\mid D]$. We’ll return to these three stages of Bayesian prediction when it becomes most helpful.
 
 ## Why is the hard part hard?
 
-Before the “easy part,” a quick sketch of why computing the posterior is challenging (you don't have to master this to *use* Bayesian methods, but the intuition helps).
+Before the "easy part", a quick sketch of why computing the posterior is challenging (you don't have to master this to *use* Bayesian methods, but the intuition helps).
 
-### The goal: a joint probability over all parameters
+### The goal: a **joint probability over all parameters**
 
 Bayes' theorem:
 
@@ -77,9 +77,22 @@ $$
 
 This is a joint distribution in a high-dimensional space. More parameters ⇒ higher dimension.
 
-### Starting simple: grid approximation
+### Starting simple: Grid approximation
 
-Suppose you’re a fish biologist interested in the hatching rate of rainbow trout. You run an experiment and **4 out of 10 eggs hatched** -- what’s the hatching rate $\theta$? With one parameter, a **grid approximation** shows the mechanics explicitly.
+You’re a fish biologist studying the hatching rate, denoted by $\theta$, of rainbow trout. In an experiment, **4 out of 10 eggs hatched**.
+
+Instead of chasing a single “best” estimate, we want the **entire posterior distribution** of plausible hatching rates given both our data and prior beliefs. This is the key idea in Bayesian inference — we quantify *uncertainty* rather than ignore it.
+
+To make this concrete, we use a **grid approximation**. We choose a fine grid of possible hatching rates,
+$$
+\theta \in [0, 1],
+$$
+meaning $\theta$ can take any value between 0 (no eggs hatch) and 1 (all eggs hatch).
+
+For each possible value of $\theta$, we compute how likely it is to observe 4 hatched eggs out of 10, multiply that by the prior belief about $\theta$, and normalize so the probabilities sum to one.
+
+The result is a **posterior distribution** over $\theta$: it shows not just which hatching rate is most plausible, but how confident we are about different possibilities — allowing us to summarize uncertainty with quantities like the posterior mean, median, mode (MAP), or credible intervals.
+
 
 ```{r}
 #| label: grid-approximation
@@ -91,11 +104,8 @@ library(ggplot2)
 # Define a grid of possible hatching rates from 0 to 1
 theta_grid <- seq(from = 0, to = 1, length.out = 100)
 
-# Prior: assume all values equally plausible (flat prior)
-prior_flat <- rep(1, 100)
-
 # Prior options:
-prior_flat <- rep(1, 100)                        # Uninformative
+prior_flat <- rep(1, 100)                        # Uninformative (flat)
 prior_conservative <- dbeta(theta_grid, 5, 5)    # Moderate rates likely
 prior_optimistic <- dbeta(theta_grid, 8, 2)      # High rates likely
 prior_skeptical <- dbeta(theta_grid, 2, 8)       # Low rates likely
@@ -128,6 +138,8 @@ data.frame(theta = theta_grid, posterior = posterior) |>
        title = "Posterior distribution with 100 grid points") +
   theme_minimal()
 ```
+
+Try changing the prior (e.g., `prior_conservative`, `prior_optimistic`, or `prior_skeptical`) and re-running the code to see how different prior beliefs influence the posterior. This highlights one of the most important insights in Bayesian inference -- **the posterior reflects both the data and the prior assumptions**.
 
 **Quick tie-in:** From this posterior $p(\theta\mid D)$, we can simulate a posterior predictive distribution $p(\tilde{y}\mid D)$ (e.g., future hatch counts) and summarize it with the expected prediction $E[\tilde{y}\mid D]$.
 
@@ -177,7 +189,8 @@ rownames(predicted_matrix) <- c("Obs 1", "Obs 2", "Obs 3", "Obs 4")
 colnames(predicted_matrix) <- c("Draw 1", "Draw 2", "Draw 3")
 ```
 
-**Why this matters for our trio:**  
+**Connecting this back to the three stages of Bayesian prediction:**
+
 - The columns come from $p(\theta\mid D)$.  
 - The matrix of $\mu$ values is the scaffold we use to simulate $p(\tilde{y}\mid D)$.  
 - Row summaries of that simulated distribution give $E[\tilde{y}\mid D]$ and intervals.
@@ -206,7 +219,7 @@ Once predictions are organized this way, everything reduces to simple arithmetic
 - **Credible intervals** for the **mean response**: rowwise quantiles of $\mu_i$
 - Next we’ll add $\sigma$ to generate draws of $\tilde{y}$ ⇒ $p(\tilde{y}\mid D)$ and prediction intervals
 
-## The three-level prediction pipeline
+## The three stages of Bayesian prediction
 
 To pull our ideas together, here’s the compact relationship we’ll now use repeatedly:
 
@@ -518,7 +531,7 @@ Notice how the observed data points (black dots) mostly fall within the red band
 - Add noise to get posterior predictive draws $p(\tilde{y}\mid D)$  
 - Summarize by row means/quantiles to get $E[\tilde{y}\mid D]$, credible intervals (for means), and prediction intervals (for outcomes)
 
-Keep the trio in mind and everything else becomes mechanical.
+Keep the three stages of Bayesian prediction in mind and everything else becomes mechanical.
 
 ## Further reading
 
