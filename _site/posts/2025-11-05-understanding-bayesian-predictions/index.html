@@ -1012,7 +1012,7 @@ Understanding the output
 <section id="advanced-topics" class="level2">
 <h2 class="anchored" data-anchor-id="advanced-topics">Advanced Topics</h2>
 <div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1021,7 +1021,7 @@ Non-Linear Models and Jensen’s Inequality
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Throughout this post, we’ve focused on Normal linear models where <span class="math inline">\(E[\mu_i|D] = E[\tilde{y}_i|D]\)</span> – a convenient mathematical property that makes the math simpler. But what happens with other model families like logistic or Poisson regression?</p>
 <p>For models with <strong>non-linear link functions</strong>, this equality breaks down due to <strong>Jensen’s inequality</strong>: for non-linear functions, the average of the transformed values does NOT equal the transformation of the average. Understanding this is crucial for working correctly with generalized linear models.</p>
@@ -1105,20 +1105,9 @@ Non-Linear Models and Jensen’s Inequality
 </li>
 <li><strong>For prediction intervals or simulating outcomes:</strong> Use <code>add_predicted_draws()</code> - gives you actual draws with observation noise</li>
 </ul>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Practical advice
-</div>
-</div>
-<div class="callout-body-container callout-body">
+<p><strong>Practical advice:</strong></p>
 <p><strong>For expected predictions</strong> (what we’ve been calling <span class="math inline">\(E[\tilde{y}|D]\)</span>): use <code>add_epred_draws()</code> for <strong>all model families</strong>. It correctly handles the non-linear transformation.</p>
 <p><strong>For Normal models only:</strong> <code>add_epred_draws()</code> and averaging the linear predictor happen to give the same answer, which is why we could take shortcuts in the main post. For other families, you must use <code>add_epred_draws()</code>.</p>
-</div>
-</div>
 </section>
 <section id="examples-in-other-model-families" class="level3">
 <h3 class="anchored" data-anchor-id="examples-in-other-model-families">Examples in other model families</h3>

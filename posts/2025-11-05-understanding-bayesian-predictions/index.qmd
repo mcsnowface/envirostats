@@ -603,13 +603,12 @@ For **any model with non-linear transformations**:
 - **For working on the link scale:** Use `add_linpred_draws()` - useful for visualizing effects or contrasts before transformation  
 - **For prediction intervals or simulating outcomes:** Use `add_predicted_draws()` - gives you actual draws with observation noise
 
-::: {.callout-important}
-## Practical advice
+**Practical advice:**
 
 **For expected predictions** (what we've been calling $E[\tilde{y}|D]$): use `add_epred_draws()` for **all model families**. It correctly handles the non-linear transformation. 
 
 **For Normal models only:** `add_epred_draws()` and averaging the linear predictor happen to give the same answer, which is why we could take shortcuts in the main post. For other families, you must use `add_epred_draws()`.
-:::
+
 
 ### Examples in other model families
 
