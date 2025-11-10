@@ -209,7 +209,7 @@ window.Quarto = {
   <li><a href="#the-core-insight" id="toc-the-core-insight" class="nav-link active" data-scroll-target="#the-core-insight">The Core Insight</a></li>
   <li><a href="#why-is-the-hard-part-hard" id="toc-why-is-the-hard-part-hard" class="nav-link" data-scroll-target="#why-is-the-hard-part-hard">Why is the hard part hard?</a>
   <ul class="collapse">
-  <li><a href="#the-goal-a-joint-probability-over-all-parameters" id="toc-the-goal-a-joint-probability-over-all-parameters" class="nav-link" data-scroll-target="#the-goal-a-joint-probability-over-all-parameters">The goal: a <strong>joint probability over all parameters</strong></a></li>
+  <li><a href="#the-goal-a-joint-probability-over-all-parameters" id="toc-the-goal-a-joint-probability-over-all-parameters" class="nav-link" data-scroll-target="#the-goal-a-joint-probability-over-all-parameters">The goal: A joint probability over all parameters!</a></li>
   <li><a href="#starting-simple-grid-approximation" id="toc-starting-simple-grid-approximation" class="nav-link" data-scroll-target="#starting-simple-grid-approximation">Starting simple: Grid approximation</a></li>
   <li><a href="#the-curse-of-dimensionality-and-continuity" id="toc-the-curse-of-dimensionality-and-continuity" class="nav-link" data-scroll-target="#the-curse-of-dimensionality-and-continuity">The curse of dimensionality (and continuity)</a></li>
   <li><a href="#the-solution-mcmc-explores-the-joint-probability-space" id="toc-the-solution-mcmc-explores-the-joint-probability-space" class="nav-link" data-scroll-target="#the-solution-mcmc-explores-the-joint-probability-space">The solution: MCMC explores the joint probability space</a></li>
@@ -218,8 +218,8 @@ window.Quarto = {
   <li><a href="#the-three-stages-of-bayesian-prediction" id="toc-the-three-stages-of-bayesian-prediction" class="nav-link" data-scroll-target="#the-three-stages-of-bayesian-prediction">The three stages of Bayesian prediction</a></li>
   <li><a href="#understanding-the-two-kinds-of-predictions" id="toc-understanding-the-two-kinds-of-predictions" class="nav-link" data-scroll-target="#understanding-the-two-kinds-of-predictions">Understanding the two kinds of predictions</a>
   <ul class="collapse">
-  <li><a href="#expected-predictions-etildeymid-d" id="toc-expected-predictions-etildeymid-d" class="nav-link" data-scroll-target="#expected-predictions-etildeymid-d">Expected predictions: <span class="math inline">\(E[\tilde{y}\mid D]\)</span></a></li>
-  <li><a href="#posterior-predictions-samples-from-ptildeymid-d" id="toc-posterior-predictions-samples-from-ptildeymid-d" class="nav-link" data-scroll-target="#posterior-predictions-samples-from-ptildeymid-d">Posterior predictions: samples from <span class="math inline">\(p(\tilde{y}\mid D)\)</span></a></li>
+  <li><a href="#posterior-distribution-of-the-mean-response-pmumid-d" id="toc-posterior-distribution-of-the-mean-response-pmumid-d" class="nav-link" data-scroll-target="#posterior-distribution-of-the-mean-response-pmumid-d">Posterior distribution of the mean response: <span class="math inline">\(p(\mu\mid D)\)</span></a></li>
+  <li><a href="#posterior-predictive-distribution-ptildeymid-d" id="toc-posterior-predictive-distribution-ptildeymid-d" class="nav-link" data-scroll-target="#posterior-predictive-distribution-ptildeymid-d">Posterior predictive distribution: <span class="math inline">\(p(\tilde{y}\mid D)\)</span></a></li>
   <li><a href="#two-types-of-intervals-and-what-they-mean" id="toc-two-types-of-intervals-and-what-they-mean" class="nav-link" data-scroll-target="#two-types-of-intervals-and-what-they-mean">Two types of intervals (and what they mean)</a></li>
   </ul></li>
   <li><a href="#a-complete-example-with-real-tools" id="toc-a-complete-example-with-real-tools" class="nav-link" data-scroll-target="#a-complete-example-with-real-tools">A complete example with real tools</a></li>
@@ -233,6 +233,7 @@ window.Quarto = {
   <li><a href="#comparing-credible-intervals-vs.-prediction-intervals" id="toc-comparing-credible-intervals-vs.-prediction-intervals" class="nav-link" data-scroll-target="#comparing-credible-intervals-vs.-prediction-intervals">Comparing credible intervals vs.&nbsp;prediction intervals</a></li>
   </ul></li>
   <li><a href="#takeaway-from-complex-to-simple" id="toc-takeaway-from-complex-to-simple" class="nav-link" data-scroll-target="#takeaway-from-complex-to-simple">Takeaway: from complex to simple</a></li>
+  <li><a href="#advanced-topics" id="toc-advanced-topics" class="nav-link" data-scroll-target="#advanced-topics">Advanced Topics</a></li>
   <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading">Further reading</a></li>
   </ul>
 </nav>
@@ -287,7 +288,7 @@ window.Quarto = {
 <p>You look at the summary. There are means and standard deviations, credible intervals, and mysterious diagnostics like “Rhat” and “ESS”. But wait – where are the p-values 😜 And how do you actually make predictions? People keep talking about “posterior predictions” and “posterior distributions” – what do those actually mean, and how do you work with them?</p>
 <p>If you’ve ever felt confused by the terminology around Bayesian predictions – posterior predictive distributions, expected predictions, prediction intervals – you’re not alone. But here’s the secret: once your Bayesian model calculates the posterior distribution, <strong>everything else is just computing means, quantiles, and other summary statistics</strong>. Let me show you what I mean.</p>
 <blockquote class="blockquote">
-<p><strong>Note:</strong> All examples in this post were built using R with the <code>rstanarm</code>, <code>tidybayes</code>, and <code>ggplot2</code> packages. You can follow along by copying and pasting the code – everything is self-contained and reproducible.</p>
+<p><strong>Note:</strong> All examples in this post were built using R with the <code>rstanarm</code>, <code>tidybayes</code>, and <code>ggplot2</code> packages. You can follow along by copying and pasting the code – everything is self-contained and reproducible. We’ll focus primarily on Normal (Gaussian) linear models throughout this post, though the workflow applies to all model families (see the Advanced Topics section at the end for important details about non-linear models).</p>
 </blockquote>
 <section id="the-core-insight" class="level2">
 <h2 class="anchored" data-anchor-id="the-core-insight">The Core Insight</h2>
@@ -296,13 +297,18 @@ window.Quarto = {
 <li><strong>The hard part</strong>: Computing the posterior distribution <span class="math inline">\(p(\theta\mid D)\)</span> (this is where MCMC comes in).</li>
 <li><strong>The easy part</strong>: Summarizing that posterior and quantities derived from it – means, standard deviations, quantiles, etc.</li>
 </ol>
-<p>Once you have posterior samples from <span class="math inline">\(p(\theta\mid D)\)</span>, you can simulate the posterior predictive distribution <span class="math inline">\(p(\tilde{y}\mid D)\)</span> and summarize it with its mean <span class="math inline">\(E[\tilde{y}\mid D]\)</span>. We’ll return to these three stages of Bayesian prediction when it becomes most helpful.</p>
+<p>Once you have posterior samples from <span class="math inline">\(p(\theta\mid D)\)</span>, you can generate:</p>
+<ul>
+<li>the posterior distribution of the mean response <span class="math inline">\(p(\mu\mid D)\)</span></li>
+<li>the posterior predictive distribution <span class="math inline">\(p(\tilde{y}\mid D)\)</span></li>
+</ul>
+<p>and then summarize these distributions in various ways: means (expectations) like <span class="math inline">\(E[\tilde{y}\mid D]\)</span>, medians, quantiles for intervals, etc.</p>
 </section>
 <section id="why-is-the-hard-part-hard" class="level2">
 <h2 class="anchored" data-anchor-id="why-is-the-hard-part-hard">Why is the hard part hard?</h2>
 <p>Before the “easy part”, a quick sketch of why computing the posterior is challenging (you don’t have to master this to <em>use</em> Bayesian methods, but the intuition helps).</p>
 <section id="the-goal-a-joint-probability-over-all-parameters" class="level3">
-<h3 class="anchored" data-anchor-id="the-goal-a-joint-probability-over-all-parameters">The goal: a <strong>joint probability over all parameters</strong></h3>
+<h3 class="anchored" data-anchor-id="the-goal-a-joint-probability-over-all-parameters">The goal: A joint probability over all parameters!</h3>
 <p>Bayes’ theorem:</p>
 <p><span class="math display">\[
 p(\theta \mid D) \;=\; \frac{p(D \mid \theta)\,p(\theta)}{p(D)}
@@ -325,12 +331,12 @@ p(\alpha,\beta,\sigma \mid D) \propto p(D \mid \alpha,\beta,\sigma)\, p(\alpha,\
 <section id="starting-simple-grid-approximation" class="level3">
 <h3 class="anchored" data-anchor-id="starting-simple-grid-approximation">Starting simple: Grid approximation</h3>
 <p>You’re a fish biologist studying the hatching rate, denoted by <span class="math inline">\(\theta\)</span>, of rainbow trout. In an experiment, <strong>4 out of 10 eggs hatched</strong>.</p>
-<p>Instead of chasing a single “best” estimate, we want the <strong>entire posterior distribution</strong> of plausible hatching rates given both our data and prior beliefs. This is the key idea in Bayesian inference — we quantify <em>uncertainty</em> rather than ignore it.</p>
+<p>Instead of chasing a single “best” estimate, we want the <strong>entire posterior distribution</strong> of plausible hatching rates given both our data and prior beliefs. This is the key idea in Bayesian inference – we quantify <em>uncertainty</em> rather than ignore it.</p>
 <p>To make this concrete, we use a <strong>grid approximation</strong>. We choose a fine grid of possible hatching rates, <span class="math display">\[
 \theta \in [0, 1],
 \]</span> meaning <span class="math inline">\(\theta\)</span> can take any value between 0 (no eggs hatch) and 1 (all eggs hatch).</p>
 <p>For each possible value of <span class="math inline">\(\theta\)</span>, we compute how likely it is to observe 4 hatched eggs out of 10, multiply that by the prior belief about <span class="math inline">\(\theta\)</span>, and normalize so the probabilities sum to one.</p>
-<p>The result is a <strong>posterior distribution</strong> over <span class="math inline">\(\theta\)</span>: it shows not just which hatching rate is most plausible, but how confident we are about different possibilities — allowing us to summarize uncertainty with quantities like the posterior mean, median, mode (MAP), or credible intervals.</p>
+<p>The result is a <strong>posterior distribution</strong> over <span class="math inline">\(\theta\)</span>: it shows not just which hatching rate is most plausible, but how confident we are about different possibilities – allowing us to summarize uncertainty with quantities like the posterior mean, median, mode (MAP), or credible intervals.</p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Show code</summary>
@@ -382,10 +388,11 @@ p(\alpha,\beta,\sigma \mid D) \propto p(D \mid \alpha,\beta,\sigma)\, p(\alpha,\
 </div>
 </div>
 <p>Try changing the prior (e.g., <code>prior_conservative</code>, <code>prior_optimistic</code>, or <code>prior_skeptical</code>) and re-running the code to see how different prior beliefs influence the posterior. This highlights one of the most important insights in Bayesian inference – <strong>the posterior reflects both the data and the prior assumptions</strong>.</p>
-<p><strong>Quick tie-in:</strong> From this posterior <span class="math inline">\(p(\theta\mid D)\)</span>, we can simulate a posterior predictive distribution <span class="math inline">\(p(\tilde{y}\mid D)\)</span> (e.g., future hatch counts) and summarize it with the expected prediction <span class="math inline">\(E[\tilde{y}\mid D]\)</span>.</p>
+<p><strong>Quick tie-in:</strong> From this posterior <span class="math inline">\(p(\theta\mid D)\)</span>, we can generate a posterior predictive distribution <span class="math inline">\(p(\tilde{y}\mid D)\)</span> (e.g., future hatch counts) and summarize it using statistics like the mean <span class="math inline">\(E[\tilde{y}\mid D]\)</span>, median, or credible intervals.</p>
 </section>
 <section id="the-curse-of-dimensionality-and-continuity" class="level3">
 <h3 class="anchored" data-anchor-id="the-curse-of-dimensionality-and-continuity">The curse of dimensionality (and continuity)</h3>
+<p>The grid approach worked because we only had one parameter to explore. But once we add even a few more – say a slope, an intercept, and a noise term – the same idea breaks down. We’d need to evaluate millions of grid points just to cover the space:</p>
 <ul>
 <li>1 parameter, 100 grid points ⇒ 100 evaluations<br>
 </li>
@@ -404,7 +411,7 @@ p(\alpha \mid D) \;=\; \int p(\alpha,\beta \mid D)\,d\beta.
 <section id="the-solution-mcmc-explores-the-joint-probability-space" class="level3">
 <h3 class="anchored" data-anchor-id="the-solution-mcmc-explores-the-joint-probability-space">The solution: MCMC explores the joint probability space</h3>
 <p><strong>Markov chain Monte Carlo (MCMC)</strong> avoids gridding and intractable integrals by <em>sampling</em> parameter values, spending more time in high-probability regions of the <strong>joint posterior space</strong>. After convergence and warm-up, the draws are (approximately) samples from the posterior <span class="math inline">\(p(\theta \mid D)\)</span>.</p>
-<p>The result is a table of draws (rows = draws, columns = parameters). <strong>That table is the payoff.</strong> From here, we move to predictions via the posterior predictive distribution <span class="math inline">\(p(\tilde{y} \mid D)\)</span> and summaries such as its expectation <span class="math inline">\(E[\tilde{y} \mid D]\)</span>.</p>
+<p>The result is a table of draws (rows = draws, columns = parameters). <strong>That table is the payoff.</strong> From here, we move to predictions by generating the posterior predictive distribution <span class="math inline">\(p(\tilde{y} \mid D)\)</span>, which we can then summarize with statistics such as its mean <span class="math inline">\(E[\tilde{y} \mid D]\)</span>, median, or quantiles.</p>
 </section>
 </section>
 <section id="a-simple-example-the-matrix-structure" class="level2">
@@ -428,15 +435,15 @@ p(\alpha \mid D) \;=\; \int p(\alpha,\beta \mid D)\,d\beta.
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(predicted_matrix) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Draw 1"</span>, <span class="st">"Draw 2"</span>, <span class="st">"Draw 3"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p><strong>Connecting this back to the three stages of Bayesian prediction:</strong></p>
+<p><strong>Connecting this to Bayesian prediction:</strong></p>
 <ul>
-<li>The columns come from <span class="math inline">\(p(\theta\mid D)\)</span>.<br>
+<li>The columns come from <span class="math inline">\(p(\theta\mid D)\)</span> – posterior samples of parameters.<br>
 </li>
-<li>The matrix of <span class="math inline">\(\mu\)</span> values is the scaffold we use to simulate <span class="math inline">\(p(\tilde{y}\mid D)\)</span>.<br>
+<li>Each row across columns represents the posterior distribution of the mean response <span class="math inline">\(p(\mu_i\mid D)\)</span> for observation <span class="math inline">\(i\)</span>.<br>
 </li>
-<li>Row summaries of that simulated distribution give <span class="math inline">\(E[\tilde{y}\mid D]\)</span> and intervals.</li>
+<li>Row summaries (mean, quantiles) give point estimates like <span class="math inline">\(E[\mu_i\mid D]\)</span> and credible intervals.</li>
 </ul>
-<p>Let’s display the matrix with row means (i.e., expected predictions of the mean response for this toy example):</p>
+<p>Let’s display the matrix with row means (i.e., expected mean responses for this toy example):</p>
 <div class="cell">
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
@@ -486,32 +493,29 @@ p(\alpha \mid D) \;=\; \int p(\alpha,\beta \mid D)\,d\beta.
 <p><br></p>
 <p>Once predictions are organized this way, everything reduces to simple arithmetic across columns:</p>
 <ul>
-<li><strong>Expected predictions</strong> <span class="math inline">\(E[\tilde{y}\mid D]\)</span>: row means of <span class="math inline">\(\mu_i\)</span></li>
-<li><strong>Credible intervals</strong> for the <strong>mean response</strong>: rowwise quantiles of <span class="math inline">\(\mu_i\)</span></li>
-<li>Next we’ll add <span class="math inline">\(\sigma\)</span> to generate draws of <span class="math inline">\(\tilde{y}\)</span> ⇒ <span class="math inline">\(p(\tilde{y}\mid D)\)</span> and prediction intervals</li>
+<li><strong>Mean response</strong> <span class="math inline">\(E[\mu_i\mid D]\)</span>: row means (averaging the posterior distribution of the mean response for each observation)</li>
+<li><strong>Credible intervals</strong> for the <strong>mean response</strong>: rowwise quantiles of the <span class="math inline">\(\mu_i\)</span> values</li>
+<li>Next we’ll add <span class="math inline">\(\sigma\)</span> to generate the full posterior predictive distribution <span class="math inline">\(p(\tilde{y}\mid D)\)</span> and prediction intervals</li>
 </ul>
 </section>
 <section id="the-three-stages-of-bayesian-prediction" class="level2">
 <h2 class="anchored" data-anchor-id="the-three-stages-of-bayesian-prediction">The three stages of Bayesian prediction</h2>
 <p>To pull our ideas together, here’s the compact relationship we’ll now use repeatedly:</p>
-<pre><code>Parameters θ  →  Data y
-p(θ|D)        →  p(ỹ|D)      →  E[ỹ|D]
-posterior        posterior       mean of the
-distribution     predictive       posterior predictive
-                 distribution     (expected prediction)</code></pre>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 11%">
-<col style="width: 22%">
-<col style="width: 30%">
-<col style="width: 35%">
+<col style="width: 9%">
+<col style="width: 18%">
+<col style="width: 24%">
+<col style="width: 28%">
+<col style="width: 19%">
 </colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: right;">Level</th>
+<th style="text-align: right;">Stage</th>
 <th>Distribution</th>
 <th>What it describes</th>
 <th>Uncertainty captured</th>
+<th>How we get it</th>
 </tr>
 </thead>
 <tbody>
@@ -520,65 +524,102 @@ distribution     predictive       posterior predictive
 <td><span class="math inline">\(p(\theta\mid D)\)</span></td>
 <td>What we believe about parameters after seeing data</td>
 <td><strong>Parameter</strong> uncertainty</td>
+<td>MCMC sampling</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">2</td>
-<td><span class="math inline">\(p(\tilde{y}\mid D)\)</span></td>
-<td>What we believe about future/unobserved data</td>
-<td><strong>Parameter + observation</strong> uncertainty</td>
+<td><span class="math inline">\(p(\mu\mid D)\)</span></td>
+<td>Posterior distribution of the mean response</td>
+<td><strong>Parameter</strong> uncertainty (propagated to <span class="math inline">\(\mu\)</span>)</td>
+<td>For each <span class="math inline">\(\theta^{(s)}\)</span>, compute <span class="math inline">\(\mu^{(s)} = \alpha^{(s)} + \beta^{(s)} x\)</span></td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">3</td>
-<td><span class="math inline">\(E[\tilde{y}\mid D]\)</span></td>
-<td>Mean of the posterior predictive distribution</td>
-<td>Center only (a summary)</td>
+<td><span class="math inline">\(p(\tilde{y}\mid D)\)</span></td>
+<td>Posterior predictive: distribution over future observations</td>
+<td><strong>Parameter + observation</strong> uncertainty</td>
+<td>For each <span class="math inline">\(\mu^{(s)}\)</span>, draw <span class="math inline">\(\tilde{y}^{(s)} \sim \text{Normal}(\mu^{(s)}, \sigma^{(s)})\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td>Summaries</td>
+<td>Point estimates and intervals from stage 2 or 3</td>
+<td>Depends on what we summarize</td>
+<td>e.g., <span class="math inline">\(E[\tilde{y}\mid D] = \frac{1}{S}\sum_s \tilde{y}^{(s)}\)</span> or quantiles</td>
 </tr>
 </tbody>
 </table>
-<p>Plain language: posterior over parameters ⇒ simulate data from it ⇒ average those simulations.</p>
+<p><strong>Key insight:</strong> Each stage builds on the previous one. We start with parameter draws from MCMC (stage 1), push them through our model equation to get mean responses (stage 2), add observation noise to get predictions (stage 3), and finally summarize those distributions (stage 4). Note that summaries from stage 2 will have narrower intervals than summaries from stage 3 because stage 3 includes observation noise.</p>
+<p><strong>Plain language:</strong> posterior over parameters ⇒ compute expected responses ⇒ add noise to get predictions ⇒ summarize.</p>
 </section>
 <section id="understanding-the-two-kinds-of-predictions" class="level2">
 <h2 class="anchored" data-anchor-id="understanding-the-two-kinds-of-predictions">Understanding the two kinds of predictions</h2>
-<section id="expected-predictions-etildeymid-d" class="level3">
-<h3 class="anchored" data-anchor-id="expected-predictions-etildeymid-d">Expected predictions: <span class="math inline">\(E[\tilde{y}\mid D]\)</span></h3>
-<p>For a Normal linear regression with <span class="math inline">\(y_i \sim \text{Normal}(\mu_i,\sigma)\)</span> and <span class="math inline">\(\mu_i = \alpha + \beta x_i\)</span>, <span class="math inline">\(E[y\mid\mu,\sigma] = \mu\)</span>, so <span class="math inline">\(E[\tilde{y}\mid D] = E[\mu\mid D]\)</span>. We can compute this as the mean of the <span class="math inline">\(\mu_i\)</span> across posterior draws.</p>
-<p><strong>Why this works:</strong> The Normal distribution is centered at <span class="math inline">\(\mu\)</span>. When we average over many possible future observations (each drawn from <span class="math inline">\(\text{Normal}(\mu, \sigma)\)</span>), we get <span class="math inline">\(\mu\)</span> back – the noise <span class="math inline">\(\sigma\)</span> averages out to zero. Then we just average those <span class="math inline">\(\mu\)</span> values across our posterior draws.</p>
-<p><strong>When this breaks:</strong> In logistic regression, your linear predictor might average to 0, but <span class="math inline">\(\text{logit}^{-1}(0) = 0.5\)</span> while the average probability could be 0.6. Non-linear transformations don’t commute with averaging. This is why we simulate full draws from <span class="math inline">\(p(\tilde{y}|D)\)</span> first, then summarize – it works for any model.</p>
+<section id="posterior-distribution-of-the-mean-response-pmumid-d" class="level3">
+<h3 class="anchored" data-anchor-id="posterior-distribution-of-the-mean-response-pmumid-d">Posterior distribution of the mean response: <span class="math inline">\(p(\mu\mid D)\)</span></h3>
+<p><strong>The posterior distribution of the mean response:</strong> For each observation <span class="math inline">\(i\)</span> and each posterior parameter draw <span class="math inline">\(\theta^{(s)}\)</span> (where <span class="math inline">\(s\)</span> indexes the draw), we compute the mean response:</p>
+<p><span class="math display">\[\mu_i^{(s)} = \alpha^{(s)} + \beta^{(s)} x_i\]</span></p>
+<p>The collection of values <span class="math inline">\(\{\mu_i^{(s)}\}_{s=1}^S\)</span> represents samples from the posterior distribution of the mean response at <span class="math inline">\(x_i\)</span>. We can summarize this distribution by computing the mean across posterior draws:</p>
+<p><span class="math display">\[E[\mu_i|D] = \frac{1}{S}\sum_{s=1}^S \mu_i^{(s)}\]</span></p>
+<p><strong>For Normal models:</strong> Because the observation noise has mean zero, <span class="math inline">\(E[\mu_i|D] = E[\tilde{y}_i|D]\)</span>. This means we can work with <span class="math inline">\(\mu\)</span> directly without simulating full observations – the expected value of the mean response equals the expected value of a future observation.</p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Show code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Expected predictions: mean of μᵢ across posterior draws</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>epred <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(predicted_matrix)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(epred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># For each observation, compute the mean of the posterior distribution</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># of the mean response (i.e., mean across posterior draws)</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># This gives E[μᵢ|D], which equals E[ỹᵢ|D] for Normal models</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>epred <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(predicted_matrix)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(epred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Obs 1 Obs 2 Obs 3 Obs 4 
   2.0   1.1   4.0   1.0 </code></pre>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important note about non-linear models
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The equality <span class="math inline">\(E[\mu_i|D] = E[\tilde{y}_i|D]\)</span> holds for Normal linear models, but <strong>breaks down for models with non-linear link functions</strong> (logistic, Poisson, etc.). For those models, always generate full posterior predictive draws first, then summarize. See the Advanced Topics section at the end of this post for details and examples.</p>
+</div>
+</div>
 </section>
-<section id="posterior-predictions-samples-from-ptildeymid-d" class="level3">
-<h3 class="anchored" data-anchor-id="posterior-predictions-samples-from-ptildeymid-d">Posterior predictions: samples from <span class="math inline">\(p(\tilde{y}\mid D)\)</span></h3>
-<p>To see the full range of plausible observations (not just the mean response), we add observation noise <span class="math inline">\(\sigma\)</span> to the <span class="math inline">\(\mu\)</span> values and simulate <span class="math inline">\(\tilde{y}\)</span>.</p>
+<section id="posterior-predictive-distribution-ptildeymid-d" class="level3">
+<h3 class="anchored" data-anchor-id="posterior-predictive-distribution-ptildeymid-d">Posterior predictive distribution: <span class="math inline">\(p(\tilde{y}\mid D)\)</span></h3>
+<p>To see the full range of plausible observations (not just the mean response), we need to add observation noise.</p>
+<p><strong>The mathematical idea:</strong> The posterior predictive distribution integrates over all parameter uncertainty:</p>
+<p><span class="math display">\[p(\tilde{y}\mid D) = \int p(\tilde{y}\mid \theta)\, p(\theta\mid D)\, d\theta\]</span></p>
+<p><strong>How we compute it:</strong> For each posterior parameter draw <span class="math inline">\(\theta^{(s)}\)</span>:</p>
+<ol type="1">
+<li>Compute the mean response: <span class="math inline">\(\mu^{(s)} = \alpha^{(s)} + \beta^{(s)} x\)</span></li>
+<li>Draw a new observation from the likelihood: <span class="math inline">\(\tilde{y}^{(s)} \sim p(y\mid \mu^{(s)}, \theta^{(s)})\)</span></li>
+</ol>
+<p>For Normal models specifically, step 2 becomes: <span class="math inline">\(\tilde{y}^{(s)} = \mu^{(s)} + \epsilon^{(s)}\)</span> where <span class="math inline">\(\epsilon^{(s)} \sim \text{Normal}(0, \sigma^{(s)})\)</span>.</p>
+<p>The collection <span class="math inline">\(\{\tilde{y}^{(s)}\}_{s=1}^S\)</span> represents samples from <span class="math inline">\(p(\tilde{y}|D)\)</span>.</p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Show code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Posterior draws of σ (one for each column)</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>sigma_draws <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.6</span>, <span class="fl">0.55</span>)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate ỹᵢ ~ Normal(μᵢ, σ) for each draw</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>y_pred_matrix <span class="ot">&lt;-</span> predicted_matrix</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>) {</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  y_pred_matrix[, j] <span class="ot">&lt;-</span> predicted_matrix[, j] <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">4</span>, <span class="dv">0</span>, sigma_draws[j])</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Posterior draws of σ (one for each column)</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>sigma_draws <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.6</span>, <span class="fl">0.55</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate ỹᵢ ~ Normal(μᵢ, σ) for each draw</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>y_pred_matrix <span class="ot">&lt;-</span> predicted_matrix</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>) {</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  y_pred_matrix[, j] <span class="ot">&lt;-</span> predicted_matrix[, j] <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">4</span>, <span class="dv">0</span>, sigma_draws[j])</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
-<caption>Posterior predictions: samples from p(ỹ|D)</caption>
+<caption>Posterior predictive samples from p(ỹ|D)</caption>
 <thead>
 <tr class="header">
 <th style="text-align: left;"></th>
@@ -621,11 +662,11 @@ distribution     predictive       posterior predictive
 </section>
 <section id="two-types-of-intervals-and-what-they-mean" class="level3">
 <h3 class="anchored" data-anchor-id="two-types-of-intervals-and-what-they-mean">Two types of intervals (and what they mean)</h3>
-<p><strong>Credible intervals (for the mean response)</strong>–from the <span class="math inline">\(\mu_i\)</span> matrix (parameter uncertainty only):</p>
+<p><strong>Credible intervals (for the mean response)</strong> – from the <span class="math inline">\(\mu_i\)</span> matrix (parameter uncertainty only):</p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Show code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(predicted_matrix, <span class="dv">1</span>, quantile, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(predicted_matrix, <span class="dv">1</span>, quantile, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>      Obs 1 Obs 2 Obs 3 Obs 4
@@ -633,11 +674,11 @@ distribution     predictive       posterior predictive
 97.5% 2.095 1.195  4.19 1.095</code></pre>
 </div>
 </div>
-<p><strong>Prediction intervals (for future observations)</strong>–from the <span class="math inline">\(\tilde{y}\)</span> matrix (parameter + observation uncertainty):</p>
+<p><strong>Prediction intervals (for future observations)</strong> – from the <span class="math inline">\(\tilde{y}\)</span> matrix (parameter + observation uncertainty):</p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Show code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(y_pred_matrix, <span class="dv">1</span>, quantile, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(y_pred_matrix, <span class="dv">1</span>, quantile, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>         Obs 1     Obs 2   Obs 3     Obs 4
@@ -674,31 +715,31 @@ Decision guide (tidybayes/R workflow)
 <tbody>
 <tr class="odd">
 <td>What’s the average outcome?</td>
-<td>Expected predictions</td>
-<td><span class="math inline">\(E[\tilde{y}\mid D]\)</span></td>
+<td>Mean response distribution</td>
+<td>distribution <span class="math inline">\(p(\mu\mid D)\)</span>; summarize to get <span class="math inline">\(E[\tilde{y}\mid D]\)</span></td>
 <td><code>add_epred_draws()</code></td>
 </tr>
 <tr class="even">
 <td>What might I observe?</td>
-<td>Posterior predictions</td>
-<td>draws from <span class="math inline">\(p(\tilde{y}\mid D)\)</span></td>
+<td>Posterior predictive</td>
+<td>distribution <span class="math inline">\(p(\tilde{y}\mid D)\)</span></td>
 <td><code>add_predicted_draws()</code></td>
 </tr>
 <tr class="odd">
 <td>Is my model realistic?</td>
-<td>Posterior predictions</td>
+<td>Posterior predictive</td>
 <td>compare simulations to data</td>
 <td><code>add_predicted_draws()</code></td>
 </tr>
 <tr class="even">
 <td>What’s the effect of X?</td>
-<td>Expected predictions</td>
-<td>change in <span class="math inline">\(E[\tilde{y}\mid D]\)</span></td>
+<td>Mean response distribution</td>
+<td>change in <span class="math inline">\(E[\mu\mid D]\)</span></td>
 <td><code>add_epred_draws()</code></td>
 </tr>
 <tr class="odd">
 <td>Do I need prediction intervals?</td>
-<td>Posterior predictions</td>
+<td>Posterior predictive</td>
 <td>full uncertainty range</td>
 <td><code>add_predicted_draws()</code></td>
 </tr>
@@ -706,7 +747,7 @@ Decision guide (tidybayes/R workflow)
 </table>
 </div>
 </div>
-<p><strong>Mini-recap:</strong> we start with <span class="math inline">\(p(\theta\mid D)\)</span>, simulate <span class="math inline">\(p(\tilde{y}\mid D)\)</span>, and summarize with <span class="math inline">\(E[\tilde{y}\mid D]\)</span>.</p>
+<p><strong>Mini-recap:</strong> parameters <span class="math inline">\(p(\theta\mid D)\)</span> ⇒ mean responses <span class="math inline">\(p(\mu\mid D)\)</span> ⇒ predictions <span class="math inline">\(p(\tilde{y}\mid D)\)</span> ⇒ summaries like <span class="math inline">\(E[\tilde{y}\mid D]\)</span>.</p>
 </section>
 </section>
 <section id="a-complete-example-with-real-tools" class="level2">
@@ -715,25 +756,25 @@ Decision guide (tidybayes/R workflow)
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Show code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rstanarm)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidybayes)</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate some data: y = 2 + 0.5x + noise</span></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n)</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> x <span class="sc">+</span> <span class="fu">rnorm</span>(n, <span class="at">sd =</span> <span class="dv">1</span>)</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit Bayesian regression (MCMC to get posterior samples)</span></span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">stan_glm</span>(y <span class="sc">~</span> x, <span class="at">data =</span> data,</span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>                <span class="at">family =</span> <span class="fu">gaussian</span>(),</span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>                <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">iter =</span> <span class="dv">2000</span>,</span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>                <span class="at">refresh =</span> <span class="dv">0</span>)</span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rstanarm)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidybayes)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate some data: y = 2 + 0.5x + noise</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> x <span class="sc">+</span> <span class="fu">rnorm</span>(n, <span class="at">sd =</span> <span class="dv">1</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit Bayesian regression (MCMC to get posterior samples)</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">stan_glm</span>(y <span class="sc">~</span> x, <span class="at">data =</span> data,</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>                <span class="at">family =</span> <span class="fu">gaussian</span>(),</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>                <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">iter =</span> <span class="dv">2000</span>,</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>                <span class="at">refresh =</span> <span class="dv">0</span>)</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -811,16 +852,16 @@ Understanding the output
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Show code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bayesplot)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract posterior predictive samples</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>y_rep <span class="ot">&lt;-</span> <span class="fu">posterior_predict</span>(fit)</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare distribution of observed vs. simulated data</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ppc_dens_overlay</span>(y, y_rep[<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>, ]) <span class="sc">+</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Posterior predictive check: Density comparison"</span>,</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Light blue = 100 draws from p(ỹ|D), Dark blue = observed data"</span>) <span class="sc">+</span></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bayesplot)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract posterior predictive samples</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>y_rep <span class="ot">&lt;-</span> <span class="fu">posterior_predict</span>(fit)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare distribution of observed vs. simulated data</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ppc_dens_overlay</span>(y, y_rep[<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>, ]) <span class="sc">+</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Posterior predictive check: Density comparison"</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Light blue = 100 draws from p(ỹ|D), Dark blue = observed data"</span>) <span class="sc">+</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -845,31 +886,31 @@ Understanding the output
 </section>
 <section id="visualizing-predictions" class="level2">
 <h2 class="anchored" data-anchor-id="visualizing-predictions">Visualizing predictions</h2>
-<p>Now that we’ve validated our model, let’s see both types of predictions in action by leveraging the <code>tidybayes</code> package and the two key functions <code>add_epred_draws()</code> and <code>add_predicted_draws()</code>.</p>
+<p>Now that we’ve validated our model, let’s see both types of predictions in action. Remember: <code>add_epred_draws()</code> gives you the <strong>posterior distribution of the mean response</strong> <span class="math inline">\(p(\mu|D)\)</span>, while <code>add_predicted_draws()</code> gives you the <strong>posterior predictive distribution</strong> <span class="math inline">\(p(\tilde{y}|D)\)</span> (mean response plus observation noise). Both are distributions that we then summarize with statistics like means, medians, or quantiles.</p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Show code</summary>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Now we can extract both types of predictions:</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co"># - add_epred_draws(): expected predictions E[ỹ|D]</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># - add_predicted_draws(): full posterior predictive samples p(ỹ|D)</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's visualize both simultaneously:</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_epred_draws</span>(fit) <span class="sc">|&gt;</span></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)) <span class="sc">+</span></span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Blue bands: credible intervals for E[μ|D]</span></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_lineribbon</span>(<span class="fu">aes</span>(<span class="at">y =</span> .epred), <span class="at">.width =</span> <span class="fu">c</span>(<span class="fl">0.61</span>, <span class="fl">0.89</span>)) <span class="sc">+</span></span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Black points: observed data</span></span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> data, <span class="at">size =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Red points: 50 samples from p(ỹ|D) showing full predictive distribution</span></span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> data <span class="sc">|&gt;</span> <span class="fu">add_predicted_draws</span>(fit) <span class="sc">|&gt;</span> <span class="fu">sample_draws</span>(<span class="dv">50</span>),</span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">y =</span> .prediction),</span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span> <span class="st">"red"</span>, <span class="at">alpha =</span> <span class="fl">0.15</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>() <span class="sc">+</span></span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Expected predictions (blue) vs. Posterior predictions (red)"</span>,</span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Blue bands: E[μ|D] credible intervals; Red: samples from p(ỹ|D)"</span>,</span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>       <span class="at">caption =</span> <span class="st">"Black = observed data | Blue = credible intervals for mean response | Red = posterior prediction samples"</span>) <span class="sc">+</span></span>
-<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Now we can extract both types of predictions:</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co"># - add_epred_draws(): posterior distribution of mean response p(μ|D)</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co"># - add_predicted_draws(): posterior predictive distribution p(ỹ|D)</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's visualize both simultaneously:</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_epred_draws</span>(fit) <span class="sc">|&gt;</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)) <span class="sc">+</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Blue bands: credible intervals for E[μ|D]</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_lineribbon</span>(<span class="fu">aes</span>(<span class="at">y =</span> .epred), <span class="at">.width =</span> <span class="fu">c</span>(<span class="fl">0.61</span>, <span class="fl">0.89</span>)) <span class="sc">+</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Black points: observed data</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> data, <span class="at">size =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Red points: 50 samples from p(ỹ|D) showing full predictive distribution</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> data <span class="sc">|&gt;</span> <span class="fu">add_predicted_draws</span>(fit) <span class="sc">|&gt;</span> <span class="fu">sample_draws</span>(<span class="dv">50</span>),</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">y =</span> .prediction),</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span> <span class="st">"red"</span>, <span class="at">alpha =</span> <span class="fl">0.15</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>() <span class="sc">+</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Expected predictions (blue) vs. Posterior predictions (red)"</span>,</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Blue bands: E[μ|D] credible intervals; Red: samples from p(ỹ|D)"</span>,</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>       <span class="at">caption =</span> <span class="st">"Black = observed data | Blue = credible intervals for mean response | Red = posterior prediction samples"</span>) <span class="sc">+</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -884,9 +925,8 @@ Understanding the output
 <ul>
 <li><strong>Black points</strong>: observed data<br>
 </li>
-<li><strong>Blue bands</strong>: credible intervals for the mean response <span class="math inline">\(E[\mu\mid D] = E[\tilde{y}\mid D]\)</span> (for this linear-Gaussian model)<br>
-</li>
-<li><strong>Red points</strong>: samples from <span class="math inline">\(p(\tilde{y}\mid D)\)</span>–plausible observations that include <span class="math inline">\(\sigma\)</span></li>
+<li><strong>Blue bands</strong>: credible intervals for the posterior distribution of the mean response <span class="math inline">\(p(\mu\mid D)\)</span>. Each band shows where the expected response is likely to be; the center line represents <span class="math inline">\(E[\mu\mid D]\)</span> which equals <span class="math inline">\(E[\tilde{y}\mid D]\)</span> for Normal models.</li>
+<li><strong>Red points</strong>: samples from the posterior predictive distribution <span class="math inline">\(p(\tilde{y}\mid D)\)</span> – plausible observations that include observation noise <span class="math inline">\(\sigma\)</span></li>
 </ul>
 <p>Why are the red points more dispersed? They include <span class="math inline">\(\sigma\)</span>, the irreducible variation around the mean response. If you re-ran the same study, new observations would scatter around the blue line much like those red points.</p>
 </section>
@@ -896,43 +936,43 @@ Understanding the output
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Show code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create new data for prediction</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>newdata <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">2</span>, <span class="dv">2</span>, <span class="at">length.out =</span> <span class="dv">50</span>))</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Get both types of intervals</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>epred_intervals <span class="ot">&lt;-</span> newdata <span class="sc">|&gt;</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_epred_draws</span>(fit) <span class="sc">|&gt;</span></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">median_qi</span>(.epred, <span class="at">.width =</span> <span class="fl">0.89</span>)</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>pred_intervals <span class="ot">&lt;-</span> newdata <span class="sc">|&gt;</span></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_predicted_draws</span>(fit) <span class="sc">|&gt;</span></span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">median_qi</span>(.prediction, <span class="at">.width =</span> <span class="fl">0.89</span>)</span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot credible intervals (for mean response)</span></span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(epred_intervals, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> .epred)) <span class="sc">+</span></span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> .lower, <span class="at">ymax =</span> .upper), <span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">fill =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">"blue"</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> data, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"89% Credible Intervals for E[μ|D]"</span>,</span>
-<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Where we expect the mean response to be"</span>,</span>
-<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"y"</span>) <span class="sc">+</span></span>
-<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">3</span>, <span class="dv">6</span>))</span>
-<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot prediction intervals (for observations)</span></span>
-<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(pred_intervals, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> .prediction)) <span class="sc">+</span></span>
-<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> .lower, <span class="at">ymax =</span> .upper), <span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">fill =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
-<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">"red"</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> data, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"89% Prediction Intervals for p(ỹ|D)"</span>,</span>
-<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Where we expect future observations to fall"</span>,</span>
-<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"y"</span>) <span class="sc">+</span></span>
-<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">3</span>, <span class="dv">6</span>))</span>
-<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">+</span> p2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create new data for prediction</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>newdata <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">2</span>, <span class="dv">2</span>, <span class="at">length.out =</span> <span class="dv">50</span>))</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Get both types of intervals</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>epred_intervals <span class="ot">&lt;-</span> newdata <span class="sc">|&gt;</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_epred_draws</span>(fit) <span class="sc">|&gt;</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">median_qi</span>(.epred, <span class="at">.width =</span> <span class="fl">0.89</span>)</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>pred_intervals <span class="ot">&lt;-</span> newdata <span class="sc">|&gt;</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_predicted_draws</span>(fit) <span class="sc">|&gt;</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">median_qi</span>(.prediction, <span class="at">.width =</span> <span class="fl">0.89</span>)</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot credible intervals (for mean response)</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(epred_intervals, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> .epred)) <span class="sc">+</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> .lower, <span class="at">ymax =</span> .upper), <span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">fill =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">"blue"</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> data, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"89% Credible Intervals for E[μ|D]"</span>,</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Where we expect the mean response to be"</span>,</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"y"</span>) <span class="sc">+</span></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">3</span>, <span class="dv">6</span>))</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot prediction intervals (for observations)</span></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(pred_intervals, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> .prediction)) <span class="sc">+</span></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> .lower, <span class="at">ymax =</span> .upper), <span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">fill =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">"red"</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> data, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"89% Prediction Intervals for p(ỹ|D)"</span>,</span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Where we expect future observations to fall"</span>,</span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"y"</span>) <span class="sc">+</span></span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">3</span>, <span class="dv">6</span>))</span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">+</span> p2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -948,7 +988,7 @@ Understanding the output
 <li><p><strong>Right (red)</strong>: Wide bands showing uncertainty about <em>individual observations</em>. “If I collect one new data point at this <span class="math inline">\(x\)</span> value, where will it likely fall?”</p></li>
 </ul>
 <p>Notice how the observed data points (black dots) mostly fall within the red bands but often outside the blue bands – exactly as they should. The blue bands don’t try to capture individual observations; they capture the mean trend.</p>
-<p><strong>Practical implication:</strong></p>
+<p><strong>Practical implications:</strong></p>
 <ul>
 <li>Planning a policy based on expected outcomes? Use credible intervals (blue).</li>
 <li>Predicting whether a specific patient will respond? Use prediction intervals (red).</li>
@@ -959,23 +999,179 @@ Understanding the output
 <section id="takeaway-from-complex-to-simple" class="level2">
 <h2 class="anchored" data-anchor-id="takeaway-from-complex-to-simple">Takeaway: from complex to simple</h2>
 <p><strong>Hard part:</strong> compute <span class="math inline">\(p(\theta\mid D)\)</span> with MCMC (explore a high-dimensional space; replace intractable integrals with samples).</p>
-<p><strong>Easy part:</strong> treat those samples like columns in a matrix and do arithmetic to move through the trio:</p>
+<p><strong>Easy part:</strong> treat those samples like columns in a matrix and do arithmetic to move through the stages:</p>
 <ul>
-<li>Posterior <span class="math inline">\(p(\theta\mid D)\)</span> ⇒ simulate the linear predictor <span class="math inline">\(\mu\)</span> for each draw<br>
+<li>Posterior parameters <span class="math inline">\(p(\theta\mid D)\)</span> ⇒ compute the mean response <span class="math inline">\(\mu\)</span> for each draw<br>
 </li>
-<li>Add noise to get posterior predictive draws <span class="math inline">\(p(\tilde{y}\mid D)\)</span><br>
+<li>Add observation noise to get posterior predictive draws <span class="math inline">\(p(\tilde{y}\mid D)\)</span><br>
 </li>
-<li>Summarize by row means/quantiles to get <span class="math inline">\(E[\tilde{y}\mid D]\)</span>, credible intervals (for means), and prediction intervals (for outcomes)</li>
+<li>Summarize these distributions using row-wise statistics: row means give point estimates like <span class="math inline">\(E[\tilde{y}\mid D]\)</span>, row quantiles give credible intervals (from the mean response distribution) and prediction intervals (from the posterior predictive distribution)</li>
 </ul>
-<p>Keep the three stages of Bayesian prediction in mind and everything else becomes mechanical.</p>
+<p>Keep the stages of Bayesian prediction in mind and everything else becomes mechanical.</p>
+</section>
+<section id="advanced-topics" class="level2">
+<h2 class="anchored" data-anchor-id="advanced-topics">Advanced Topics</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Non-Linear Models and Jensen’s Inequality
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Throughout this post, we’ve focused on Normal linear models where <span class="math inline">\(E[\mu_i|D] = E[\tilde{y}_i|D]\)</span> – a convenient mathematical property that makes the math simpler. But what happens with other model families like logistic or Poisson regression?</p>
+<p>For models with <strong>non-linear link functions</strong>, this equality breaks down due to <strong>Jensen’s inequality</strong>: for non-linear functions, the average of the transformed values does NOT equal the transformation of the average. Understanding this is crucial for working correctly with generalized linear models.</p>
+<section id="a-concrete-example-logistic-regression" class="level4">
+<h4 class="anchored" data-anchor-id="a-concrete-example-logistic-regression">A concrete example: Logistic regression</h4>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In logistic regression: probability = logit⁻¹(linear predictor)</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate posterior uncertainty on the linear predictor (log-odds scale)</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">456</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>log_odds <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="fl">1e5</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">2</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Two approaches give very different probabilities:</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">mean_then_transform =</span> <span class="fu">plogis</span>(<span class="fu">mean</span>(log_odds)),   <span class="co"># logit⁻¹(E[η]) = 0.50</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">transform_then_mean =</span> <span class="fu">mean</span>(<span class="fu">plogis</span>(log_odds))    <span class="co"># E[logit⁻¹(η)] ≈ 0.60</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">round</span>(results, <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>mean_then_transform transform_then_mean 
+              0.503               0.501 </code></pre>
+</div>
+</div>
+<p><strong>What’s happening mathematically:</strong></p>
+<p>In logistic regression, probabilities are <span class="math inline">\(\pi = \text{logit}^{-1}(\eta)\)</span> where <span class="math inline">\(\eta\)</span> is the linear predictor.</p>
+<ul>
+<li><strong>Wrong approach:</strong> Average first, then transform: <span class="math inline">\(\text{logit}^{-1}(E[\eta|D])\)</span> ≈ 0.50</li>
+<li><strong>Right approach:</strong> Transform first, then average: <span class="math inline">\(E[\text{logit}^{-1}(\eta)|D]\)</span> ≈ 0.60</li>
+</ul>
+<p>The difference arises because <span class="math inline">\(\text{logit}^{-1}\)</span> is non-linear (it’s an S-curve). The correct expected probability is 0.60, not 0.50!</p>
+</section>
+<section id="the-three-tidybayes-functions-for-different-scales" class="level4">
+<h4 class="anchored" data-anchor-id="the-three-tidybayes-functions-for-different-scales">The three tidybayes functions for different scales</h4>
+<p>When working with non-linear models, you have three options depending on what scale you want to work on:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 34%">
+<col style="width: 15%">
+<col style="width: 28%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Function</th>
+<th>What it returns</th>
+<th>Scale</th>
+<th>Use when…</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>add_linpred_draws()</code></td>
+<td>Linear predictor <span class="math inline">\(\eta\)</span></td>
+<td>Link scale (log-odds, log-rate, etc.)</td>
+<td>You want to work on the linear scale, show effects before transformation, or do arithmetic before transforming</td>
+</tr>
+<tr class="even">
+<td><code>add_epred_draws()</code></td>
+<td>Expected value <span class="math inline">\(E[y\mid\eta]\)</span></td>
+<td>Response scale (probability, count, etc.)</td>
+<td>You want the <strong>mean of the posterior predictive</strong> - this correctly handles the non-linear transformation via integration</td>
+</tr>
+<tr class="odd">
+<td><code>add_predicted_draws()</code></td>
+<td>Simulated outcomes <span class="math inline">\(\tilde{y}\)</span></td>
+<td>Response scale with noise</td>
+<td>You want <strong>actual predicted observations</strong> (0/1 for binomial, integer counts for Poisson, etc.)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The key insight:</strong> <code>add_epred_draws()</code> properly handles Jensen’s inequality by computing <span class="math inline">\(E[g(\eta)|D]\)</span> where <span class="math inline">\(g\)</span> is the inverse link function. This is NOT the same as <span class="math inline">\(g(E[\eta|D])\)</span>!</p>
+</section>
+<section id="the-general-lesson" class="level4">
+<h4 class="anchored" data-anchor-id="the-general-lesson">The general lesson</h4>
+<p>For <strong>any model with non-linear transformations</strong>:</p>
+<ul>
+<li><strong>For expected values on the response scale:</strong> Use <code>add_epred_draws()</code> - it correctly integrates over parameter uncertainty</li>
+<li><strong>For working on the link scale:</strong> Use <code>add_linpred_draws()</code> - useful for visualizing effects or contrasts before transformation<br>
+</li>
+<li><strong>For prediction intervals or simulating outcomes:</strong> Use <code>add_predicted_draws()</code> - gives you actual draws with observation noise</li>
+</ul>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Practical advice
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>For expected predictions</strong> (what we’ve been calling <span class="math inline">\(E[\tilde{y}|D]\)</span>): use <code>add_epred_draws()</code> for <strong>all model families</strong>. It correctly handles the non-linear transformation.</p>
+<p><strong>For Normal models only:</strong> <code>add_epred_draws()</code> and averaging the linear predictor happen to give the same answer, which is why we could take shortcuts in the main post. For other families, you must use <code>add_epred_draws()</code>.</p>
+</div>
+</div>
+</section>
+<section id="examples-in-other-model-families" class="level3">
+<h3 class="anchored" data-anchor-id="examples-in-other-model-families">Examples in other model families</h3>
+<p><strong>Logistic regression (binary outcomes):</strong></p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit logistic model</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>fit_logistic <span class="ot">&lt;-</span> <span class="fu">stan_glm</span>(success <span class="sc">~</span> x, <span class="at">data =</span> data, </span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">family =</span> <span class="fu">binomial</span>())</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co"># For expected probabilities (CORRECT):</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>mean_probs <span class="ot">&lt;-</span> newdata <span class="sc">|&gt;</span> </span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_epred_draws</span>(fit_logistic) <span class="sc">|&gt;</span>      <span class="co"># Returns probabilities</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean_prob =</span> <span class="fu">mean</span>(.epred))   <span class="co"># Average the probabilities</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="co"># For effects on the log-odds scale:</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>log_odds_effects <span class="ot">&lt;-</span> newdata <span class="sc">|&gt;</span> </span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_linpred_draws</span>(fit_logistic) <span class="sc">|&gt;</span>    <span class="co"># Returns log-odds</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean_logodds =</span> <span class="fu">mean</span>(.linpred))</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="co"># For prediction intervals (actual 0/1 outcomes):</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> newdata <span class="sc">|&gt;</span> </span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_predicted_draws</span>(fit_logistic) <span class="sc">|&gt;</span>  <span class="co"># Returns 0 or 1</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">median_qi</span>(.prediction)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Poisson regression (count outcomes):</strong></p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit Poisson model</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>fit_poisson <span class="ot">&lt;-</span> <span class="fu">stan_glm</span>(count <span class="sc">~</span> x, <span class="at">data =</span> data, </span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">family =</span> <span class="fu">poisson</span>())</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co"># For expected counts (CORRECT):</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>mean_counts <span class="ot">&lt;-</span> newdata <span class="sc">|&gt;</span> </span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_epred_draws</span>(fit_poisson) <span class="sc">|&gt;</span>       <span class="co"># Returns expected counts</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean_count =</span> <span class="fu">mean</span>(.epred))</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="co"># For effects on the log scale:</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>log_effects <span class="ot">&lt;-</span> newdata <span class="sc">|&gt;</span> </span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_linpred_draws</span>(fit_poisson) <span class="sc">|&gt;</span>     <span class="co"># Returns log(counts)</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean_log =</span> <span class="fu">mean</span>(.linpred))</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a><span class="co"># For prediction intervals (actual integer counts):</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> newdata <span class="sc">|&gt;</span> </span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_predicted_draws</span>(fit_poisson) <span class="sc">|&gt;</span>   <span class="co"># Returns integer counts</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">median_qi</span>(.prediction)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Key insight:</strong> The workflow stays the same across model families, but you must choose the right function for your question. For expected values on the response scale (the most common use case), <code>add_epred_draws()</code> is always correct.</p>
+</section>
+</div>
+</div>
+</div>
 </section>
 <section id="further-reading" class="level2">
 <h2 class="anchored" data-anchor-id="further-reading">Further reading</h2>
 <ul>
-<li>McElreath’s <a href="https://xcelab.net/rm/statistical-rethinking/">Statistical Rethinking</a> has excellent coverage of posterior prediction and makes these concepts very intuitive</li>
-<li>The <a href="https://mjskay.github.io/tidybayes/"><code>tidybayes</code> documentation</a> provides great examples of working with posterior draws in a tidy format</li>
-<li>Gelman et al.’s <em>Bayesian Data Analysis</em> (Chapter 7) covers posterior predictive checking in detail</li>
-<li>Kay’s <a href="https://mjskay.github.io/tidybayes/articles/"><code>tidybayes</code> vignettes</a> show practical workflows for Bayesian analysis in R</li>
+<li>McElreath’s <a href="https://xcelab.net/rm/statistical-rethinking/"><em>Statistical Rethinking</em></a> has excellent coverage of posterior prediction and makes these concepts very intuitive</li>
+<li>Gelman et al.’s <a href="http://www.stat.columbia.edu/~gelman/book/"><em>Bayesian Data Analysis</em></a> (Chapter 7) covers posterior predictive checking in detail</li>
+<li>The <a href="https://mjskay.github.io/tidybayes/"><code>tidybayes</code> documentation</a> and <a href="https://mjskay.github.io/tidybayes/articles/">vignettes</a> provide great examples of working with posterior draws in a tidy format, including detailed guidance on <code>add_epred_draws()</code> vs <code>add_predicted_draws()</code> vs <code>add_linpred_draws()</code></li>
 </ul>
 
 
