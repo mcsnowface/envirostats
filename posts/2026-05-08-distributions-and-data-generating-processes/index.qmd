@@ -259,12 +259,8 @@ $$
 }_{\text{Gamma}(3,\, \lambda)}
 $$
 
-The Exponential is memoryless: $P(X > s + t \mid X > s) = P(X > t)$.
-The process carries no history - the distribution of remaining wait time
-is identical at every moment, regardless of how long you have already
-been waiting. The Gamma, by contrast, accumulates $k$ waiting periods -
-it *has* history, which is why it develops a hump rather than simply
-decaying from the left.
+The Exponential is memoryless: $P(X > s + t \mid X > s) = P(X > t)$, meaning that if you have already been waiting $s$ minutes and nothing has happened, your expected remaining wait is identical to what it was when you started. The past is irrelevant. A machine that has been running for 10 years has exactly the same probability of failing tomorrow as a brand new one. When that assumption holds, the Exponential is the right model. The Gamma, by contrast, accumulates $k$ waiting periods - it *has* history, which is why it develops a hump rather than simply decaying from the left, making it more appropriate when wear or accumulation is part of the story, as it is in most biological and mechanical processes.
+
 
 When the shape parameter $\alpha$ is a positive integer, this stacking
 interpretation is exact. When $\alpha$ is continuous - as it almost
