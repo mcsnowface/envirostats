@@ -176,7 +176,7 @@ deliberate choice.
 
 The **cargo-cult Normal** looks like this: I read somewhere that Normal
 is fine for large samples. No further examination. The statement has
-been copied from Stack Overflow answers and textbook footnotes, passed
+been copied from online forums and textbook footnotes, passed
 along in methods sections and team wikis, each time losing a little more
 of the context that made it defensible in the first place. The original
 author may have been making the informed trade-off. Most readers after
