@@ -515,7 +515,7 @@
     "href": "tools/probability-distributions/index.html",
     "title": "Probability Distribution Explorer",
     "section": "",
-    "text": "The tool is not first. Know what you are building, then reach into the box.\nAn interactive reference for eight essential probability distributions. Adjust the parameters with live sliders, toggle between PDF and CDF views, and see how mean and variance relate for each one.\nA companion to the post Distributions and Data Generating Processes.\n\n\n\n\n\n\n\n\n\n  Open in full screen ↗"
+    "text": "The tool is not first. Know what you are building, then reach into the box.\nAn interactive reference for eight essential probability distributions. Adjust the parameters with live sliders, toggle between PDF and CDF views, and see how mean and variance relate for each one.\nA companion to the post Distributions and Data Generating Processes.\n\n  Open in full screen ↗"
   },
   {
     "objectID": "tools.html",
@@ -523,5 +523,12 @@
     "title": "Tools",
     "section": "",
     "text": "Probability Distribution Explorer\n\n\nInteractive reference for eight essential probability distributions with live parameter sliders.\n\n\n\n\n\n\nMay 8, 2026\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts.html",
+    "href": "posts.html",
+    "title": "Insights",
+    "section": "",
+    "text": "Distributions and Data Generating Processes\n\n\n\ndistributions\n\nstatistics\n\ninference\n\nphilosophy\n\n\n\n\n\n\n\nStefan Schreiber\n\n\nMay 8, 2026\n\n\n\n\n\n\n\n\n\n\n\n\n\nUnderstanding Bayesian Predictions\n\n\n\nbayesian\n\nprediction\n\ninference\n\n\n\n\n\n\n\nStefan Schreiber\n\n\nNov 5, 2025\n\n\n\n\n\n\n\n\n\n\n\n\n\nUnderstanding Bayesian Inference: Linear Regression\n\n\n\nbayesian\n\ninference\n\nregression\n\n\n\n\n\n\n\nStefan Schreiber\n\n\nOct 27, 2025\n\n\n\n\n\n\n\n\n\n\n\n\n\nUnderstanding Bayesian Inference: Foundations\n\n\n\nfrequentist\n\ninference\n\nbayesian\n\n\n\n\n\n\n\nStefan Schreiber\n\n\nOct 20, 2025\n\n\n\n\n\n\n\n\n\n\n\n\n\nUnderstanding Frequentist Inference\n\n\n\nfrequentist\n\ninference\n\nbayesian\n\n\n\n\n\n\n\nStefan Schreiber\n\n\nOct 12, 2025\n\n\n\n\n\n\n\n\n\n\n\n\n\nThe Power of Evidence Synthesis\n\n\n\nevidence-synthesis\n\nsystematic-review\n\nmeta-analysis\n\n\n\nBridging Gaps Between Research and Practice\n\n\n\nSanja Schreiber\n\n\nApr 10, 2024\n\n\n\n\n\n\nNo matching items"
   }
 ]
