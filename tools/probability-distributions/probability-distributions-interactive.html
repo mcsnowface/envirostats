@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Probability Distributions</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0b0c10; --surface:#13151c; --card:#1a1d28; --border:#252838;
+  --a1:#7c6af7; --a2:#f7a26a; --a3:#6af7c4; --a4:#f76a9a;
+  --a5:#f7e26a; --a6:#6ab4f7; --a7:#c46af7; --a8:#6af7a0;
+  --text:#e8eaf0; --muted:#7880a0; --code:#0f1118;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4}
+
+header{position:relative;padding:50px 40px 36px;border-bottom:1px solid var(--border);overflow:hidden;z-index:1}
+header::after{content:'f(x)';position:absolute;right:-20px;top:-30px;font-family:'DM Serif Display',serif;font-style:italic;font-size:200px;color:var(--a1);opacity:.04;pointer-events:none;user-select:none}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--a3);text-transform:uppercase;margin-bottom:14px}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(32px,5vw,64px);font-weight:400;line-height:1.05;letter-spacing:-1px}
+h1 em{font-style:italic;color:var(--a2)}
+.subtitle{margin-top:14px;color:var(--muted);font-size:14px;max-width:520px;line-height:1.7}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.pill{padding:5px 13px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:11px;border:1px solid;cursor:default}
+
+main{padding:0 40px 80px;position:relative;z-index:1}
+
+/* Mode toggle */
+.mode-bar{display:flex;align-items:center;gap:10px;padding:20px 0 16px}
+.mode-bar span{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-right:4px}
+.mode-btn{padding:5px 14px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:11px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s}
+.mode-btn.active{border-color:var(--a1);color:var(--a1);background:rgba(124,106,247,.08)}
+
+/* 4×2 grid */
+.dist-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:0}
+.dist-card{background:var(--card);padding:22px 20px 16px;cursor:pointer;position:relative;transition:background .2s;border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
+.dist-card:nth-child(4n){border-right:none}
+.dist-card:nth-child(n+5){border-bottom:none}
+.dist-card:hover{background:#1e2133}
+.dist-card.open{background:#1e2133}
+.accent-bar{position:absolute;top:0;left:0;right:0;height:3px;border-radius:3px 3px 0 0;opacity:0;transition:opacity .2s}
+.dist-card.open .accent-bar{opacity:1}
+.dist-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:3px}
+.dist-name{font-family:'DM Serif Display',serif;font-size:20px;font-weight:400;margin-bottom:2px;transition:color .2s}
+.dist-tagline{font-size:11px;color:var(--muted);font-style:italic;margin-bottom:10px}
+.mini-svg{width:100%;height:56px;display:block;margin-bottom:10px}
+.param-pills{display:flex;gap:5px;flex-wrap:wrap}
+.param-pill{font-family:'JetBrains Mono',monospace;font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--muted)}
+
+/* Detail panel */
+.detail{background:#161926;border:1px solid var(--border);border-top:none;border-radius:0 0 14px 14px;overflow:hidden;margin-bottom:2px}
+.detail-inner{padding:28px 28px 24px;display:grid;grid-template-columns:1fr 300px;gap:24px}
+.detail-title{display:flex;align-items:center;gap:10px;margin-bottom:20px;grid-column:1/-1}
+.detail-accent-strip{width:4px;height:28px;border-radius:2px;flex-shrink:0}
+.detail-name{font-family:'DM Serif Display',serif;font-size:24px;font-weight:400}
+.detail-sub{font-size:13px;color:var(--muted);font-style:italic;margin-left:4px}
+
+/* Big chart */
+.chart-wrap{background:var(--code);border:1px solid var(--border);border-radius:10px;padding:16px 16px 10px;margin-bottom:12px}
+.big-svg{width:100%;display:block}
+.formula-line{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;margin-top:4px;line-height:1.6}
+.formula-line em{color:var(--text);font-style:normal}
+
+/* Sliders panel */
+.right-panel{display:flex;flex-direction:column;gap:12px}
+.panel-box{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px}
+.panel-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px}
+.slider-row{margin-bottom:14px}
+.slider-row:last-child{margin-bottom:0}
+.slider-header{display:flex;justify-content:space-between;margin-bottom:5px}
+.slider-key{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)}
+.slider-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600}
+input[type=range]{width:100%;height:4px;appearance:none;-webkit-appearance:none;background:var(--border);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;cursor:pointer;border:2px solid var(--bg);background:var(--thumb-color,#7c6af7)}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;cursor:pointer;border:2px solid var(--bg);background:var(--thumb-color,#7c6af7);border-style:solid}
+.slider-limits{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);opacity:.5;margin-top:3px}
+
+.stats-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:11px}
+.stats-row:last-child{border-bottom:none}
+.stats-key{color:var(--muted)}
+
+.r-block{background:var(--code);border:1px solid var(--border);border-radius:10px;padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9}
+.rf-d{color:var(--a1)} .rf-p{color:var(--a2)} .rf-q{color:var(--a3)} .rf-r{color:var(--a4)}
+.r-dim{color:var(--muted)}
+
+.use-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.use-tag{font-size:11px;font-family:'JetBrains Mono',monospace;padding:3px 10px;border-radius:4px;background:rgba(255,255,255,.04);color:var(--muted);border:1px solid var(--border)}
+
+/* cheatsheet */
+.cheatsheet{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:36px;margin-top:40px}
+.cheatsheet h2{font-family:'DM Serif Display',serif;font-size:28px;font-weight:400;margin-bottom:6px}
+.cheatsheet-intro{color:var(--muted);font-size:13px;margin-bottom:28px;line-height:1.7}
+.prefix-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:28px}
+.prefix-card{background:var(--code);border:1px solid var(--border);border-radius:10px;padding:18px}
+.prefix-letter{font-family:'DM Serif Display',serif;font-size:36px;font-style:italic;line-height:1;margin-bottom:6px}
+.prefix-full{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:5px}
+.prefix-meaning{font-size:12px;color:#bcc0d4;line-height:1.6}
+table{width:100%;border-collapse:collapse;font-size:12px;font-family:'JetBrains Mono',monospace}
+th{text-align:left;padding:8px 10px;color:var(--muted);font-size:9px;letter-spacing:2px;text-transform:uppercase;border-bottom:1px solid var(--border)}
+td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.td-fn{color:var(--a1)} .td-dist{color:var(--a2)} .td-desc{color:var(--muted);font-family:'DM Sans',sans-serif;font-size:11px}
+
+@media(max-width:900px){
+  .dist-grid{grid-template-columns:repeat(2,1fr)}
+  .dist-card:nth-child(2n){border-right:none}
+  .dist-card:nth-child(n+5){border-bottom:1px solid var(--border)}
+  .dist-card:nth-child(n+7){border-bottom:none}
+  .detail-inner{grid-template-columns:1fr}
+  .prefix-grid{grid-template-columns:repeat(2,1fr)}
+  header,main{padding-left:20px;padding-right:20px}
+}
+@media(max-width:560px){
+  .dist-grid{grid-template-columns:1fr}
+  .dist-card{border-right:none!important;border-bottom:1px solid var(--border)!important}
+  .dist-card:last-child{border-bottom:none!important}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Statistical Reference</div>
+  <h1>Probability<br><em>Distributions</em></h1>
+  <p class="subtitle">Eight essential distributions with live interactive controls. Drag the sliders — the curves update instantly.</p>
+  <div class="pills">
+    <span class="pill" style="color:var(--a1);border-color:var(--a1);background:rgba(124,106,247,.08)">PDF · Density</span>
+    <span class="pill" style="color:var(--a2);border-color:var(--a2);background:rgba(247,162,106,.08)">CDF · Cumulative</span>
+    <span class="pill" style="color:var(--a3);border-color:var(--a3);background:rgba(106,247,196,.08)">Quantile · Inverse CDF</span>
+    <span class="pill" style="color:var(--a4);border-color:var(--a4);background:rgba(247,106,154,.08)">Random Sampling</span>
+  </div>
+</header>
+
+<main>
+  <div class="mode-bar">
+    <span>View</span>
+    <button class="mode-btn active" id="btn-pdf" onclick="setMode('pdf')">PDF</button>
+    <button class="mode-btn" id="btn-cdf" onclick="setMode('cdf')">CDF</button>
+  </div>
+
+  <div class="dist-grid" id="grid"></div>
+  <div id="detail-slot"></div>
+
+  <!-- Cheat sheet -->
+  <div class="cheatsheet">
+    <h2>The R Naming System</h2>
+    <p class="cheatsheet-intro">Every distribution follows the same <code style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--a1)">[prefix][distname]</code> pattern. Learn the four prefixes once and you can use any of R's 30+ distributions instantly.</p>
+    <div class="prefix-grid">
+      <div class="prefix-card"><div class="prefix-letter" style="color:var(--a1)">d</div><div class="prefix-full">DENSITY</div><div class="prefix-meaning">Value of the PDF/PMF at x. How dense or likely is this specific value?</div></div>
+      <div class="prefix-card"><div class="prefix-letter" style="color:var(--a2)">p</div><div class="prefix-full">PROBABILITY</div><div class="prefix-meaning">Returns P(X ≤ q) — cumulative probability up to q. Used for p-values.</div></div>
+      <div class="prefix-card"><div class="prefix-letter" style="color:var(--a3)">q</div><div class="prefix-full">QUANTILE</div><div class="prefix-meaning">Inverse CDF: given probability p, returns x such that P(X≤x)=p. Critical values.</div></div>
+      <div class="prefix-card"><div class="prefix-letter" style="color:var(--a4)">r</div><div class="prefix-full">RANDOM</div><div class="prefix-meaning">Draws n random samples. Use set.seed() first for reproducibility.</div></div>
+    </div>
+    <table>
+      <thead><tr><th>R Functions</th><th>Distribution</th><th>Key Parameters</th><th>Primary Use</th></tr></thead>
+      <tbody>
+        <tr><td class="td-fn">dnorm / pnorm / qnorm / rnorm</td><td class="td-dist">Normal</td><td>mean, sd</td><td class="td-desc">z-tests, CI, CLT</td></tr>
+        <tr><td class="td-fn">dlogis / plogis / qlogis / rlogis</td><td class="td-dist">Logistic</td><td>location, scale</td><td class="td-desc">Logistic regression, sigmoid</td></tr>
+        <tr><td class="td-fn">dexp / pexp / qexp / rexp</td><td class="td-dist">Exponential</td><td>rate λ</td><td class="td-desc">Wait times, survival</td></tr>
+        <tr><td class="td-fn">dbinom / pbinom / qbinom / rbinom</td><td class="td-dist">Binomial</td><td>size n, prob p</td><td class="td-desc">Success counts, A/B testing</td></tr>
+        <tr><td class="td-fn">dpois / ppois / qpois / rpois</td><td class="td-dist">Poisson</td><td>lambda λ</td><td class="td-desc">Event counts per interval</td></tr>
+        <tr><td class="td-fn">dt / pt / qt / rt</td><td class="td-dist">Student's t</td><td>df ν</td><td class="td-desc">t-tests, small sample inference</td></tr>
+        <tr><td class="td-fn">dgamma / pgamma / qgamma / rgamma</td><td class="td-dist">Gamma</td><td>shape α, rate β</td><td class="td-desc">Waiting k events, insurance</td></tr>
+        <tr><td class="td-fn">dbeta / pbeta / qbeta / rbeta</td><td class="td-dist">Beta</td><td>shape1 α, shape2 β</td><td class="td-desc">Bayesian priors, proportions</td></tr>
+        <tr><td class="td-fn">dchisq / pchisq / qchisq / rchisq</td><td class="td-dist">Chi-squared</td><td>df</td><td class="td-desc">Goodness-of-fit, variance</td></tr>
+        <tr><td class="td-fn">df / pf / qf / rf</td><td class="td-dist">F</td><td>df1, df2</td><td class="td-desc">ANOVA, comparing variances</td></tr>
+        <tr><td class="td-fn">dunif / punif / qunif / runif</td><td class="td-dist">Uniform</td><td>min, max</td><td class="td-desc">Simulation, random numbers</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Beyond the Eight -->
+  <div class="cheatsheet" style="margin-top:24px">
+    <h2>Beyond the Eight</h2>
+    <p class="cheatsheet-intro">The eight distributions above cover the majority of everyday modelling needs. But the toolbox is larger. Here are three you are likely to encounter next — each closely related to a distribution already covered.</p>
+    <table>
+      <thead><tr><th>R Functions</th><th>Distribution</th><th>Relationship to the Eight</th><th>When you need it</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="td-fn">dnbinom / pnbinom / qnbinom / rnbinom</td>
+          <td class="td-dist">Negative Binomial</td>
+          <td class="td-desc">Extends Poisson by adding a second parameter to allow variance &gt; mean (overdispersion). Reduces to Poisson as the dispersion parameter → ∞.</td>
+          <td class="td-desc">Count data where variance far exceeds the mean — RNA-seq read counts, insurance claims, social media engagement.</td>
+        </tr>
+        <tr>
+          <td class="td-fn">dweibull / pweibull / qweibull / rweibull</td>
+          <td class="td-dist">Weibull</td>
+          <td class="td-desc">Generalises the Exponential by allowing the failure rate to increase or decrease over time. Exponential is the special case where shape = 1 (constant rate).</td>
+          <td class="td-desc">Survival analysis and reliability engineering where risk is not constant — machine wear, time-to-failure, clinical trial endpoints.</td>
+        </tr>
+        <tr>
+          <td class="td-fn">dlnorm / plnorm / qlnorm / rlnorm</td>
+          <td class="td-dist">Log-Normal</td>
+          <td class="td-desc">If log(X) is Normal, then X is Log-Normal. Closely related to the Gamma for positive skewed data — both are flexible, but Log-Normal arises from multiplicative rather than additive processes.</td>
+          <td class="td-desc">Income distributions, species abundance, particle sizes, reaction times — anything arising from many small <em>multiplicative</em> effects.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<script>
+// ── Math helpers ──────────────────────────────────────────────────────────────
+function erf(x){
+  const t=1/(1+0.3275911*Math.abs(x));
+  const p=t*(0.254829592+t*(-0.284496736+t*(1.421413741+t*(-1.453152027+t*1.061405429))));
+  return Math.sign(x)*(1-p*Math.exp(-x*x));
+}
+function gamma(n){
+  if(n<0.5) return Math.PI/(Math.sin(Math.PI*n)*gamma(1-n));
+  if(n<2) return gamma(n+1)/n;
+  const g=7,c=[0.99999999999980993,676.5203681218851,-1259.1392167224028,771.32342877765313,-176.61502916214059,12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+  let x=c[0]; for(let i=1;i<g+2;i++) x+=c[i]/(n-1+i);
+  const t=n-1+g+0.5;
+  return Math.sqrt(2*Math.PI)*Math.pow(t,n-0.5)*Math.exp(-t)*x;
+}
+function fact(n){let r=1;for(let i=2;i<=n;i++)r*=i;return r;}
+function binom(n,k){if(k<0||k>n)return 0;let r=1;for(let i=0;i<k;i++)r=r*(n-i)/(i+1);return Math.round(r);}
+function betaFn(a,b){return gamma(a)*gamma(b)/gamma(a+b);}
+function lowerRegGamma(a,x){
+  if(x<=0)return 0;
+  if(x>(a+1))return 1-upperRegGamma(a,x);
+  let sum=1/a,term=1/a;
+  for(let i=1;i<200;i++){term*=x/(a+i);sum+=term;if(Math.abs(term)<1e-10)break;}
+  return Math.exp(-x+a*Math.log(x)-Math.log(gamma(a)))*sum;
+}
+function upperRegGamma(a,x){
+  let C=1+1e30,D=1/(x+1-a),f=D,delta;
+  for(let i=1;i<200;i++){
+    const an=-i*(i-a),bn=x+2*i+1-a;
+    D=bn+an*D;if(Math.abs(D)<1e-30)D=1e-30;D=1/D;
+    C=bn+an/C;if(Math.abs(C)<1e-30)C=1e-30;
+    delta=C*D;f*=delta;if(Math.abs(delta-1)<1e-10)break;
+  }
+  return Math.exp(-x+a*Math.log(x)-Math.log(gamma(a)))*f;
+}
+function regIncBeta(x,a,b){
+  if(x<=0)return 0;if(x>=1)return 1;
+  const lbeta=Math.log(gamma(a))+Math.log(gamma(b))-Math.log(gamma(a+b));
+  const front=Math.exp(a*Math.log(x)+b*Math.log(1-x)-lbeta)/a;
+  function cf(x,a,b){
+    const qab=a+b,qap=a+1,qam=a-1;
+    let c=1,d=1-qab*x/qap;if(Math.abs(d)<1e-30)d=1e-30;d=1/d;let h=d;
+    for(let m=1;m<200;m++){
+      let aa=m*(b-m)*x/((qam+2*m)*(a+2*m));
+      d=1+aa*d;if(Math.abs(d)<1e-30)d=1e-30;c=1+aa/c;if(Math.abs(c)<1e-30)c=1e-30;d=1/d;h*=d*c;
+      aa=-(a+m)*(qab+m)*x/((a+2*m)*(qap+2*m));
+      d=1+aa*d;if(Math.abs(d)<1e-30)d=1e-30;c=1+aa/c;if(Math.abs(c)<1e-30)c=1e-30;d=1/d;const del=d*c;h*=del;
+      if(Math.abs(del-1)<1e-10)break;
+    }
+    return h;
+  }
+  if(x<(a+1)/(a+b+2))return front*cf(x,a,b);
+  return 1-Math.exp(b*Math.log(1-x)+a*Math.log(x)-lbeta)/b*cf(1-x,b,a);
+}
+function tCDF(x,df){
+  if(df>200)return 0.5*(1+erf(x/Math.sqrt(2)));
+  const ib=regIncBeta(df/(df+x*x),df/2,0.5);
+  return x>=0?1-ib/2:ib/2;
+}
+
+// ── Distribution definitions ──────────────────────────────────────────────────
+const DISTS = [
+  {
+    id:'normal', num:'01', name:'Normal', tagline:'The bell curve', accent:'var(--a1)', accentHex:'#7c6af7',
+    params:[{key:'mu',label:'μ (mean)',min:-3,max:3,step:0.1,def:0},{key:'sigma',label:'σ (std dev)',min:0.2,max:3,step:0.1,def:1}],
+    continuous:true, xRange:()=>[-5,5],
+    pdf:(x,p)=>(1/(p.sigma*Math.sqrt(2*Math.PI)))*Math.exp(-0.5*((x-p.mu)/p.sigma)**2),
+    cdf:(x,p)=>0.5*(1+erf((x-p.mu)/(p.sigma*Math.sqrt(2)))),
+    formula:(p,m)=>m==='pdf'?`f(x) = exp(−(x−${p.mu.toFixed(1)})² / 2σ²) / (σ√2π)   σ=${p.sigma.toFixed(1)}`:`F(x) = ½·[1 + erf((x − ${p.mu.toFixed(1)}) / (${p.sigma.toFixed(1)}·√2))]`,
+    stats:(p)=>({mean:p.mu.toFixed(2),variance:(p.sigma**2).toFixed(2),'std dev':p.sigma.toFixed(2)}),
+    rCode:(p)=>[`dnorm(x, mean=${p.mu.toFixed(1)}, sd=${p.sigma.toFixed(1)})`,`pnorm(q, mean=${p.mu.toFixed(1)}, sd=${p.sigma.toFixed(1)})`,`qnorm(p, mean=${p.mu.toFixed(1)}, sd=${p.sigma.toFixed(1)})`,`rnorm(n, mean=${p.mu.toFixed(1)}, sd=${p.sigma.toFixed(1)})`],
+    uses:['z-tests','CLT applications','Measurement error','Confidence intervals'],
+    desc:'Symmetric, bell-shaped. Arises naturally via the <strong>Central Limit Theorem</strong>: averages of many independent variables become approximately normal. Fully described by mean μ and std dev σ.',
+  },
+  {
+    id:'logistic', num:'02', name:'Logistic', tagline:'The log-odds, or sigmoid', accent:'var(--a2)', accentHex:'#f7a26a',
+    params:[{key:'mu',label:'μ (location)',min:-3,max:3,step:0.1,def:0},{key:'s',label:'s (scale)',min:0.2,max:3,step:0.1,def:1}],
+    continuous:true, xRange:()=>[-8,8],
+    pdf:(x,p)=>{const e=Math.exp(-(x-p.mu)/p.s);return e/(p.s*(1+e)**2);},
+    cdf:(x,p)=>1/(1+Math.exp(-(x-p.mu)/p.s)),
+    formula:(p,m)=>m==='pdf'?`f(x) = e^(−(x−${p.mu.toFixed(1)})/s) / [s·(1+e^(−(x−μ)/s))²]`:`F(x) = 1 / (1 + exp(−(x−${p.mu.toFixed(1)})/${p.s.toFixed(1)}))  ← sigmoid`,
+    stats:(p)=>({mean:p.mu.toFixed(2),variance:(Math.PI**2/3*p.s**2).toFixed(2),'std dev':(Math.PI/Math.sqrt(3)*p.s).toFixed(2)}),
+    rCode:(p)=>[`dlogis(x, location=${p.mu.toFixed(1)}, scale=${p.s.toFixed(1)})`,`plogis(q, location=${p.mu.toFixed(1)}, scale=${p.s.toFixed(1)})`,`qlogis(p, location=${p.mu.toFixed(1)}, scale=${p.s.toFixed(1)})`,`rlogis(n, location=${p.mu.toFixed(1)}, scale=${p.s.toFixed(1)})`],
+    uses:['Logistic regression','Sigmoid / neural nets','Binary classification','Growth models'],
+    desc:'Its CDF <em>is</em> the sigmoid 1/(1+e⁻ˣ) by definition — not just sigmoid-shaped like the Normal CDF. The difference: the logistic has <strong>heavier tails</strong>, and the log-odds (logit = qlogis) relationship is algebraically exact. Named by Verhulst (1845) for population growth, adopted in ML as "the sigmoid activation".',
+  },
+  {
+    id:'exp', num:'03', name:'Exponential', tagline:'Time until the first event — memoryless', accent:'var(--a3)', accentHex:'#6af7c4',
+    params:[{key:'rate',label:'λ (rate)',min:0.2,max:3,step:0.1,def:1}],
+    continuous:true, xRange:()=>[0,6],
+    pdf:(x,p)=>x<0?0:p.rate*Math.exp(-p.rate*x),
+    cdf:(x,p)=>x<0?0:1-Math.exp(-p.rate*x),
+    formula:(p,m)=>m==='pdf'?`f(x) = ${p.rate.toFixed(1)} · exp(−${p.rate.toFixed(1)}x)   for x ≥ 0`:`F(x) = 1 − exp(−${p.rate.toFixed(1)}x)`,
+    stats:(p)=>({mean:(1/p.rate).toFixed(2),variance:(1/p.rate**2).toFixed(2),'std dev':(1/p.rate).toFixed(2)}),
+    rCode:(p)=>[`dexp(x, rate=${p.rate.toFixed(1)})`,`pexp(q, rate=${p.rate.toFixed(1)})`,`qexp(p, rate=${p.rate.toFixed(1)})`,`rexp(n, rate=${p.rate.toFixed(1)})`],
+    uses:['Time between arrivals','Survival analysis','Reliability / failures','Queuing theory'],
+    desc:'The single-event special case of the Gamma. Models the waiting time until the <strong>first event</strong> in a Poisson process. Memoryless: the process has no history — P(X > s+t given X > s) = P(X > t). The elapsed wait is irrelevant; the distribution always resets. Mean = 1/λ. Stack k independent Exponential waits and you get a Gamma(k, λ).',
+  },
+  {
+    id:'binom', num:'04', name:'Binomial', tagline:'Successes in n trials', accent:'var(--a4)', accentHex:'#f76a9a',
+    params:[{key:'n',label:'n (trials)',min:2,max:30,step:1,def:10},{key:'prob',label:'p (success prob)',min:0.05,max:0.95,step:0.05,def:0.3}],
+    continuous:false,
+    xRange:(p)=>[0,Math.round(p.n)],
+    pdf:(k,p)=>{const n=Math.round(p.n);k=Math.round(k);if(k<0||k>n)return 0;return binom(n,k)*p.prob**k*(1-p.prob)**(n-k);},
+    cdf:(k,p)=>{let s=0;const n=Math.round(p.n);for(let i=0;i<=Math.floor(k);i++)s+=binom(n,i)*p.prob**i*(1-p.prob)**(n-i);return s;},
+    formula:(p,m)=>m==='pdf'?`P(X=k) = C(${Math.round(p.n)},k) · ${p.prob.toFixed(2)}^k · ${(1-p.prob).toFixed(2)}^(${Math.round(p.n)}−k)`:`F(k) = Σᵢ₌₀ᵏ C(${Math.round(p.n)},i) · ${p.prob.toFixed(2)}^i · ${(1-p.prob).toFixed(2)}^(${Math.round(p.n)}−i)`,
+    stats:(p)=>({mean:(p.n*p.prob).toFixed(2),variance:(p.n*p.prob*(1-p.prob)).toFixed(2),'std dev':Math.sqrt(p.n*p.prob*(1-p.prob)).toFixed(2)}),
+    rCode:(p)=>[`dbinom(x, size=${Math.round(p.n)}, prob=${p.prob.toFixed(2)})`,`pbinom(q, size=${Math.round(p.n)}, prob=${p.prob.toFixed(2)})`,`qbinom(p, size=${Math.round(p.n)}, prob=${p.prob.toFixed(2)})`,`rbinom(n, size=${Math.round(p.n)}, prob=${p.prob.toFixed(2)})`],
+    uses:['A/B testing','Coin flips','Quality control','Election polling','Genetics'],
+    desc:'Counts successes in <strong>n independent yes/no trials</strong>, each with probability p. Backbone of A/B testing. When n is large and p is small, approximated by a Poisson(λ=np).',
+  },
+  {
+    id:'pois', num:'05', name:'Poisson', tagline:'Events per interval', accent:'var(--a5)', accentHex:'#f7e26a',
+    params:[{key:'lambda',label:'λ (avg rate)',min:0.5,max:12,step:0.5,def:3}],
+    continuous:false,
+    xRange:(p)=>[0,Math.max(12,Math.round(p.lambda*3))],
+    pdf:(k,p)=>{k=Math.round(k);if(k<0)return 0;return Math.exp(-p.lambda)*p.lambda**k/fact(k);},
+    cdf:(k,p)=>{let s=0;for(let i=0;i<=Math.floor(k);i++)s+=Math.exp(-p.lambda)*p.lambda**i/fact(i);return s;},
+    formula:(p,m)=>m==='pdf'?`P(X=k) = e^−${p.lambda.toFixed(1)} · ${p.lambda.toFixed(1)}^k / k!`:`F(k) = e^−${p.lambda.toFixed(1)} · Σᵢ₌₀ᵏ (${p.lambda.toFixed(1)}^i / i!)`,
+    stats:(p)=>({mean:p.lambda.toFixed(2),variance:p.lambda.toFixed(2),'std dev':Math.sqrt(p.lambda).toFixed(2)}),
+    rCode:(p)=>[`dpois(x, lambda=${p.lambda.toFixed(1)})`,`ppois(q, lambda=${p.lambda.toFixed(1)})`,`qpois(p, lambda=${p.lambda.toFixed(1)})`,`rpois(n, lambda=${p.lambda.toFixed(1)})`],
+    uses:['Arrivals per hour','Website traffic','Insurance claims','Mutations per gene','Defects per unit'],
+    desc:'Counts events in a fixed window when they arrive at constant average rate λ, independently of each other. Mean = Variance = λ — if these two diverge in your data, consider Negative Binomial. Part of a natural family: the <strong>Poisson</strong> counts events in a window, the <strong>Exponential</strong> times the wait until the next one, and the <strong>Gamma</strong> times the total wait until the k-th. Three distributions, one underlying process. Limit of Binomial(n,p) as n→∞, p→0, np→λ.',
+  },
+  {
+    id:'t', num:'06', name:"Student's t", tagline:'Normal with fatter tails', accent:'var(--a6)', accentHex:'#6ab4f7',
+    params:[{key:'df',label:'ν (degrees of freedom)',min:1,max:30,step:1,def:5}],
+    continuous:true, xRange:()=>[-5,5],
+    pdf:(x,p)=>{const v=p.df;return(gamma((v+1)/2)/(Math.sqrt(v*Math.PI)*gamma(v/2)))*(1+x*x/v)**(-(v+1)/2);},
+    cdf:(x,p)=>tCDF(x,p.df),
+    formula:(p,m)=>m==='pdf'?`f(x) ∝ (1 + x²/${Math.round(p.df)})^(−(${Math.round(p.df)}+1)/2)`:`F(x) via regularised incomplete beta  [df=${Math.round(p.df)}]`,
+    stats:(p)=>({mean:p.df>1?'0':'undefined (Cauchy)',variance:p.df>2?(p.df/(p.df-2)).toFixed(2):(p.df===2?'∞ (df=2)':'∞'),'std dev':p.df>2?Math.sqrt(p.df/(p.df-2)).toFixed(2):'∞'}),
+    rCode:(p)=>[`dt(x, df=${Math.round(p.df)})`,`pt(q, df=${Math.round(p.df)})`,`qt(p, df=${Math.round(p.df)})`,`rt(n, df=${Math.round(p.df)})`],
+    uses:['t-tests','Small sample CI','Regression coefficients','Heavy-tail simulation'],
+    desc:'Like Normal but with <strong>heavier tails</strong> controlled by ν. As ν→∞ it converges to N(0,1). Mean is 0 for ν>1 (undefined for ν=1), variance is ν/(ν−2) for ν>2. At ν=1 it becomes the <strong>Cauchy distribution</strong> — so heavy-tailed that even the mean is undefined.',
+  },
+  {
+    id:'gamma', num:'07', name:'Gamma', tagline:'Positive, skewed, variance scales with the mean', accent:'var(--a7)', accentHex:'#c46af7',
+    params:[{key:'shape',label:'α (shape)',min:0.5,max:8,step:0.5,def:2},{key:'rate',label:'β (rate)',min:0.2,max:3,step:0.1,def:1}],
+    continuous:true, xRange:()=>[0,12],
+    pdf:(x,p)=>{if(x<=0)return 0;return(p.rate**p.shape/gamma(p.shape))*x**(p.shape-1)*Math.exp(-p.rate*x);},
+    cdf:(x,p)=>x<=0?0:lowerRegGamma(p.shape,p.rate*x),
+    formula:(p,m)=>m==='pdf'?`f(x) = β^α/Γ(α) · x^(α−1) · exp(−βx)  [α=${p.shape.toFixed(1)}, β=${p.rate.toFixed(1)}]`:`F(x) = γ(α, βx) / Γ(α)  [regularised lower incomplete gamma]`,
+    stats:(p)=>({mean:(p.shape/p.rate).toFixed(2),variance:(p.shape/p.rate**2).toFixed(2),'std dev':(Math.sqrt(p.shape)/p.rate).toFixed(2)}),
+    rCode:(p)=>[`dgamma(x, shape=${p.shape.toFixed(1)}, rate=${p.rate.toFixed(1)})`,`pgamma(q, shape=${p.shape.toFixed(1)}, rate=${p.rate.toFixed(1)})`,`qgamma(p, shape=${p.shape.toFixed(1)}, rate=${p.rate.toFixed(1)})`,`rgamma(n, shape=${p.shape.toFixed(1)}, rate=${p.rate.toFixed(1)})`],
+    uses:['Wait for k events','Rainfall / floods','Bayesian rate priors','Generalises Chi-squared'],
+    desc:'The natural distribution for <strong>positive, continuous, right-skewed data</strong> where variance scales with the mean — biomass, precipitation, concentrations, body weight. Shape α controls skewness: small α gives a sharply decaying curve, large α approaches a bell. Variance = mean²/α. Generalises the Exponential: Gamma(1, λ) = Exp(λ). With integer α, it is the total waiting time for α independent Poisson events — each gap an Exp(λ), stacked. Non-integer α (common in practice) loses the counting story but retains the shape. Special cases: <strong>Exponential</strong> (α=1), <strong>Chi-squared</strong> (α=df/2, β=0.5).',
+  },
+  {
+    id:'beta', num:'08', name:'Beta', tagline:'A distribution over [0, 1]', accent:'var(--a8)', accentHex:'#6af7a0',
+    params:[{key:'a',label:'α (shape1)',min:0.2,max:8,step:0.2,def:2},{key:'b',label:'β (shape2)',min:0.2,max:8,step:0.2,def:5}],
+    continuous:true, xRange:()=>[0,1],
+    pdf:(x,p)=>{if(x<=0||x>=1)return 0;return x**(p.a-1)*(1-x)**(p.b-1)/betaFn(p.a,p.b);},
+    cdf:(x,p)=>x<=0?0:x>=1?1:regIncBeta(x,p.a,p.b),
+    formula:(p,m)=>m==='pdf'?`f(x) = x^(${p.a.toFixed(1)}−1)·(1−x)^(${p.b.toFixed(1)}−1) / B(${p.a.toFixed(1)},${p.b.toFixed(1)})`:`F(x) = I_x(${p.a.toFixed(1)}, ${p.b.toFixed(1)})  [regularised incomplete beta]`,
+    stats:(p)=>({mean:(p.a/(p.a+p.b)).toFixed(3),variance:(p.a*p.b/((p.a+p.b)**2*(p.a+p.b+1))).toFixed(4),'std dev':Math.sqrt(p.a*p.b/((p.a+p.b)**2*(p.a+p.b+1))).toFixed(4)}),
+    rCode:(p)=>[`dbeta(x, shape1=${p.a.toFixed(1)}, shape2=${p.b.toFixed(1)})`,`pbeta(q, shape1=${p.a.toFixed(1)}, shape2=${p.b.toFixed(1)})`,`qbeta(p, shape1=${p.a.toFixed(1)}, shape2=${p.b.toFixed(1)})`,`rbeta(n, shape1=${p.a.toFixed(1)}, shape2=${p.b.toFixed(1)})`],
+    uses:['Bayesian priors','Modelling proportions','A/B test posteriors','Click-through rates'],
+    desc:'Lives entirely on <strong>[0,1]</strong> — the only standard distribution whose support is bounded by definition, inherited directly from the limits of Euler\u2019s integral. Not a constraint bolted on after the fact: the math and the application share the same boundaries by construction. \u03b1=\u03b2=1 gives Uniform; \u03b1>\u03b2 skews right (toward 1); \u03b1<\u03b2 skews left (toward 0); \u03b1=\u03b2<1 gives U-shape. Conjugate prior for the Binomial: if your prior is Beta(\u03b1,\u03b2) and you observe k successes in n trials, the posterior is Beta(\u03b1+k, \u03b2+n\u2212k).',
+  },
+];
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let mode = 'pdf';
+let openId = null;
+const params = {};
+DISTS.forEach(d=>{params[d.id]={};d.params.forEach(p=>{params[d.id][p.key]=p.def;});});
+
+// ── Curve generation ──────────────────────────────────────────────────────────
+function genContinuous(dist, p, m, N=250){
+  const [x0,x1] = dist.xRange(p);
+  const pts=[];
+  for(let i=0;i<=N;i++){
+    const x=x0+(x1-x0)*i/N;
+    let y = m==='pdf'?dist.pdf(x,p):dist.cdf(x,p);
+    if(!isFinite(y)||isNaN(y))y=0;
+    pts.push({x,y:Math.max(0,y)});
+  }
+  return pts;
+}
+function genDiscrete(dist, p, m){
+  const [k0,k1] = dist.xRange(p);
+  const pts=[];
+  for(let k=k0;k<=k1;k++){
+    let y = m==='pdf'?dist.pdf(k,p):dist.cdf(k,p);
+    if(!isFinite(y)||isNaN(y))y=0;
+    pts.push({x:k,y:Math.max(0,y)});
+  }
+  return pts;
+}
+
+function pts2path(pts, W, H, yMax, m){
+  if(!pts.length)return'';
+  const x0=pts[0].x, xR=pts[pts.length-1].x-pts[0].x||1;
+  const sx=x=>(x-x0)/xR*W, sy=y=>H-(m==='cdf'?y:y/yMax)*H;
+  return pts.map((p,i)=>`${i?'L':'M'}${sx(p.x).toFixed(1)},${sy(p.y).toFixed(1)}`).join(' ');
+}
+
+// ── SVG builders ──────────────────────────────────────────────────────────────
+function miniSVG(dist, p, m, W=180, H=56){
+  const hex = dist.accentHex;
+  const id = `g${dist.id}${m}`;
+  if(dist.continuous){
+    const pts=genContinuous(dist,p,m,150);
+    const yMax=Math.max(...pts.map(t=>t.y),0.001);
+    const path=pts2path(pts,W,H,yMax,m);
+    const areaPath=path+` L${W},${H} L0,${H} Z`;
+    return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${hex}" stop-opacity="0.35"/><stop offset="100%" stop-color="${hex}" stop-opacity="0"/></linearGradient></defs>
+<path d="${areaPath}" fill="url(#${id})"/>
+<path d="${path}" fill="none" stroke="${hex}" stroke-width="1.8"/>`;
+  } else {
+    const pts=genDiscrete(dist,p,m);
+    const yMax=Math.max(...pts.map(t=>t.y),0.001);
+    const x0=pts[0].x, xR=pts[pts.length-1].x-pts[0].x||1;
+    const barW=Math.max(2,W/pts.length*0.55);
+    return pts.map(pt=>{
+      const sx=(pt.x-x0)/xR*W;
+      const h=m==='cdf'?pt.y*H:(pt.y/yMax)*H;
+      return `<rect x="${(sx-barW/2).toFixed(1)}" y="${(H-h).toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(0,h).toFixed(1)}" fill="${hex}" opacity="0.8" rx="1"/>`;
+    }).join('');
+  }
+}
+
+function bigSVG(dist, p, m, W=460, H=160){
+  const hex=dist.accentHex;
+  const id=`big${dist.id}`;
+  let pts, yMax, path='', bars='';
+  if(dist.continuous){
+    pts=genContinuous(dist,p,m,300);
+    yMax=Math.max(...pts.map(t=>t.y),0.001);
+    path=pts2path(pts,W,H,yMax,m);
+  } else {
+    pts=genDiscrete(dist,p,m);
+    yMax=Math.max(...pts.map(t=>t.y),0.001);
+    const x0=pts[0].x, xR=pts[pts.length-1].x-pts[0].x||1;
+    const barW=Math.max(3,W/pts.length*0.6);
+    bars=pts.map(pt=>{
+      const sx=(pt.x-x0)/xR*W;
+      const h=m==='cdf'?pt.y*H:(pt.y/yMax)*H;
+      return `<rect x="${(sx-barW/2).toFixed(1)}" y="${(H-h).toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(0,h).toFixed(1)}" fill="${hex}" opacity="0.85" rx="2"/>`;
+    }).join('');
+  }
+
+  // axis labels
+  const [x0v,x1v]=dist.xRange(p);
+  const xMid=((x0v+x1v)/2).toFixed(1);
+  const xL=typeof x0v==='number'?x0v.toFixed(1):x0v;
+  const xR=typeof x1v==='number'?x1v.toFixed(1):x1v;
+  const yTicks = m==='cdf'?[0,0.25,0.5,0.75,1.0]:[0,+(yMax*0.5).toFixed(2),+yMax.toFixed(2)];
+
+  const gridLines = yTicks.map(v=>{
+    const sy=H-(m==='cdf'?v:v/yMax)*H;
+    return `<line x1="0" y1="${sy.toFixed(1)}" x2="${W}" y2="${sy.toFixed(1)}" stroke="#252838" stroke-width="0.5"/>
+<text x="-6" y="${(sy+4).toFixed(1)}" font-size="9" text-anchor="end" fill="#7880a0" font-family="JetBrains Mono,monospace">${v.toFixed(2)}</text>`;
+  }).join('');
+
+  const xLabels=`
+<text x="0" y="${H+16}" font-size="9" text-anchor="middle" fill="#7880a0" font-family="JetBrains Mono,monospace">${xL}</text>
+<text x="${(W/2).toFixed(0)}" y="${H+16}" font-size="9" text-anchor="middle" fill="#7880a0" font-family="JetBrains Mono,monospace">${xMid}</text>
+<text x="${W}" y="${H+16}" font-size="9" text-anchor="middle" fill="#7880a0" font-family="JetBrains Mono,monospace">${xR}</text>`;
+
+  const svgW=W+50, svgH=H+28;
+  return `<svg viewBox="0 0 ${svgW} ${svgH}" width="100%" class="big-svg" aria-label="${dist.name} ${m.toUpperCase()} chart">
+  <g transform="translate(40,4)">
+    ${gridLines}
+    ${dist.continuous?`<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${hex}" stop-opacity="0.3"/><stop offset="100%" stop-color="${hex}" stop-opacity="0"/></linearGradient></defs>
+    ${path?`<path d="${path} L${W},${H} L0,${H} Z" fill="url(#${id})"/><path d="${path}" fill="none" stroke="${hex}" stroke-width="2"/>`:''}`
+    :bars}
+    <line x1="0" y1="${H}" x2="${W}" y2="${H}" stroke="#252838" stroke-width="0.5"/>
+    <line x1="0" y1="0" x2="0" y2="${H}" stroke="#252838" stroke-width="0.5"/>
+    ${xLabels}
+  </g>
+</svg>`;
+}
+
+// ── Rendering ─────────────────────────────────────────────────────────────────
+function paramPills(dist){
+  const p=params[dist.id];
+  return dist.params.map(pr=>{
+    const v=p[pr.key];
+    const shown=Number.isInteger(pr.step)&&pr.step===1?Math.round(v):v.toFixed(1);
+    return `<span class="param-pill">${pr.key}=${shown}</span>`;
+  }).join('');
+}
+
+function renderGrid(){
+  const grid=document.getElementById('grid');
+  grid.innerHTML=DISTS.map(d=>{
+    const p=params[d.id];
+    const isOpen=openId===d.id;
+    return `<div class="dist-card${isOpen?' open':''}" id="card-${d.id}" onclick="toggleCard('${d.id}')">
+  <div class="accent-bar" style="background:${d.accent}"></div>
+  <div class="dist-num">${d.num} ·</div>
+  <div class="dist-name" style="${isOpen?`color:${d.accent}`:'color:var(--text)'}">${d.name}</div>
+  <div class="dist-tagline">${d.tagline}</div>
+  <svg class="mini-svg" viewBox="0 0 180 56" aria-label="${d.name} mini ${mode} chart">
+    ${miniSVG(d,p,mode)}
+  </svg>
+  <div class="param-pills">${paramPills(d)}</div>
+</div>`;
+  }).join('');
+}
+
+function renderDetail(){
+  const slot=document.getElementById('detail-slot');
+  if(!openId){slot.innerHTML='';return;}
+  const dist=DISTS.find(d=>d.id===openId);
+  const p=params[dist.id];
+  const stats=dist.stats(p);
+  const codes=dist.rCode(p);
+  const pfxClass=['rf-d','rf-p','rf-q','rf-r'];
+
+  const sliders=dist.params.map(pr=>{
+    const v=p[pr.key];
+    const shown=Number.isInteger(pr.step)&&pr.step===1?Math.round(v):v.toFixed(1);
+    return `<div class="slider-row">
+  <div class="slider-header">
+    <span class="slider-key">${pr.label}</span>
+    <span class="slider-val" id="val-${dist.id}-${pr.key}" style="color:${dist.accent}">${shown}</span>
+  </div>
+  <input type="range" min="${pr.min}" max="${pr.max}" step="${pr.step}" value="${v}"
+    style="accent-color:${dist.accentHex};--thumb-color:${dist.accentHex}"
+    oninput="updateParam('${dist.id}','${pr.key}',parseFloat(this.value))">
+  <div class="slider-limits"><span>${pr.min}</span><span>${pr.max}</span></div>
+</div>`;
+  }).join('');
+
+  const statsRows=Object.entries(stats).map(([k,v])=>`<div class="stats-row"><span class="stats-key">${k}</span><span style="color:${dist.accent};font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600">${v}</span></div>`).join('');
+
+  const rLines=codes.map((line,i)=>{
+    const fn=line.split('(')[0];
+    const rest=line.slice(fn.length);
+    return `<span class="${pfxClass[i]}">${fn}</span><span class="r-dim">${rest}</span>`;
+  }).join('<br>');
+
+  slot.innerHTML=`<div class="detail">
+  <div class="detail-inner">
+    <div class="detail-title">
+      <div class="detail-accent-strip" style="background:${dist.accent}"></div>
+      <span class="detail-name" style="color:${dist.accent}">${dist.name}</span>
+      <span class="detail-sub">${dist.tagline}</span>
+    </div>
+
+    <div>
+      <div class="chart-wrap" id="bigchart-${dist.id}">
+        ${bigSVG(dist,p,mode)}
+        <div class="formula-line"><em>${mode.toUpperCase()}</em>&nbsp;&nbsp;${dist.formula(p,mode)}</div>
+      </div>
+      <p style="font-size:13px;color:#bcc0d4;line-height:1.7;margin-bottom:12px">${dist.desc}</p>
+      <div class="use-tags">${dist.uses.map(u=>`<span class="use-tag">${u}</span>`).join('')}</div>
+    </div>
+
+    <div class="right-panel">
+      <div class="panel-box">
+        <div class="panel-label">Parameters</div>
+        ${sliders}
+      </div>
+      <div class="panel-box">
+        <div class="panel-label">Stats</div>
+        ${statsRows}
+      </div>
+      <div class="r-block"><div class="panel-label" style="margin-bottom:8px">R Functions</div>${rLines}</div>
+    </div>
+  </div>
+</div>`;
+}
+
+// ── Interactions ──────────────────────────────────────────────────────────────
+function toggleCard(id){
+  openId = openId===id ? null : id;
+  renderGrid();
+  renderDetail();
+  if(openId){
+    setTimeout(()=>{
+      const slot=document.getElementById('detail-slot');
+      if(slot) slot.scrollIntoView({behavior:'smooth',block:'nearest'});
+    },50);
+  }
+}
+
+function updateParam(distId, key, val){
+  params[distId][key]=val;
+  // update value display
+  const shown=Number.isInteger(DISTS.find(d=>d.id===distId).params.find(p=>p.key===key).step)&&DISTS.find(d=>d.id===distId).params.find(p=>p.key===key).step===1?Math.round(val):val.toFixed(1);
+  const vEl=document.getElementById(`val-${distId}-${key}`);
+  if(vEl) vEl.textContent=shown;
+  // update mini card SVG
+  const card=document.getElementById(`card-${distId}`);
+  if(card){
+    const dist=DISTS.find(d=>d.id===distId);
+    const miniEl=card.querySelector('svg');
+    if(miniEl){
+      miniEl.innerHTML=miniSVG(dist,params[distId],mode);
+    }
+    // update param pills
+    const pillsEl=card.querySelector('.param-pills');
+    if(pillsEl) pillsEl.innerHTML=paramPills(dist);
+  }
+  // update big chart + formula + stats
+  const dist=DISTS.find(d=>d.id===distId);
+  const bigWrap=document.getElementById(`bigchart-${distId}`);
+  if(bigWrap){
+    const svg=bigWrap.querySelector('svg');
+    if(svg) svg.outerHTML; // placeholder; replace whole wrap
+    bigWrap.innerHTML=bigSVG(dist,params[distId],mode)+`<div class="formula-line"><em>${mode.toUpperCase()}</em>&nbsp;&nbsp;${dist.formula(params[distId],mode)}</div>`;
+  }
+  // update stats
+  const statsDiv=bigWrap?.closest('.detail-inner')?.querySelector('.panel-box:nth-child(2)');
+  if(statsDiv){
+    const s=dist.stats(params[distId]);
+    const rows=statsDiv.querySelectorAll('.stats-row');
+    Object.values(s).forEach((v,i)=>{if(rows[i])rows[i].lastElementChild.textContent=v;});
+  }
+  // update R code
+  const rBlock=bigWrap?.closest('.detail-inner')?.querySelector('.r-block');
+  if(rBlock){
+    const codes=dist.rCode(params[distId]);
+    const pfxClass=['rf-d','rf-p','rf-q','rf-r'];
+    const lines=codes.map((line,i)=>{
+      const fn=line.split('(')[0];
+      const rest=line.slice(fn.length);
+      return `<span class="${pfxClass[i]}">${fn}</span><span class="r-dim">${rest}</span>`;
+    }).join('<br>');
+    rBlock.innerHTML=`<div class="panel-label" style="margin-bottom:8px">R Functions</div>${lines}`;
+  }
+}
+
+function setMode(m){
+  mode=m;
+  document.getElementById('btn-pdf').classList.toggle('active',m==='pdf');
+  document.getElementById('btn-cdf').classList.toggle('active',m==='cdf');
+  renderGrid();
+  renderDetail();
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+renderGrid();
+</script>
+</body>
+</html>

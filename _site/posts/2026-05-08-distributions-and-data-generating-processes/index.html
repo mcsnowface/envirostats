@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Stefan Schreiber">
+<meta name="dcterms.date" content="2026-05-08">
+
+<title>Distributions and Data Generating Processes – Quantitative Environmental Services</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../images/favicon.png" rel="icon" type="image/png">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-e83117e711fad372bcb8c8022997a9a8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Distributions and Data Generating Processes – Quantitative Environmental Services">
+<meta property="og:description" content="Before you fit a model, understand your data. The right distribution follows from the data generating process - not from a decision tree">
+<meta property="og:image" content="https://www.envirostats.ca/posts/2026-05-08-distributions-and-data-generating-processes/distributions.png">
+<meta property="og:site_name" content="Quantitative Environmental Services">
+<meta property="og:image:height" content="1024">
+<meta property="og:image:width" content="1536">
+<meta property="og:image:alt" content="Distributions">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../images/favicon.png" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Quantitative Environmental Services</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../mission.html"> 
+<span class="menu-text">Our Mission</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../services.html"> 
+<span class="menu-text">Our Services</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">Who we are</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../posts.html"> 
+<span class="menu-text">Insights</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../tools.html"> 
+<span class="menu-text">Tools</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#the-toolbox-metaphor" id="toc-the-toolbox-metaphor" class="nav-link active" data-scroll-target="#the-toolbox-metaphor">The Toolbox Metaphor</a></li>
+  <li><a href="#the-hard-part-understanding-your-data" id="toc-the-hard-part-understanding-your-data" class="nav-link" data-scroll-target="#the-hard-part-understanding-your-data">The Hard Part: Understanding Your Data</a></li>
+  <li><a href="#a-worked-example-when-plausible-is-not-correct" id="toc-a-worked-example-when-plausible-is-not-correct" class="nav-link" data-scroll-target="#a-worked-example-when-plausible-is-not-correct">A Worked Example: When Plausible Is Not Correct</a></li>
+  <li><a href="#the-but-large-counts-are-fine-objection" id="toc-the-but-large-counts-are-fine-objection" class="nav-link" data-scroll-target="#the-but-large-counts-are-fine-objection">The “But Large Counts Are Fine” Objection</a></li>
+  <li><a href="#the-toolbox" id="toc-the-toolbox" class="nav-link" data-scroll-target="#the-toolbox">The Toolbox</a>
+  <ul class="collapse">
+  <li><a href="#a-family-worth-understanding" id="toc-a-family-worth-understanding" class="nav-link" data-scroll-target="#a-family-worth-understanding">A Family Worth Understanding</a></li>
+  </ul></li>
+  <li><a href="#the-philosophy-one-more-time" id="toc-the-philosophy-one-more-time" class="nav-link" data-scroll-target="#the-philosophy-one-more-time">The Philosophy, One More Time</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Distributions and Data Generating Processes</h1>
+<p class="subtitle lead">Before you fit a model, understand your data. The right distribution follows from the data generating process - not from a decision tree</p>
+  <div class="quarto-categories">
+    <div class="quarto-category">distributions</div>
+    <div class="quarto-category">statistics</div>
+    <div class="quarto-category">inference</div>
+    <div class="quarto-category">philosophy</div>
+  </div>
+  </div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Stefan Schreiber </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">May 8, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="distributions.png" class="img-fluid figure-img"></p>
+<figcaption>The tool is not first. Know what you are building, then reach into the box.</figcaption>
+</figure>
+</div>
+<p>You have count data. Maybe it’s the number of customer support tickets received each hour, the number of errors logged per deployment, or the number of goals scored per match. A colleague runs a t-test on it. Another fits a linear regression. The outputs look plausible. The numbers are in a reasonable range. A p-value appears. Someone writes it up.</p>
+<p>But something nags at you.</p>
+<p>The problem isn’t the method - not exactly. It’s that nobody stopped to ask <em>what kind of thing this data actually is</em>. Counts can’t be negative. They’re integers. Their variance tends to grow with their mean. These aren’t statistical technicalities to be handled later with a footnote. They’re facts about reality that any honest model must respect from the start.</p>
+<p>This post is about that moment - the moment before the model. The moment where the real work happens.</p>
+<section id="the-toolbox-metaphor" class="level2">
+<h2 class="anchored" data-anchor-id="the-toolbox-metaphor">The Toolbox Metaphor</h2>
+<p>A distribution is not a curve you fit to data. It is a model of how your data <em>came to exist</em>.</p>
+<p>When a carpenter reaches for a chisel rather than a saw, it isn’t because the chisel fits the wood better in some abstract aesthetic sense. It’s because the chisel is the right tool for the job being done - the specific cut, the specific material, the specific grain. The tool matches the task. Not the other way around.</p>
+<p>Statistical distributions work the same way. The Normal distribution isn’t “the default” any more than a hammer is the default tool. It’s the right choice when your data arises from many small, independent additive effects - heights, measurement errors, exam scores averaged over large populations. It’s a poor choice when it doesn’t.</p>
+<p>The toolbox is large. But picking from it is actually the fast part. What takes time, and what most curricula under-emphasise, is the work that comes before the picking. Understanding what you are building before you reach for a tool.</p>
+</section>
+<section id="the-hard-part-understanding-your-data" class="level2">
+<h2 class="anchored" data-anchor-id="the-hard-part-understanding-your-data">The Hard Part: Understanding Your Data</h2>
+<p>Before you open R, before you look at a histogram, before you run a single line of code, there are three questions worth sitting with.</p>
+<p><strong>What is this data, fundamentally?</strong></p>
+<p>Not “what does it look like” - what <em>is</em> it? Is it a duration? A count? A proportion? A continuous measurement that can take any real value? A binary outcome? The answer immediately rules out large portions of the toolbox. Proportions live between <span class="math inline">\(0\)</span> and <span class="math inline">\(1\)</span>. Counts are non-negative integers. Durations are positive and continuous. These aren’t statistical assumptions you impose - they’re descriptions of reality that your model should already know.</p>
+<p>A model that can predict <span class="math inline">\(-14\)</span> customer support tickets, or a conversion rate of <span class="math inline">\(1.3\)</span>, or a waiting time of <span class="math inline">\(-6\)</span> minutes, is a model that has already parted ways with the phenomenon it claims to describe.</p>
+<p><strong>What process generated it?</strong></p>
+<p>This is the deeper question, and the more rewarding one. Data doesn’t just exist - it was created by something happening in the world. Ask what that something was.</p>
+<p>A count of website visits per hour was generated by independent users arriving at some average rate. That’s a Poisson process. A conversion result from an A/B test was generated by some number of users each independently doing or not doing something. That’s a Binomial process. The time until the next server failure was generated by a process with no memory - the machine doesn’t know how long it’s been running. That’s Exponential.</p>
+<p>When you can describe the generating process in plain language, the distribution tends to name itself. The formula is secondary. The story comes first.</p>
+<p><strong>What does the mean tell you - and what does the variance add?</strong></p>
+<p>The mean describes where your data tends to land. The variance describes how it spreads around that. But the <em>relationship</em> between the two is often the most diagnostic thing you can examine, and it’s a check that takes five minutes and gets skipped constantly.</p>
+<p>In a Poisson process, <span class="math inline">\(\text{Var}(X) = \mu\)</span> - exactly, by construction. If you compute both from your count data and they’re in the same neighbourhood, that’s meaningful confirmation. If variance is far larger than the mean, you have overdispersion - your data has more spread than a simple Poisson process can account for, and a more flexible count model is likely needed. If variance is growing with the square of the mean, you’re in Gamma territory. If variance looks like <span class="math inline">\(\mu \cdot p \cdot (1-p) \cdot n\)</span>, you have Binomial structure.</p>
+<p>Most analysts skip straight to fitting. The two-moment check often makes the right distribution obvious before any fitting happens at all.</p>
+</section>
+<section id="a-worked-example-when-plausible-is-not-correct" class="level2">
+<h2 class="anchored" data-anchor-id="a-worked-example-when-plausible-is-not-correct">A Worked Example: When Plausible Is Not Correct</h2>
+<p>Consider a software team tracking the number of bugs filed each day. At the end of a sprint, someone compares two periods with a t-test. The output looks reasonable - a test statistic, a p-value, a confidence interval. The report gets written.</p>
+<p>But look at what the Normal model is silently assuming:</p>
+<ul>
+<li>That bug counts could, in principle, be negative. They cannot.</li>
+<li>That the variance is constant regardless of how many bugs are being filed. It isn’t - on high-volume days, counts are more spread out. Variance tracks the mean.</li>
+<li>That the outcome is continuous. It isn’t - you cannot file <span class="math inline">\(4.7\)</span> bugs.</li>
+</ul>
+<p>These aren’t minor violations. They are mismatches between the model’s assumptions and the structure of the data generating process. The confidence interval may extend below zero - a nonsensical bound that a Poisson model would never produce. The p-value is likely too small, because the Normal is underestimating variance in the right tail. The model is producing numbers, but the numbers are answering a question about data that doesn’t exist.</p>
+<p>The Poisson model, by contrast, respects all three constraints by construction. Not because you bolted on corrections after the fact, but because it was built from the ground up to describe this kind of process - discrete, non-negative, <span class="math inline">\(\text{Var}(X) = \mu\)</span>. You don’t have to tell it that counts can’t be negative. It already knows.</p>
+</section>
+<section id="the-but-large-counts-are-fine-objection" class="level2">
+<h2 class="anchored" data-anchor-id="the-but-large-counts-are-fine-objection">The “But Large Counts Are Fine” Objection</h2>
+<p>At this point, an experienced analyst will often say: <em>“If the counts are large enough, the Normal is a perfectly good approximation. We did it for years and it worked.”</em></p>
+<p>This is worth taking seriously, because it is not always wrong. But it conflates two very different things.</p>
+<p>The <strong>informed approximation</strong> looks like this: I know this data is Poisson. <span class="math inline">\(\lambda\)</span> is large - two hundred events per day. The Normal approximation is tight in the centre of the distribution, the tails don’t matter much for this particular question, and I need a quick answer. I’ll use Normal here, consciously, knowing what I’m trading away. That is statistical judgment. It is defensible precisely because the analyst understands the data generating process and is making a deliberate choice.</p>
+<p>The <strong>cargo-cult Normal</strong> looks like this: I read somewhere that Normal is fine for large samples. No further examination. The statement has been copied from Stack Overflow answers and textbook footnotes, passed along in methods sections and team wikis, each time losing a little more of the context that made it defensible in the first place. The original author may have been making the informed trade-off. Most readers after them are just copying the conclusion without the reasoning. The approximation becomes a thought-stopper - a licence not to ask the question at all.</p>
+<p>The outputs of these two approaches can look identical. That is precisely what makes the second one dangerous.</p>
+<p>And even the informed approximation carries costs worth naming. The Normal still assigns positive probability to negative counts - negligible for large <span class="math inline">\(\lambda\)</span>, but the model doesn’t <em>know</em> that. The structural mean-variance relationship that defines a Poisson process - <span class="math inline">\(\text{Var}(X) = \mu\)</span>, always - disappears entirely when you switch to Normal. You’ve freed variance to be whatever it wants, which means you’ve discarded a constraint that was doing real scientific work. Add predictors later, and the mean drops in some subgroups. The approximation that worked in the centre quietly falls apart at the edges, with no warning.</p>
+<p>There is also a historical dimension worth understanding. The Normal dominated applied statistics for decades not because it was always the most appropriate model, but because it was <em>mathematically convenient</em>. Fitting a Poisson GLM once meant a mainframe, a statistics department, and a lot of patience. Log-transforming count data and running ordinary least squares was a forced trade-off - the best available option under real computational constraints.</p>
+<p>That trade-off made sense in 1975. It doesn’t in 2026, when <code>glm(y ~ x, family = poisson)</code> is one line in R.</p>
+<p>The barrier is gone. The habit stayed.</p>
+</section>
+<section id="the-toolbox" class="level2">
+<h2 class="anchored" data-anchor-id="the-toolbox">The Toolbox</h2>
+<p>Once you have thought carefully about what your data is and where it came from, the choice of distribution usually follows naturally. Here are the eight most commonly needed, framed not by their mathematical properties but by the story each one tells about the data generating process.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Distribution</th>
+<th>The story it tells</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Normal</strong></td>
+<td>Many small independent effects added together. Heights, errors, averages of large samples. The Central Limit Theorem at work.</td>
+</tr>
+<tr class="even">
+<td><strong>Logistic</strong></td>
+<td>The log-odds of a binary outcome. Its CDF <em>is</em> the sigmoid function - not just sigmoid-shaped, but the exact function <span class="math inline">\(\frac{1}{1+e^{-x}}\)</span> that logistic regression applies to every prediction.</td>
+</tr>
+<tr class="odd">
+<td><strong>Exponential</strong></td>
+<td>Time until the <em>first</em> event in a memoryless Poisson process. The machine has no history - it does not know how long it has been running, and that ignorance is the model.</td>
+</tr>
+<tr class="even">
+<td><strong>Binomial</strong></td>
+<td>How many successes in <span class="math inline">\(n\)</span> independent yes/no trials? The backbone of A/B testing and anything involving counted outcomes out of a fixed total.</td>
+</tr>
+<tr class="odd">
+<td><strong>Poisson</strong></td>
+<td>How many events arrived in a fixed window, when they occur at a constant average rate <span class="math inline">\(\lambda\)</span> and independently of each other?</td>
+</tr>
+<tr class="even">
+<td><strong>Student’s t</strong></td>
+<td>Like Normal, but you don’t know <span class="math inline">\(\sigma\)</span> and your sample is small. The extra uncertainty lives in the heavier tails. At <span class="math inline">\(\nu = 1\)</span> it becomes the Cauchy - so heavy-tailed that even the mean is undefined.</td>
+</tr>
+<tr class="odd">
+<td><strong>Gamma</strong></td>
+<td>Positive, continuous, right-skewed data where <span class="math inline">\(\text{Var}(X)\)</span> scales with the mean. Biomass, precipitation, concentrations. A generalisation of the Exponential.</td>
+</tr>
+<tr class="even">
+<td><strong>Beta</strong></td>
+<td>What is the probability itself? The only standard distribution that lives entirely on <span class="math inline">\([0, 1]\)</span> - the natural home for proportions, rates, and Bayesian priors on probabilities.</td>
+</tr>
+</tbody>
+</table>
+<section id="a-family-worth-understanding" class="level3">
+<h3 class="anchored" data-anchor-id="a-family-worth-understanding">A Family Worth Understanding</h3>
+<p>Three of these distributions are not independent entries in the toolbox. They are three windows onto the same underlying process - and seeing their relationship is one of the most useful things you can take from this post.</p>
+<p>In a Poisson process, events arrive independently at a constant rate <span class="math inline">\(\lambda\)</span>. You can ask three different questions about that process, and each one leads to a different distribution:</p>
+<ul>
+<li><em>How many events arrived in a fixed window?</em> <span class="math inline">\(\rightarrow\)</span> <strong>Poisson</strong></li>
+<li><em>How long until the first event?</em> <span class="math inline">\(\rightarrow\)</span> <strong>Exponential</strong></li>
+<li><em>How long until the</em> <span class="math inline">\(k\)</span><em>-th event - the total waiting time starting from now?</em> <span class="math inline">\(\rightarrow\)</span> <strong>Gamma</strong></li>
+</ul>
+<p>The Exponential and Gamma are directly connected. Each gap between consecutive events is an independent <span class="math inline">\(\text{Exp}(\lambda)\)</span> wait. Stack <span class="math inline">\(k\)</span> of those gaps on top of each other - add up <span class="math inline">\(k\)</span> independent waiting times - and the total follows a <span class="math inline">\(\text{Gamma}(k, \lambda)\)</span>. The Exponential is simply the special case where <span class="math inline">\(k = 1\)</span>.</p>
+<p><span class="math display">\[
+\underbrace{
+  \overbrace{t_1}^{\text{Exp}(\lambda)} +
+  \overbrace{t_2}^{\text{Exp}(\lambda)} +
+  \overbrace{t_3}^{\text{Exp}(\lambda)}
+}_{\text{Gamma}(3,\, \lambda)}
+\]</span></p>
+<p>The Exponential is memoryless: <span class="math inline">\(P(X &gt; s + t \mid X &gt; s) = P(X &gt; t)\)</span>. The process carries no history - the distribution of remaining wait time is identical at every moment, regardless of how long you have already been waiting. The Gamma, by contrast, accumulates <span class="math inline">\(k\)</span> waiting periods - it <em>has</em> history, which is why it develops a hump rather than simply decaying from the left.</p>
+<p>When the shape parameter <span class="math inline">\(\alpha\)</span> is a positive integer, this stacking interpretation is exact. When <span class="math inline">\(\alpha\)</span> is continuous - as it almost always is in practice, when you fit a Gamma to biological data like biomass or precipitation - the counting story no longer holds literally. A fitted <span class="math inline">\(\alpha = 2.7\)</span> does not mean you are waiting for <span class="math inline">\(2.7\)</span> events. It means your data has the particular skewness and mean-variance structure that sits between “waiting for 2” and “waiting for 3.” The math generalises smoothly even when the story doesn’t. And that generalisation is what makes the Gamma so flexible and useful for the kind of positive, right-skewed continuous data that appears throughout biology, ecology, and environmental science.</p>
+<p>If you understand the Poisson process, in other words, you get three distributions for the price of one. The toolbox is not a list. It is a set of related ideas, and understanding the relationships is part of understanding the tools.</p>
+<p>You can explore all eight interactively - adjust the parameters, watch the shapes change in real time, and see exactly how <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma^2\)</span> relate for each one - in the <a href="../..\tools/">distribution explorer here</a>.</p>
+</section>
+</section>
+<section id="the-philosophy-one-more-time" class="level2">
+<h2 class="anchored" data-anchor-id="the-philosophy-one-more-time">The Philosophy, One More Time</h2>
+<p>Each distribution encodes a claim about how the world works. The Normal says: this quantity arose from many small additive effects. The Poisson says: these events occur independently at a constant rate. The Beta says: this value is itself a probability, bounded and continuous on <span class="math inline">\([0, 1]\)</span>.</p>
+<p>When you pick a distribution without asking what generated your data, you are still making that claim - you’ve just made it unconsciously. The model doesn’t know you weren’t thinking about it. It will proceed to estimate, predict, and report confidence intervals based on assumptions you never examined.</p>
+<p>When you understand your data generating process well enough to answer three questions - what values can my data take, what is its mean <span class="math inline">\(\mu\)</span>, and how does its variance <span class="math inline">\(\sigma^2\)</span> behave - you have identified the constraints your distribution must respect. The good news is you don’t need to derive anything from scratch. Statisticians and mathematicians have already done that work. The common distributions we reach for - Normal, Poisson, Gamma, Beta and the rest - are precisely the distributions that have been proven to be the most conservative for their specific constraints. They assume nothing beyond what those constraints require. Your job is to identify the constraints. The right distribution follows from that.</p>
+<p>This idea has a formal name - the principle of maximum entropy, developed by E.T. Jaynes and made accessible for working scientists by Richard McElreath in <em>Statistical Rethinking</em> - but you don’t need the mathematics to use it. The intuition is enough: among all distributions consistent with what you know, the right one is the most conservative. The one that could have been produced in the most ways. The one that encodes your knowledge and then stops.</p>
+<p>The discipline this post is arguing for is not complicated. It doesn’t require new software or new mathematics. It just requires slowing down long enough to ask: <em>what is this data, really, and what process put it here?</em></p>
+<p>The distribution will suggest itself. The toolbox is large, but once you know what you’re building, most of it stops being relevant. You reach for the right tool not because it fits - but because it’s correct.</p>
+<p>And correct, in statistics as in carpentry, is not the same thing as close enough.</p>
+<hr>
+<p><em>If you want to explore the distributions mentioned in this post - their shapes, their parameters, their R functions - the interactive reference is available on the <a href="../..\tools/">Tools</a> page.</em></p>
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{schreiber2026,
+  author = {Schreiber, Stefan},
+  title = {Distributions and {Data} {Generating} {Processes}},
+  date = {2026-05-08},
+  url = {https://envirostats.ca/posts/2026-05-09-distributions-and-data-generating-processes/},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-schreiber2026" class="csl-entry quarto-appendix-citeas" role="listitem">
+Schreiber, Stefan. 2026. <span>“Distributions and Data Generating
+Processes.”</span> May 8, 2026. <a href="https://envirostats.ca/posts/2026-05-09-distributions-and-data-generating-processes/">https://envirostats.ca/posts/2026-05-09-distributions-and-data-generating-processes/</a>.
+</div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/www\.envirostats\.ca");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Copyright 2026, EnviroStats Solutions Inc.</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
