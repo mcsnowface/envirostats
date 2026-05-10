@@ -282,7 +282,7 @@ understanding the tools.
 You can explore all eight interactively - adjust the parameters, watch
 the shapes change in real time, and see exactly how $\mu$ and
 $\sigma^2$ relate for each one - in the
-[distribution explorer here](/tools/).
+[distribution explorer here](/tools/probability-distributions/).
 
 ## The Philosophy, One More Time
 
