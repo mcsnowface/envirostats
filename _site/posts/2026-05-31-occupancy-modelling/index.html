@@ -454,7 +454,7 @@ p_{ij} = \text{logit}^{-1}(\beta_0 + \beta_1 \cdot \text{weekday}_{ij} + \beta_2
 <ul>
 <li><em>Multiple visits</em> (<span class="math inline">\(J \geq 2\)</span>, with <span class="math inline">\(J \geq 3\)</span> strongly preferred). A single visit conflates <span class="math inline">\(\psi\)</span> and <span class="math inline">\(p\)</span> completely.</li>
 <li><em>Sufficient sites.</em> With very few sites, the joint likelihood surface becomes flat along a ridge that trades off <span class="math inline">\(\psi\)</span> against <span class="math inline">\(p\)</span>.</li>
-<li><em>Variation in covariates.</em> If you have covariates that affect <span class="math inline">\(p\)</span> but not <span class="math inline">\(\psi\)</span> (for example, time of day affects whether someone answers but does not change whether they live there), this gives the model a lever to separate the two processes. This is the <em>covariate exclusion restriction</em>, and it is the single most powerful design choice you can make.</li>
+<li><em>Variation in detection covariates.</em> If you have covariates that affect <span class="math inline">\(p\)</span> but not <span class="math inline">\(\psi\)</span> (for example, time of day affects whether someone answers but does not change whether they live there), this gives the model a dedicated lever to separate the two processes. It is the single most powerful design choice you can make.</li>
 </ul>
 <p><strong>Boundary problems.</strong> When true <span class="math inline">\(\psi\)</span> is near 0 or 1, or when true <span class="math inline">\(p\)</span> is near 0 or 1, the likelihood surface flattens near the boundary and estimates become unstable. In a Bayesian framework this shows up as posteriors that are sensitive to the prior in those regions. The practical implication: if almost all your sites either always produce detections or never do, more surveys cannot fully fix the problem.</p>
 <p>We will illustrate this concretely with our simulation data below. Once the data exist, we can plot the joint likelihood surface and see exactly how well-separated the peak is. See the figure in the worked example section.</p>
@@ -486,7 +486,7 @@ p_{ij} = \text{logit}^{-1}(\beta_0 + \beta_1 \cdot \text{weekday}_{ij} + \beta_2
 <li>Occupancy in high-noise areas: <span class="math inline">\(\psi_\text{noisy} = 0.55\)</span></li>
 <li>Detection probability: <span class="math inline">\(p = 0.60\)</span>, constant across all visits</li>
 </ul>
-<p>On the logit scale, with a standardised continuous noise covariate (so that a one-unit increase represents a meaningful shift in noise level), this corresponds to <span class="math inline">\(\alpha_0 \approx 0.40\)</span> and <span class="math inline">\(\alpha_1 \approx -1.20\)</span>.</p>
+<p>On the logit scale, with a standardised continuous noise covariate (so that a one-unit increase represents a meaningful shift in noise level), this corresponds to <span class="math inline">\(\alpha_0 \approx 0.40\)</span> (the baseline occupancy intercept) and <span class="math inline">\(\alpha_1 \approx -1.20\)</span> (the noise slope). These parameters are explained in detail in the Stan model section below.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>R code: simulate detection histories</summary>
@@ -764,7 +764,7 @@ Figure&nbsp;2: Occupancy probability as a function of standardised noise level u
 </tr>
 </tbody>
 </table>
-<p>A slope of −4.0 would mean that moving one standard deviation noisier nearly empties a neighbourhood entirely. That is a claim requiring extraordinary evidence. The normal(0, 1.0) prior assigns this value vanishingly small probability, as it sits four standard deviations from zero, while leaving slopes in the −0.5 to −2.5 range, which correspond to meaningful but not extreme effects, well within the prior’s support. The data can push the estimate wherever the evidence points; the prior simply prevents the sampler from seriously entertaining scenarios that would require an almost total noise-driven exodus.</p>
+<p>A slope of −4.0 would mean that moving one standard deviation noisier nearly empties a neighbourhood entirely. That is a claim requiring extraordinary evidence. The normal(0, 1.0) prior assigns this value vanishingly small probability, as it sits four standard deviations from zero, while leaving slopes in the −0.5 to −2.5 range, which correspond to meaningful but not extreme effects, well within the prior’s support. The data can push the estimate wherever the evidence points; the prior simply prevents the sampler from seriously entertaining scenarios where noise alone drives occupancy to near zero.</p>
 <p>The Stan code below implements the two-level model exactly as described. If you are not familiar with Stan, the three blocks map directly onto the model structure: <code>data</code> declares what we pass in, <code>parameters</code> names the three unknowns the sampler will estimate, <code>model</code> contains the priors and the marginalised likelihood loop, and <code>generated quantities</code> computes derived quantities — site-level <span class="math inline">\(\psi_i\)</span>, detection probability <span class="math inline">\(p\)</span>, and the posterior probability that each all-zero site is genuinely occupied.</p>
 <div class="cell">
 <details class="code-fold">
@@ -869,18 +869,19 @@ Figure&nbsp;2: Occupancy probability as a function of standardised noise level u
 </section>
 <section id="parameter-recovery" class="level3">
 <h3 class="anchored" data-anchor-id="parameter-recovery">Parameter Recovery</h3>
-<p>The first check after any Bayesian fit is whether the model recovers the true parameters. But before looking at the figure, it is worth being clear about what these parameters actually represent — because the model works on the <em>logit scale</em>, and the numbers will look unfamiliar at first.</p>
+<p>The first check after any Bayesian fit is whether the model recovers the true parameters. But before looking at the figure, it is worth being clear about what these parameters actually represent, because the model works on the <em>logit scale</em> and the numbers will look unfamiliar at first.</p>
 <p>Recall that occupancy probability is modelled as:</p>
 <p><span class="math display">\[\psi_i = \text{logit}^{-1}(\alpha_0 + \alpha_1 \cdot \text{noise}_i)\]</span></p>
-<p>This means <span class="math inline">\(\alpha_0\)</span> and <span class="math inline">\(\alpha_1\)</span> are not occupancy probabilities themselves. They are coefficients on the logit scale — a transformed scale where 0 corresponds to a probability of 0.50, positive values correspond to probabilities above 0.50, and negative values correspond to probabilities below 0.50. To convert back to a probability, you apply the logistic function: <span class="math inline">\(\text{logit}^{-1}(x) = e^x / (1 + e^x)\)</span>.</p>
-<p>So what do the true values mean in plain terms?</p>
+<p>The logit scale is a transformed scale where 0 corresponds to a probability of 0.50, positive values correspond to probabilities above 0.50, and negative values correspond to probabilities below 0.50. To convert back to a probability, you apply the logistic function: <span class="math inline">\(\text{logit}^{-1}(x) = e^x / (1 + e^x)\)</span>.</p>
+<p><span class="math inline">\(\alpha_0\)</span> and <span class="math inline">\(\beta_0\)</span> are intercepts on this scale and need to be converted to be interpreted as probabilities. <span class="math inline">\(\alpha_1\)</span> is a slope and works differently: it describes a constant change in log-odds per one-unit increase in standardised noise. Because the logistic function produces a sigmoidal curve, this does not translate to a fixed change in probability. The change in probability per unit of noise depends on where you are on the curve, being largest near 50% occupancy and smallest near the extremes.</p>
+<p>So what do the true values, the parameters we used to simulate the data, mean in plain terms?</p>
 <ul>
-<li><span class="math inline">\(\alpha_0 = 0.40\)</span>: the baseline occupancy intercept. Converting: <span class="math inline">\(\text{logit}^{-1}(0.40) \approx 0.60\)</span>, meaning a site with average noise has roughly 60% occupancy probability.</li>
-<li><span class="math inline">\(\alpha_1 = -1.20\)</span>: the noise slope. <strong>Negative</strong> because higher noise is associated with lower occupancy. A one-unit increase in standardised noise reduces the log-odds of occupancy by 1.20 — a substantial effect.</li>
-<li><span class="math inline">\(\beta_0 = 0.40\)</span>: the detection intercept. Converting: <span class="math inline">\(\text{logit}^{-1}(0.40) \approx 0.60\)</span>, matching our true detection probability of 60%.</li>
+<li><span class="math inline">\(\alpha_0 = 0.40\)</span>: the true baseline occupancy intercept. Converting: <span class="math inline">\(\text{logit}^{-1}(0.40) \approx 0.60\)</span>, meaning a site with average noise has roughly 60% occupancy probability.</li>
+<li><span class="math inline">\(\alpha_1 = -1.20\)</span>: the true noise slope. <strong>Negative</strong> because higher noise is associated with lower occupancy. A one-unit increase in standardised noise reduces the log-odds of occupancy by 1.20. Because of the sigmoidal curve this corresponds to different probability drops depending on the baseline, being largest near 50% occupancy and smallest near the extremes.</li>
+<li><span class="math inline">\(\beta_0 = 0.40\)</span>: the true detection intercept. Converting: <span class="math inline">\(\text{logit}^{-1}(0.40) \approx 0.60\)</span>, corresponding to a true detection probability of 60%.</li>
 </ul>
-<p>The reason <span class="math inline">\(\alpha_1\)</span> is negative is simply that noisy neighbourhoods are less occupied, which is exactly the effect we built into the simulation. If noise had no effect, <span class="math inline">\(\alpha_1\)</span> would be near zero. If noise made neighbourhoods <em>more</em> occupied, it would be positive.</p>
-<p>The figure below shows the posterior distribution for each parameter — the model’s full range of uncertainty after seeing the data — with the true simulation values marked. A narrow distribution means the data pin down the parameter precisely; a wide one means more uncertainty remains.</p>
+<p>If noise had no effect on occupancy, <span class="math inline">\(\alpha_1\)</span> would be near zero. If noise made neighbourhoods <em>more</em> occupied, it would be positive.</p>
+<p>The figure below shows the posterior distribution for each parameter, representing the model’s full range of uncertainty after seeing the data, with the true simulation values marked as dashed red lines. A narrow distribution means the data pin down the parameter precisely; a wide one means more uncertainty remains.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>R code: parameter recovery plot</summary>
@@ -926,17 +927,17 @@ Figure&nbsp;2: Occupancy probability as a function of standardised noise level u
 <img src="index_files/figure-html/fig-parameter-recovery-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-parameter-recovery-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3: Posterior distributions for the three model parameters, all on the logit scale. Dashed lines mark the true values used to simulate the data. α₀ and β₀ near 0.40 both correspond to probabilities of roughly 60% on the natural scale. α₁ near −1.20 captures the negative effect of noise on occupancy — the further left (more negative), the stronger the deterrent effect of noise.
+Figure&nbsp;3: Posterior distributions for the three model parameters, all on the logit scale. Dashed red lines mark the true values used to simulate the data, not the posterior means. <span class="math inline">\(\alpha_0\)</span> and <span class="math inline">\(\alpha_1\)</span> are recovered closely. <span class="math inline">\(\beta_0\)</span> shows a slight offset, the posterior is centred around 0.23 rather than the true 0.40, which is normal sampling variation: detection probability is harder to pin down precisely because it can only be estimated from visits to genuinely occupied units.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>The posteriors are centred close to the true values in all three cases. The noise slope <span class="math inline">\(\alpha_1\)</span> is the most precisely recovered — the data contain a strong signal about the direction and magnitude of the noise effect. The intercepts <span class="math inline">\(\alpha_0\)</span> and <span class="math inline">\(\beta_0\)</span> are slightly wider, which is normal: intercepts absorb more residual uncertainty than slope parameters when covariates are well-spread.</p>
+<p><span class="math inline">\(\alpha_0\)</span> and <span class="math inline">\(\alpha_1\)</span> are recovered closely, as expected given the strong signal from the contrast between quiet and noisy neighbourhoods. <span class="math inline">\(\beta_0\)</span> shows a slightly larger offset from the true value: the posterior mean is approximately 0.23 compared to the true 0.40, corresponding to an estimated detection probability of about 56% versus the true 60%. This is normal sampling variation rather than a model failure. Detection probability is estimated from a smaller effective sample since it can only be informed by visits to genuinely occupied units, giving it less signal than the occupancy parameters.</p>
 </section>
 <section id="occupancy-probability-vs.-noise" class="level3">
 <h3 class="anchored" data-anchor-id="occupancy-probability-vs.-noise">Occupancy Probability vs.&nbsp;Noise</h3>
-<p>The quantity we care most about is how occupancy probability varies with noise level. The figure below shows the posterior mean occupancy curve and its 90% <em>credible interval</em> — the range within which the true value falls with 90% posterior probability — across the full range of observed noise values. Rug marks along the top edge show individual quiet sites (blue); rug marks along the bottom edge show individual noisy sites (red).</p>
+<p>The quantity we care most about is how occupancy probability varies with noise level. The figure below shows the posterior mean occupancy curve and its 90% <em>credible interval</em> (the range within which the true value falls with 90% posterior probability) across the full range of observed noise values. The logit-scale estimates have been converted back to the probability scale via the logistic function, so the y-axis shows occupancy as a probability between 0 and 1 and is directly interpretable. Rug marks along the top edge show individual quiet sites (blue); rug marks along the bottom edge show individual noisy sites (red).</p>
 <div class="cell">
 <details class="code-fold">
 <summary>R code: occupancy vs noise plot</summary>
@@ -993,7 +994,7 @@ Figure&nbsp;4: Posterior occupancy probability as a function of standardised noi
 </div>
 </div>
 </div>
-<p>The negative slope is clearly recovered. The interval is wider at extreme noise values — the edges of the data — where fewer sites exist to anchor the estimate.</p>
+<p>The negative slope is clearly recovered. The interval is wider at extreme noise values (the edges of the data) where fewer sites exist to anchor the estimate.</p>
 </section>
 <section id="what-happens-if-you-ignore-detection-probability" class="level3">
 <h3 class="anchored" data-anchor-id="what-happens-if-you-ignore-detection-probability">What Happens If You Ignore Detection Probability?</h3>
@@ -1061,7 +1062,7 @@ Figure&nbsp;4: Posterior occupancy probability as a function of standardised noi
 <img src="index_files/figure-html/fig-naive-vs-model-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-naive-vs-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;5: Naive occupancy estimate (raw proportion of visits with a detection, treated as the occupancy rate) versus the model-based posterior estimate, shown separately for quiet and noisy sites. The naive estimator consistently underestimates occupancy in both neighbourhood types. Because it underestimates both by similar amounts here, the relative difference is approximately preserved — but this would not hold if detection probability varied systematically between neighbourhoods.
+Figure&nbsp;5: Naive occupancy estimate (raw proportion of visits with a detection, treated as the occupancy rate) versus the model-based posterior estimate, shown separately for quiet and noisy sites. The naive estimator consistently underestimates occupancy in both neighbourhood types. Because it underestimates both by similar amounts here, the relative difference is approximately preserved, but this would not hold if detection probability varied systematically between neighbourhoods.
 </figcaption>
 </figure>
 </div>
@@ -1073,7 +1074,7 @@ Figure&nbsp;5: Naive occupancy estimate (raw proportion of visits with a detecti
 <section id="whats-next" class="level2">
 <h2 class="anchored" data-anchor-id="whats-next">What’s Next</h2>
 <p>We now have the full single-season occupancy model: the motivation, the two-level structure and its marginal likelihood, a worked numerical example by hand, the identifiability surface showing that <span class="math inline">\(\psi\)</span> and <span class="math inline">\(p\)</span> are separately recoverable, a Bayesian implementation in Stan with carefully considered priors, and a final comparison showing what goes wrong if you ignore imperfect detection entirely.</p>
-<p>In <strong>Part 2</strong>, we ask a different question: not <em>whether</em> a unit is occupied, but <em>how many people</em> are typically home. This turns the latent binary state into a latent count, and calls for an <strong>N-mixture model</strong>. The detection problem reappears in the same form, but the stakes are higher: with counts, misestimating detection probability does not just shift your estimates up or down — it distorts the entire shape of the abundance distribution.</p>
+<p>In <strong>Part 2</strong>, we ask a different question: not <em>whether</em> a unit is occupied, but <em>how many people</em> are typically home. This turns the latent binary state into a latent count, and calls for an <strong>N-mixture model</strong>. The detection problem reappears in the same form, but the stakes are higher: with counts, not accounting for detection probability systematically deflates abundance estimates, and the bias compounds as counts get larger.</p>
 </section>
 <section id="references" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
