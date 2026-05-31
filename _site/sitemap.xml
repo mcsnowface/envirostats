@@ -1,55 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://www.envirostats.ca/about.html</loc>
-    <lastmod>2025-10-12T23:55:08.499Z</lastmod>
+    <loc>https://www.envirostats.ca/tools.html</loc>
+    <lastmod>2026-05-09T03:46:17.226Z</lastmod>
   </url>
   <url>
     <loc>https://www.envirostats.ca/services.html</loc>
     <lastmod>2025-10-13T14:54:21.953Z</lastmod>
   </url>
   <url>
-    <loc>https://www.envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/index.html</loc>
-    <lastmod>2025-10-17T06:20:08.191Z</lastmod>
-  </url>
-  <url>
-    <loc>https://www.envirostats.ca/mission.html</loc>
-    <lastmod>2025-10-12T23:55:08.516Z</lastmod>
-  </url>
-  <url>
-    <loc>https://www.envirostats.ca/posts/2024-04-10-evidence-synthesis/index.html</loc>
-    <lastmod>2025-10-12T23:55:08.522Z</lastmod>
-  </url>
-  <url>
-    <loc>https://www.envirostats.ca/posts.html</loc>
-    <lastmod>2026-05-09T04:53:46.095Z</lastmod>
-  </url>
-  <url>
-    <loc>https://www.envirostats.ca/index.html</loc>
-    <lastmod>2025-10-12T23:55:08.502Z</lastmod>
-  </url>
-  <url>
-    <loc>https://www.envirostats.ca/posts/2025-10-20-understanding-bayesian-inference-foundations/index.html</loc>
-    <lastmod>2025-10-21T14:14:30.864Z</lastmod>
-  </url>
-  <url>
-    <loc>https://www.envirostats.ca/posts/2025-10-27-understanding-bayesian-inference-linear-regression/index.html</loc>
-    <lastmod>2025-10-28T04:41:30.193Z</lastmod>
+    <loc>https://www.envirostats.ca/posts/2026-05-31-occupancy-modelling/index.html</loc>
+    <lastmod>2026-05-31T04:16:19.180Z</lastmod>
   </url>
   <url>
     <loc>https://www.envirostats.ca/posts/2025-11-05-understanding-bayesian-predictions/index.html</loc>
     <lastmod>2025-11-10T02:42:53.792Z</lastmod>
   </url>
   <url>
+    <loc>https://www.envirostats.ca/posts/2025-10-20-understanding-bayesian-inference-foundations/index.html</loc>
+    <lastmod>2025-10-21T14:14:30.864Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.envirostats.ca/posts/2024-04-10-evidence-synthesis/index.html</loc>
+    <lastmod>2025-10-12T23:55:08.522Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.envirostats.ca/index.html</loc>
+    <lastmod>2025-10-12T23:55:08.502Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.envirostats.ca/about.html</loc>
+    <lastmod>2025-10-12T23:55:08.499Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.envirostats.ca/mission.html</loc>
+    <lastmod>2025-10-12T23:55:08.516Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.envirostats.ca/posts/2025-10-12-understanding-frequentist-inference/index.html</loc>
+    <lastmod>2025-10-17T06:20:08.191Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.envirostats.ca/posts/2025-10-27-understanding-bayesian-inference-linear-regression/index.html</loc>
+    <lastmod>2025-10-28T04:41:30.193Z</lastmod>
+  </url>
+  <url>
     <loc>https://www.envirostats.ca/posts/2026-05-08-distributions-and-data-generating-processes/index.html</loc>
     <lastmod>2026-05-10T13:32:33.216Z</lastmod>
   </url>
   <url>
-    <loc>https://www.envirostats.ca/tools/probability-distributions/index.html</loc>
-    <lastmod>2026-05-09T04:48:59.375Z</lastmod>
+    <loc>https://www.envirostats.ca/posts.html</loc>
+    <lastmod>2026-05-09T04:53:46.095Z</lastmod>
   </url>
   <url>
-    <loc>https://www.envirostats.ca/tools.html</loc>
-    <lastmod>2026-05-09T03:46:17.226Z</lastmod>
+    <loc>https://www.envirostats.ca/tools/probability-distributions/index.html</loc>
+    <lastmod>2026-05-09T04:48:59.375Z</lastmod>
   </url>
 </urlset>

@@ -9,3 +9,4 @@
 *_cache/
 *.rds
 *.RDS
+**/*.quarto_ipynb
