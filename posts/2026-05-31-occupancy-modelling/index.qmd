@@ -96,7 +96,7 @@ This is the core problem that occupancy modelling is designed to solve.
 
 ## Detection vs. Occupancy: Untangling Two Processes
 
-What we have stumbled into is a situation where the state we care about (is this unit occupied?) and the observation process (did we detect a resident?) are entangled — unless we design our study to separate them.
+What we have stumbled into is a situation where the state we care about (is this unit occupied?) and the observation process (did we detect a resident?) are entangled, unless we design our study to separate them.
 
 We can think of our data as arising from two distinct processes:
 
@@ -135,7 +135,7 @@ What makes the occupancy model distinctive is that this two-part pattern appears
 
 We visit unit $i$ on $J$ occasions and collect its *detection history* $\mathbf{y}_i = (y_{i1}, \ldots, y_{iJ})$, where each $y_{ij}$ is 1 if someone answered on visit $j$ and 0 otherwise.
 
-The quantity we care about but **never observe directly** is the true occupancy state $z_i$, the same binary state introduced earlier as the output of Process 1: is this unit occupied (1) or vacant (0)? We model it as a Bernoulli random variable — a single coin flip with a site-specific probability of landing heads:
+The quantity we care about but **never observe directly** is the true occupancy state $z_i$, the same binary state introduced earlier as the output of Process 1: is this unit occupied (1) or vacant (0)? We model it as a Bernoulli random variable, a single coin flip with a site-specific probability of landing heads:
 
 $$
 z_i \sim \text{Bernoulli}(\psi_i)
@@ -143,7 +143,7 @@ $$
 
 A Bernoulli distribution is the simplest possible probability model: it produces a 1 with probability $\psi_i$ and a 0 with probability $1 - \psi_i$.
 
-We do not observe $\psi_i$ directly either, but we model it as a function of site-level covariates — things like noise level and distance to the nearest park:
+We do not observe $\psi_i$ directly either, but we model it as a function of site-level covariates, such as things like noise level and distance to the nearest park:
 
 $$
 \psi_i = \text{logit}^{-1}(\alpha_0 + \alpha_1 \cdot \text{noise}_i + \cdots)
@@ -161,7 +161,7 @@ $$
 y_{ij} \mid z_i \sim \text{Bernoulli}(z_i \cdot p_{ij})
 $$
 
-The notation $y_{ij} \mid z_i$ is read "the observation at site $i$, visit $j$, *given* the occupancy state $z_i$." The vertical bar means we are conditioning on — taking as given — the true state of the unit.
+The notation $y_{ij} \mid z_i$ is read "the observation at site $i$, visit $j$, *given* the occupancy state $z_i$." The vertical bar means we are conditioning on (taking as given) the true state of the unit.
 
 $p_{ij}$ is the **detection probability**: the chance that a resident answers the door on visit $j$ to unit $i$, *given that the unit is occupied*. The double subscript is there because detection probability can in principle vary both across sites (some households are just harder to reach) and across visits (a Saturday afternoon visit is more likely to find someone home than a Tuesday morning one).
 
@@ -189,9 +189,9 @@ $$
 \mathcal{L}_i = \underbrace{\psi_i \prod_j p_{ij}^{y_{ij}}(1 - p_{ij})^{1 - y_{ij}}}_{\text{occupied and produced this history}} \;+\; \underbrace{(1 - \psi_i)\,\mathbf{1}\!\left[\sum_j y_{ij} = 0\right]}_{\text{vacant and produced all zeros}}
 $$
 
-Both terms are **regular probabilities** on the $[0, 1]$ scale — not log-probabilities. We can add them directly because they represent two mutually exclusive scenarios: a unit cannot be both occupied and vacant at the same time. Adding the probabilities of mutually exclusive events gives the total probability of what we observed, which is exactly what a likelihood is.
+Both terms are **regular probabilities** on the $[0, 1]$ scale, not log-probabilities. We can add them directly because they represent two mutually exclusive scenarios: a unit cannot be both occupied and vacant at the same time. Adding the probabilities of mutually exclusive events gives the total probability of what we observed, which is exactly what a likelihood is.
 
-The indicator $\mathbf{1}[\sum_j y_{ij} = 0]$ is a simple on/off switch. It equals 1 when every visit to site $i$ recorded a zero — no detection across all $J$ visits — and equals 0 the moment any single $y_{ij} = 1$ occurs. In that second case the vacant term becomes $(1 - \psi_i) \times 0 = 0$ and vanishes from the sum entirely, because a vacant unit producing a detection is a logical impossibility. To put it plainly:
+The indicator $\mathbf{1}[\sum_j y_{ij} = 0]$ is a simple on/off switch. It equals 1 when every visit to site $i$ recorded a zero (no detection across all $J$ visits) and equals 0 the moment any single $y_{ij} = 1$ occurs. In that second case the vacant term becomes $(1 - \psi_i) \times 0 = 0$ and vanishes from the sum entirely, because a vacant unit producing a detection is a logical impossibility. To put it plainly:
 
 - **Any detection occurred** ($\sum_j y_{ij} > 0$): switch = 0, vacant term = 0, only the occupied term contributes.
 - **All visits were zero** ($\sum_j y_{ij} = 0$): switch = 1, vacant term = $(1 - \psi_i)$, both terms contribute.
@@ -267,7 +267,7 @@ Using the terminology from @royle2008, this is a **state-space model**: the syst
 
 A useful distinction: in a mixed model, you typically care only about the *variance* of the random effect distribution, not the individual group estimates themselves. In an occupancy model, you often care a great deal about the individual $z_i$ values. Which units are occupied? Where is occupancy clustered? The latent states are themselves targets of inference, not nuisance parameters to be integrated away.
 
-The two approaches are not mutually exclusive. You can embed an occupancy model inside a multilevel structure — for example, if sites are nested within neighbourhoods and you want neighbourhood-level random effects on $\psi$. In that case both kinds of hierarchy operate simultaneously.
+The two approaches are not mutually exclusive. You can embed an occupancy model inside a multilevel structure (for example, if sites are nested within neighbourhoods and you want neighbourhood-level random effects on $\psi$), in which case both kinds of hierarchy operate simultaneously.
 
 
 ## Identifiability: Can the Data Tell $\psi$ and $p$ Apart?
@@ -389,11 +389,11 @@ Before fitting the model, it is worth returning to the identifiability question 
 
 Each cell in the heatmap below asks: *if the true occupancy probability were $\psi$ and the true detection probability were $p$, how well would that combination explain our 120-site dataset?* The brightest region is the best-fitting combination; colours fall away as we move to less plausible combinations. The white cross marks the true values used to generate the data.
 
-The contour lines are drawn at −1, −2, −5, −10, and −20 on the relative log-likelihood scale. A value of −2 means the likelihood at that point is $e^{-2} \approx 0.14$ times the likelihood at the peak — the data are about seven times less probable under that parameter combination than under the best one. The −2 contour is a useful rough boundary: anything inside it is well-supported by the data, anything outside it is not.
+The contour lines are drawn at −1, −2, −5, −10, and −20 on the relative log-likelihood scale. A value of −2 means the likelihood at that point is $e^{-2} \approx 0.14$ times the likelihood at the peak, meaning the data are about seven times less probable under that parameter combination than under the best one. The −2 contour is a useful rough boundary: anything inside it is well-supported by the data, anything outside it is not.
 
 ```{r}
 #| label: fig-identifiability
-#| fig-cap: "Joint log-likelihood surface for ψ and p computed from the simulation dataset (N = 120 sites, J = 4 visits). Each cell shows how well that combination of ψ and p explains the observed detection histories, relative to the best-fitting combination (set to zero). The white cross marks the true values used to simulate the data. The well-defined peak confirms that ψ and p are separately identifiable — there is one clear best answer, not a ridge of equally plausible combinations."
+#| fig-cap: "Joint log-likelihood surface for ψ and p computed from the simulation dataset (N = 120 sites, J = 4 visits). Each cell shows how well that combination of ψ and p explains the observed detection histories, relative to the best-fitting combination (set to zero). The white cross marks the true values used to simulate the data. The well-defined peak confirms that ψ and p are separately identifiable: there is one clear best answer, not a ridge of equally plausible combinations."
 
 log_lik_surface <- function(psi, p, y, J) {
   ll <- 0
@@ -443,7 +443,7 @@ ggplot(grid, aes(x = psi, y = p)) +
 
 If you have ever read a topographic map, the contour lines here work exactly the same way. On a topo map, each line connects all points at the same elevation; a tight cluster of rings indicates a sharp summit, while widely spaced lines indicate a gentle slope. Here, each white contour line connects all combinations of $\psi$ and $p$ that fit the data equally well at that likelihood level, and the colour fills in the full surface between them. The bright spot at the centre is the summit: the single combination that best explains the data. The contour rings around it show how steeply the fit deteriorates as you move away.
 
-The peak is tight and well-centred near the true values. This matters because a sharp peak means there is essentially one combination of $\psi$ and $p$ that explains the data well — moving away from it in any direction, including sliding along the $\psi$ axis alone or the $p$ axis alone, makes the fit noticeably worse. The data are pinning down both parameters separately.
+The peak is tight and well-centred near the true values. This matters because a sharp peak means there is essentially one combination of $\psi$ and $p$ that explains the data well. Moving away from it in any direction, including sliding along the $\psi$ axis alone or the $p$ axis alone, makes the fit noticeably worse. The data are pinning down both parameters separately.
 
 A diagonal ridge running from the bottom-right to the top-left would be the danger sign: it would mean that low $\psi$ paired with high $p$ fits about as well as high $\psi$ paired with low $p$, and the data cannot tell the two stories apart, like a mountain range with no clear summit, just an endless spine. The tight, roughly circular peak here confirms that our four visits per site are sufficient to identify both parameters separately.
 
@@ -467,7 +467,7 @@ For the intercepts, a normal(0, 1.5) prior on the logit scale covers a wide rang
 
 For the noise slope $\alpha_1$, it helps to think about what different slope values imply in practice. Because the covariate is standardised, $\alpha_1$ tells us how occupancy changes when noise increases by one standard deviation. We fix the intercept at $\alpha_0 = 0.40$ (60% occupancy at average noise) and vary only the slope.
 
-The figure below shows five curves, one per slope value. They all pass through the same point at noise = 0 — 60% occupancy — because the intercept is identical. What differs is how steeply occupancy falls as noise increases to the right, and how steeply it rises as noise decreases to the left.
+The figure below shows five curves, one per slope value. They all pass through the same point at noise = 0 — 60% occupancy, because the intercept is identical. What differs is how steeply occupancy falls as noise increases to the right, and how steeply it rises as noise decreases to the left.
 
 ```{r}
 #| label: fig-slope-illustration
@@ -531,7 +531,7 @@ For reference, the same information in numbers:
 
 A slope of −4.0 would mean that moving one standard deviation noisier nearly empties a neighbourhood entirely. That is a claim requiring extraordinary evidence. The normal(0, 1.0) prior assigns this value vanishingly small probability, as it sits four standard deviations from zero, while leaving slopes in the −0.5 to −2.5 range, which correspond to meaningful but not extreme effects, well within the prior's support. The data can push the estimate wherever the evidence points; the prior simply prevents the sampler from seriously entertaining scenarios where noise alone drives occupancy to near zero.
 
-The Stan code below implements the two-level model exactly as described. If you are not familiar with Stan, the three blocks map directly onto the model structure: `data` declares what we pass in, `parameters` names the three unknowns the sampler will estimate, `model` contains the priors and the marginalised likelihood loop, and `generated quantities` computes derived quantities — site-level $\psi_i$, detection probability $p$, and the posterior probability that each all-zero site is genuinely occupied.
+The Stan code below implements the two-level model exactly as described. If you are not familiar with Stan, the three blocks map directly onto the model structure: `data` declares what we pass in, `parameters` names the three unknowns the sampler will estimate, `model` contains the priors and the marginalised likelihood loop, and `generated quantities` computes derived quantities: site-level $\psi_i$, detection probability $p$, and the posterior probability that each all-zero site is genuinely occupied.
 
 ```{r}
 #| label: stan-model
@@ -632,7 +632,7 @@ fit <- mod$sample(
 fit$summary(c("alpha0", "alpha1", "beta0", "p"))
 ```
 
-The table above shows the posterior summary for each parameter. The `mean` column is the posterior mean — our best single-number estimate. The `q5` and `q95` columns are the 5th and 95th percentiles, forming a 90% credible interval. `rhat` is a convergence diagnostic: values close to 1.00 indicate the four independent sampling chains reached the same answer, which is what we want to see.
+The table above shows the posterior summary for each parameter. The `mean` column is the posterior mean, our best single-number estimate. The `q5` and `q95` columns are the 5th and 95th percentiles, forming a 90% credible interval. `rhat` is a convergence diagnostic: values close to 1.00 indicate the four independent sampling chains reached the same answer, which is what we want to see.
 
 ```{r}
 #| label: extract-draws
@@ -659,7 +659,7 @@ Recall that occupancy probability is modelled as:
 
 $$\psi_i = \text{logit}^{-1}(\alpha_0 + \alpha_1 \cdot \text{noise}_i)$$
 
-The logit scale is a transformed scale where 0 corresponds to a probability of 0.50, positive values correspond to probabilities above 0.50, and negative values correspond to probabilities below 0.50. To convert back to a probability, you apply the logistic function: $\text{logit}^{-1}(x) = e^x / (1 + e^x)$.
+The logit scale is a transformed scale where 0 corresponds to a probability of 0.50, positive values correspond to probabilities above 0.50, and negative values correspond to probabilities below 0.50. To convert back to a probability, you apply the logistic function: $$\text{logit}^{-1}(x) = e^x / (1 + e^x)$$
 
 $\alpha_0$ and $\beta_0$ are intercepts on this scale and need to be converted to be interpreted as probabilities. $\alpha_1$ is a slope and works differently: it describes a constant change in log-odds per one-unit increase in standardised noise. Because the logistic function produces a sigmoidal curve, this does not translate to a fixed change in probability. The change in probability per unit of noise depends on where you are on the curve, being largest near 50% occupancy and smallest near the extremes.
 
