@@ -35,7 +35,7 @@ draft: false
 
 ---
 
-![Knock knock. Who's there? Wendy. Wendy who? Wendy doorbell works, you won't need to keep visiting the same house four times.](occupancy_modelling_knock_knock.png)
+![Knock knock. Who's there? Wendy. Wendy who? Wendy doorbell rings, let us know.](occupancy_modelling_knock_knock.png)
 
 
 ```{r}
